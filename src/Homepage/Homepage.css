@@ -1,356 +1,566 @@
-/* --- Global & Typography --- */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* ============================================================
+   TKRCET Homepage — Professional CSS
+   Inspired by: Clean modern UI with bold typography,
+   card-based layouts, and smooth interactions.
+   Theme: Institutional Prestige × Modern Tech
+   ============================================================ */
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ── CSS Variables ── */
+:root {
+  --primary:       #1a3a5c;
+  --primary-light: #2563a8;
+  --accent:        #e85d26;
+  --accent-hover:  #c94d1a;
+  --bg:            #f5f7fa;
+  --surface:       #ffffff;
+  --surface-alt:   #eef2f7;
+  --text:          #1a1f2e;
+  --text-muted:    #6b7280;
+  --border:        #dde3ec;
+
+  --radius-sm:  8px;
+  --radius-md:  14px;
+  --radius-lg:  22px;
+  --radius-xl:  32px;
+
+  --shadow-sm:  0 2px 8px rgba(26,58,92,.08);
+  --shadow-md:  0 6px 24px rgba(26,58,92,.12);
+  --shadow-lg:  0 16px 48px rgba(26,58,92,.16);
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'DM Sans', sans-serif;
+
+  --transition: .25s cubic-bezier(.4,0,.2,1);
 }
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
 
 body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background-color: #f7f9fc; /* Very light grey for contrast against white cards */
-    color: #1a1d1e;
-    line-height: 1.6;
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* --- Header --- */
+img { max-width: 100%; display: block; }
+a   { color: inherit; text-decoration: none; }
+ul  { list-style: none; }
+
+/* ══════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════ */
 .header1 {
-    background-color: #ffffff;
-    padding: 15px 5%;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  background: var(--primary);
+  padding: 0 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
 }
 
 .marquee-container {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 70px;
+  overflow: hidden;
 }
 
 #logo {
-    height: 50px;
-    width: auto;
-    border-radius: 8px;
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.25);
 }
 
 #space {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #1a1d1e;
-    letter-spacing: -0.5px;
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: .04em;
+  white-space: nowrap;
+  animation: marquee 18s linear infinite;
 }
 
-/* --- Main Layout --- */
-.main-content {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 32px;
-    padding: 40px 5%;
-    max-width: 1400px;
-    margin: 0 auto;
+@keyframes marquee {
+  0%   { transform: translateX(60%); }
+  100% { transform: translateX(-100%); }
 }
 
-.left-section {
-    flex: 1.5;
-    min-width: 320px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+/* ── Typing / reveal animations ── */
+@keyframes typing {
+  from { width: 0; }
+  to   { width: 100%; }
 }
 
-.right-section {
-    flex: 1;
-    min-width: 320px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
+@keyframes blink {
+  50% { border-color: transparent; }
 }
 
-/* --- Left Section: Campus Images & About --- */
-.campus-image img {
-    width: 100%;
-    height: 450px;
-    object-fit: cover;
-    border-radius: 24px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-    transition: opacity 0.5s ease-in-out;
-}
-
-.about-campus {
-    background: #ffffff;
-    padding: 32px;
-    border-radius: 24px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-}
-
-.about-campus h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: #1a1d1e;
-}
-
-.about-campus p {
-    font-size: 1rem;
-    color: #4a5568;
-    white-space: pre-line; /* Respects line breaks in your text block */
-    text-align: justify;
-}
-
-/* --- Right Section: Delegates (Template Tab Style) --- */
-.delegates {
-    background: #ffffff;
-    padding: 32px;
-    border-radius: 24px;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-}
-
-.delegates h3 {
-    font-size: 1.25rem;
-    margin-bottom: 20px;
-}
-
-.delegates img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin: 0 auto 16px;
-    border: 4px solid #e5f3ed; /* Soft mint accent from template */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-.delegates h4 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 12px;
-}
-
-.delegates p {
-    font-size: 0.95rem;
-    color: #4a5568;
-    margin-bottom: 24px;
-    /* Limit to 4 lines for cleaner UI, scrollable if needed */
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.quick-links {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-    background: #e5f3ed; /* Light mint background like the UI tabs */
-    padding: 8px;
-    border-radius: 16px;
-}
-
-.quick-links button {
-    flex: 1 1 calc(33% - 8px);
-    padding: 10px 12px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #1a1d1e;
-    transition: all 0.2s ease;
-}
-
-.quick-links button:hover {
-    background: #ffffff !important;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-}
-
-/* --- Vision & Mission --- */
-.vision-mission {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.vision, .mission {
-    background: #e5f3ed;
-    padding: 24px;
-    border-radius: 24px;
-}
-
-.vision h4, .mission h4 {
-    font-size: 1.15rem;
-    font-weight: 700;
-    margin-bottom: 12px;
-    color: #1a1d1e;
-}
-
-.vision p, .mission ul {
-    font-size: 0.95rem;
-    color: #4a5568;
-}
-
-.mission ul {
-    padding-left: 20px;
-}
-
-.mission li {
-    margin-bottom: 8px;
-}
-
-/* --- Login Section (Dark Theme + Orange CTA from Template) --- */
-.login {
-    background: #1a1d1e;
-    padding: 32px;
-    border-radius: 24px;
-    color: #ffffff;
-}
-
-.login h3 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 24px;
-    text-align: center;
-}
-
-.login input {
-    width: 100%;
-    padding: 14px 16px;
-    margin-bottom: 16px;
-    border: 1px solid #333;
-    border-radius: 12px;
-    background: #2a2d2e;
-    color: #ffffff;
-    font-size: 1rem;
-    font-family: inherit;
-    transition: border-color 0.2s ease;
-}
-
-.login input:focus {
-    outline: none;
-    border-color: #f96131; /* Vibrant orange focus state */
-}
-
-.login input::placeholder {
-    color: #888;
-}
-
-.login button {
-    width: 100%;
-    padding: 16px;
-    background: #f96131; /* Vibrant orange from the screenshot */
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.05rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 8px;
-}
-
-.login button:hover {
-    background: #e05228;
-}
-
-.login button:disabled {
-    background: #666;
-    cursor: not-allowed;
-}
-
-/* --- Footer --- */
-.footer {
-    background: #1a1d1e;
-    color: #888888;
-    text-align: center;
-    padding: 40px 5%;
-    margin-top: 40px;
-    font-size: 0.9rem;
-}
-
-.footer p {
-    margin-bottom: 8px;
-}
-
-/* --- Animations for JS classes --- */
-.text-reveal {
-    animation: fadeIn 1s ease-in;
-}
-
-.typing {
-    display: inline-block;
-    overflow: hidden;
-    white-space: nowrap;
-    border-right: 2px solid #f96131;
-    animation: typing 3s steps(40, end), blink-caret .75s step-end infinite;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-@keyframes typing {
-    from { width: 0 }
-    to { width: 100% }
+.typing {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 3px solid var(--accent);
+  animation: typing 2.4s steps(30,end) forwards, blink .75s step-end infinite;
+  max-width: 100%;
 }
 
-@keyframes blink-caret {
-    from, to { border-color: transparent }
-    50% { border-color: #f96131; }
+.text-reveal  { animation: fadeIn .8s ease forwards; }
+.text-reveal1 { animation: fadeUp .6s ease forwards; }
+
+/* ══════════════════════════════════════════
+   MAIN LAYOUT  (two-column on desktop)
+══════════════════════════════════════════ */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.75rem;
+  padding: 2rem 2rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-/* --- Responsive Media Queries --- */
-@media screen and (max-width: 1024px) {
-    .left-section { flex: 1.2; }
-    .right-section { flex: 1; }
+/* ══════════════════════════════════════════
+   LEFT SECTION
+══════════════════════════════════════════ */
+.left-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-@media screen and (max-width: 850px) {
-    .main-content {
-        flex-direction: column;
-    }
-    
-    .campus-image img {
-        height: 350px;
-    }
-    
-    .quick-links button {
-        flex: 1 1 calc(50% - 8px);
-    }
+/* ── Campus Image Carousel ── */
+.campus-image {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  height: 320px;
+  box-shadow: var(--shadow-md);
 }
 
-@media screen and (max-width: 500px) {
-    .header1 {
-        padding: 15px;
-    }
-    
-    .marquee-container {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-    }
-    
-    #space {
-        font-size: 1.1rem;
-    }
-    
-    .campus-image img {
-        height: 250px;
-        border-radius: 16px;
-    }
-    
-    .about-campus, .delegates, .vision, .mission, .login {
-        padding: 24px;
-        border-radius: 16px;
-    }
+.campus-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .6s var(--transition);
+}
 
-    .quick-links button {
-        flex: 1 1 100%;
-    }
+.campus-image:hover img { transform: scale(1.03); }
+
+.campus-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(26,58,92,.45) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* ── About Campus ── */
+.about-campus {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  animation: fadeUp .7s ease forwards;
+}
+
+.about-campus h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+}
+
+.about-campus p {
+  font-size: .925rem;
+  color: var(--text-muted);
+  line-height: 1.8;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: .5rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.about-campus p::-webkit-scrollbar { width: 4px; }
+.about-campus p::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ══════════════════════════════════════════
+   RIGHT SECTION
+══════════════════════════════════════════ */
+.right-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ══════════════════════════════════════════
+   DELEGATES CARD
+══════════════════════════════════════════ */
+.delegates {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  text-align: center;
+  animation: fadeUp .6s ease forwards;
+}
+
+.delegates h3 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--primary);
+  margin-bottom: 1.25rem;
+}
+
+.delegates img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 1rem;
+  border: 4px solid var(--surface-alt);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.delegates img:hover {
+  transform: scale(1.06);
+  box-shadow: var(--shadow-md);
+}
+
+.delegates h4 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: .5rem;
+}
+
+.delegates p {
+  font-size: .875rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  max-height: 130px;
+  overflow-y: auto;
+  text-align: left;
+  padding-right: .25rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  margin-bottom: 1.25rem;
+}
+
+/* ── Quick-link buttons (delegate tabs) ── */
+.quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  justify-content: center;
+}
+
+.quick-links button {
+  font-family: var(--font-body);
+  font-size: .78rem;
+  font-weight: 500;
+  padding: .38rem .85rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-transform: capitalize;
+}
+
+.quick-links button:hover {
+  border-color: var(--primary-light);
+  color: var(--primary);
+  background: var(--surface-alt);
+}
+
+.quick-links button[style*="background-color: rgb(221, 221, 221)"],
+.quick-links button[style*="background-color: #ddd"] {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #ffffff !important;
+}
+
+/* ══════════════════════════════════════════
+   VISION & MISSION
+══════════════════════════════════════════ */
+.vision-mission {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  animation: fadeUp .75s ease forwards;
+}
+
+.vision,
+.mission {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--primary);
+}
+
+.vision { border-top-color: var(--primary); }
+.mission { border-top-color: var(--accent); }
+
+.vision h4,
+.mission h4 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--primary);
+  margin-bottom: .75rem;
+}
+
+.mission h4 { color: var(--accent); }
+
+.vision p,
+.mission p {
+  font-size: .855rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+}
+
+.mission ul {
+  padding-left: 1.1rem;
+  list-style: disc;
+}
+
+.mission li {
+  font-size: .855rem;
+  color: var(--text-muted);
+  margin-bottom: .4rem;
+  line-height: 1.6;
+}
+
+/* ══════════════════════════════════════════
+   LOGIN CARD  — inspired by Dealflow style
+══════════════════════════════════════════ */
+.login {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  animation: fadeUp .8s ease forwards;
+}
+
+.login h3 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1.25rem;
+  position: relative;
+  display: inline-block;
+}
+
+.login h3::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+  margin-top: .3rem;
+}
+
+.login input {
+  display: block;
+  width: 100%;
+  padding: .78rem 1rem;
+  margin-bottom: .9rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: .925rem;
+  color: var(--text);
+  background: var(--bg);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+
+.login input::placeholder { color: var(--text-muted); }
+
+.login input:focus {
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(37,99,168,.15);
+  background: var(--surface);
+}
+
+.login input:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+#menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  width: 100%;
+  padding: .85rem 1.5rem;
+  background: var(--accent);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  letter-spacing: .02em;
+  margin-top: .25rem;
+}
+
+#menu::after { content: '→'; font-size: 1.1rem; }
+
+#menu:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(232,93,38,.3);
+}
+
+#menu:active:not(:disabled) { transform: translateY(0); }
+
+#menu:disabled {
+  opacity: .65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Badge-style label for login (inspired by Dealflow pill) ── */
+.login::before {
+  content: 'STUDENT & FACULTY PORTAL';
+  display: inline-block;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  color: var(--primary-light);
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: .3rem .85rem;
+  margin-bottom: 1rem;
+}
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+.footer {
+  background: var(--primary);
+  color: rgba(255,255,255,.8);
+  text-align: center;
+  padding: 1.5rem 2rem;
+  font-size: .85rem;
+  line-height: 2;
+}
+
+.footer p:first-child {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: .9rem;
+}
+
+/* ══════════════════════════════════════════
+   TOAST OVERRIDES
+══════════════════════════════════════════ */
+.Toastify__toast {
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-body) !important;
+  font-size: .9rem !important;
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — TABLET  (≤ 900px)
+══════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .main-content {
+    grid-template-columns: 1fr;
+    padding: 1.5rem 1.25rem 2.5rem;
+    gap: 1.5rem;
+  }
+
+  .campus-image { height: 240px; }
+
+  .vision-mission { grid-template-columns: 1fr; }
+
+  #space { font-size: .95rem; }
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — MOBILE  (≤ 600px)
+══════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .header1 { padding: 0 1rem; }
+
+  .marquee-container { min-height: 60px; gap: .75rem; }
+
+  #logo { width: 42px; height: 42px; }
+
+  #space { font-size: .85rem; }
+
+  .main-content { padding: 1rem 1rem 2rem; gap: 1.25rem; }
+
+  .campus-image { height: 200px; border-radius: var(--radius-md); }
+
+  .about-campus,
+  .delegates,
+  .login {
+    padding: 1.25rem 1rem;
+    border-radius: var(--radius-md);
+  }
+
+  .delegates img { width: 90px; height: 90px; }
+
+  .about-campus p { max-height: 200px; }
+
+  .delegates p { max-height: 110px; }
+
+  .quick-links button { font-size: .72rem; padding: .3rem .65rem; }
+
+  .vision-mission { grid-template-columns: 1fr; gap: .85rem; }
+
+  .login { padding: 1.25rem; }
+
+  .login h3 { font-size: 1.15rem; }
+
+  #menu { font-size: .9rem; padding: .75rem 1.25rem; }
+
+  .footer { padding: 1.25rem 1rem; font-size: .8rem; }
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — LARGE DESKTOP  (≥ 1400px)
+══════════════════════════════════════════ */
+@media (min-width: 1400px) {
+  .main-content { padding: 2.5rem 3rem 4rem; gap: 2.5rem; }
+  .campus-image { height: 400px; }
+  .about-campus p { max-height: 320px; }
 }
