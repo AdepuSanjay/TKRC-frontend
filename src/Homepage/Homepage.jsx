@@ -3,472 +3,379 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
+import './Homepage.css';
 
-/* ─────────────────────────────────────────────────────────
-   TKRCET Homepage — Cinematic Prestige Redesign
-   Theme: Dark Cinematic · Obsidian × Molten Gold × Ivory
-   Fonts: Playfair Display SC + DM Sans
-   ───────────────────────────────────────────────────────── */
+import { MdSchool, MdVerified } from 'react-icons/md';
+import {
+  RiUser3Line, RiLockPasswordLine, RiArrowRightLine,
+  RiLoginBoxLine, RiShieldCheckLine, RiMedalLine,
+  RiGroupLine, RiBuilding2Line,
+  RiCalendarCheckLine, RiBarChartBoxLine, RiTimeLine,
+  RiTeamLine, RiAwardLine, RiEyeLine, RiEyeOffLine,
+} from 'react-icons/ri';
+import { FaUniversity, FaEye, FaBullseye, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { TbBuildingBank, TbFlame, TbCertificate } from 'react-icons/tb';
+import { BiSolidQuoteLeft } from 'react-icons/bi';
+import { IoLocationSharp } from 'react-icons/io5';
+import { BsCheck2Circle } from 'react-icons/bs';
+import { HiAcademicCap } from 'react-icons/hi';
 
-const IMAGES = [
-  "./images/campus.webp",
-  "./images/collage4.jpg",
-  "./images/collage2.jpg",
-  "./images/collage1.jpg"
-];
-
-const DELEGATES = [
-  {
-    key: "chairman",
-    name: "Sri Teegala Krishna Reddy",
-    role: "Chairman",
-    initial: "TK",
-    photo: "../images/tkrcet-chairman.webp",
-    quote: "Together, let's continue to strive for excellence and shape a brighter future.",
-    bio: "Teegala Krishna Reddy Engineering College has grown in leaps and bounds, hurtling across barriers along the way. This has been made possible with the collaborative effort of the Management, the Staff and the Students."
-  },
-  {
-    key: "secretary",
-    name: "Dr. T. Harinath Reddy",
-    role: "Secretary",
-    initial: "TH",
-    photo: "../images/tkrcet-secretary.webp",
-    quote: "Empowering students to become global leaders through world-class technical education.",
-    bio: "TEEGALA KRISHNA REDDY EDUCATIONAL SOCIETY is a venture contributing to the endeavour of providing world-class technical education and empowering students to become global leaders."
-  },
-  {
-    key: "treasurer",
-    name: "Sri. T. Amaranath Reddy",
-    role: "Treasurer",
-    initial: "TA",
-    photo: "../images/tkres-treasurer1.webp",
-    quote: "Values with discipline are the hallmark of our college.",
-    bio: "The motive of TKRES is to develop a global perspective to cope with the fast changing technology scenario. Emphasis not only on academic excellence but the development of the overall personality of a student."
-  },
-  {
-    key: "principal",
-    name: "Dr. D. V. Ravi Shankar",
-    role: "Principal",
-    initial: "DV",
-    photo: "../images/tkr-principal.webp",
-    quote: "23 years of distinguished academic experience shaping the institution's future.",
-    bio: "Dr. D. V. Ravi Shankar obtained his AMIE from Institution of Engineers, M.Tech in Materials Engineering from NIT Suratkal, and Ph.D in Mechanical Engineering from JNT University, Hyderabad."
-  },
-  {
-    key: "dean",
-    name: "Dr. A. Suresh Rao",
-    role: "Vice Principal & Dean",
-    initial: "AS",
-    photo: "../images/suresh_cse.webp",
-    quote: "20 years of experience spanning industry and academia.",
-    bio: "Dr. A. Suresh Rao, Professor in CSE, was conferred with a PhD from NIT Warangal in 2015. He currently serves as Vice Principal, Dean of Academics and HoD of CSE at TKRCET."
-  },
-  {
-    key: "coe",
-    name: "Dr. D. Nageshwar Rao",
-    role: "Controller of Examinations",
-    initial: "DN",
-    photo: "../images/coe.webp",
-    quote: "Distinguished academician guiding research scholars with 20 years of excellence.",
-    bio: "A distinguished academician with 20 years of teaching experience. He pursued Ph.D in VLSI from GITAM University and has published several research papers in National and International journals."
-  }
-];
-
-export default function Homepage() {
+const Homepage = () => {
   const navigate = useNavigate();
-  const [imgIdx, setImgIdx] = useState(0);
-  const [imgVisible, setImgVisible] = useState(true);
-  const [delIdx, setDelIdx] = useState(0);
-  const [delVisible, setDelVisible] = useState(true);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+
+  const imagesLoader = [
+    "./images/campus.webp",
+    "./images/collage4.jpg",
+    "./images/collage2.jpg",
+    "./images/collage1.jpg",
+  ];
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imgFade, setImgFade] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [headerScrolled, setHeaderScrolled] = useState(false);
-  const heroRef = useRef(null);
 
-  // Header scroll effect
-  useEffect(() => {
-    const onScroll = () => setHeaderScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  // Image carousel
-  useEffect(() => {
-    const t = setInterval(() => {
-      setImgVisible(false);
-      setTimeout(() => { setImgIdx(p => (p + 1) % IMAGES.length); setImgVisible(true); }, 500);
-    }, 5500);
-    return () => clearInterval(t);
-  }, []);
-
-  // Delegate carousel
-  useEffect(() => {
-    const t = setInterval(() => {
-      setDelVisible(false);
-      setTimeout(() => { setDelIdx(p => (p + 1) % DELEGATES.length); setDelVisible(true); }, 350);
-    }, 6000);
-    return () => clearInterval(t);
-  }, []);
-
-  const switchDelegate = (i) => {
-    if (i === delIdx) return;
-    setDelVisible(false);
-    setTimeout(() => { setDelIdx(i); setDelVisible(true); }, 280);
+  const delegateInfo = {
+    chairman: {
+      name: "Sri Teegala Krishna Reddy",
+      role: "Chairman",
+      photo: "../images/tkrcet-chairman.webp",
+      description: "TKRCET has grown in leaps and bounds through the collaborative effort of Management, Staff and Students. My vision is to see every student excel while upholding the moral values that define our institution's character and enduring legacy.",
+    },
+    secretary: {
+      name: "Dr. T. Harinath Reddy",
+      role: "Secretary",
+      photo: "../images/tkrcet-secretary.webp",
+      description: "Engineers play the most vital role in nation building. TKRES is committed to providing world-class technical education, empowering students to become leaders who contribute to both the nation and the global community.",
+    },
+    treasurer: {
+      name: "Sri. T. Amaranath Reddy",
+      role: "Treasurer",
+      photo: "../images/tkres-treasurer1.webp",
+      description: "Our emphasis is not only on academic excellence but the holistic development of a student's personality. We ensure new ideas are not merely discussed but executed, turning every student's promise into remarkable achievement.",
+    },
+    principal: {
+      name: "Dr. D. V. Ravi Shankar",
+      role: "Principal",
+      photo: "../images/tkr-principal.webp",
+      description: "With M.Tech from NIT Suratkal and Ph.D from JNTUH, I bring 23 years of academic distinction. My goal is to foster an environment where curiosity thrives, innovation flourishes, and every student reaches their full potential.",
+    },
+    dean: {
+      name: "Dr. A. Suresh Rao",
+      role: "Vice Principal & Dean",
+      photo: "../images/suresh_cse.webp",
+      description: "Holding a Ph.D from NIT Warangal, I oversee academics with a commitment to excellence. My 20 years bridging industry and academia ensures our curriculum remains rigorous, relevant, and aligned with global industry demands.",
+    },
+    coe: {
+      name: "Dr. D. Nageshwar Rao",
+      role: "Controller of Examinations",
+      photo: "../images/coe.webp",
+      description: "With a Ph.D in VLSI from GITAM University and 20 years of teaching experience, I ensure examination integrity and academic standards. My research and industry interactions keep our academic processes truly world-class.",
+    },
   };
 
+  const delegateKeys = Object.keys(delegateInfo);
+  const [currentDelegateIndex, setCurrentDelegateIndex] = useState(0);
+  const [delegateFade, setDelegateFade] = useState(true);
+  const delegateTimerRef = useRef(null);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setImgFade(false);
+      setTimeout(() => { setCurrentImageIndex(p => (p + 1) % imagesLoader.length); setImgFade(true); }, 400);
+    }, 5000);
+    return () => clearInterval(t);
+  }, []);
+
+  const doSwitchDelegate = (nextIndex) => {
+    setDelegateFade(false);
+    setTimeout(() => { setCurrentDelegateIndex(nextIndex); setDelegateFade(true); }, 250);
+  };
+
+  useEffect(() => {
+    clearInterval(delegateTimerRef.current);
+    delegateTimerRef.current = setInterval(() => {
+      doSwitchDelegate((currentDelegateIndex + 1) % delegateKeys.length);
+    }, 6000);
+    return () => clearInterval(delegateTimerRef.current);
+  }, [currentDelegateIndex]);
+
+  const handlePrev = () => doSwitchDelegate((currentDelegateIndex - 1 + delegateKeys.length) % delegateKeys.length);
+  const handleNext = () => doSwitchDelegate((currentDelegateIndex + 1) % delegateKeys.length);
+  const handleTab  = (i) => { if (i !== currentDelegateIndex) doSwitchDelegate(i); };
+
+  const currentDelegate = delegateInfo[delegateKeys[currentDelegateIndex]];
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPw, setShowPw]     = useState(false);
+
   const handleLogin = async () => {
-    if (!username || !password) { toast.error("Please enter credentials."); return; }
+    if (!username || !password) { toast.warning('Please fill in all fields.'); return; }
     setLoading(true);
     try {
-      const fr = await axios.post('https://tkrc-backend.vercel.app/faculty/login', { username, password });
-      if (fr.data.success) {
-        const f = fr.data.faculty;
-        localStorage.setItem("facultyId", f.id);
-        toast.success(`Welcome, ${f.name}!`);
-        setTimeout(() => navigate('/index'), 1800);
+      const r = await axios.post('https://tkrc-backend.vercel.app/faculty/login', { username, password });
+      if (r.data.success) {
+        localStorage.setItem('facultyId', r.data.faculty.id);
+        toast.success(`Welcome, ${r.data.faculty.name}!`);
+        setTimeout(() => navigate('/index'), 2000);
         return;
       }
     } catch (_) {}
     try {
-      const sr = await axios.post('https://tkrcet-backend-g3zu.onrender.com/Section/login', { rollNumber: username, password });
-      if (sr.data.success && sr.data.student?.id) {
-        const s = sr.data.student;
-        localStorage.setItem("studentId", s.rollNumber);
-        toast.success(`Welcome, ${s.name}!`);
-        setTimeout(() => navigate('/index'), 1800);
+      const r = await axios.post('https://tkrcet-backend-g3zu.onrender.com/Section/login', { rollNumber: username, password });
+      if (r.data.success && r.data.student?.id) {
+        localStorage.setItem('studentId', r.data.student.rollNumber);
+        toast.success(`Welcome, ${r.data.student.name}!`);
+        setTimeout(() => navigate('/index'), 2000);
         return;
       }
     } catch (_) {
-      toast.error("Invalid credentials. Please try again.");
+      toast.error('Invalid credentials. Please try again.');
     } finally { setLoading(false); }
   };
 
-  const d = DELEGATES[delIdx];
+  const stats = [
+    { icon: <TbBuildingBank />, num: '20+',   label: 'Acre Campus'  },
+    { icon: <MdSchool />,       num: '7+',    label: 'UG Programs'  },
+    { icon: <RiGroupLine />,    num: '5000+', label: 'Students'     },
+    { icon: <RiAwardLine />,    num: 'AICTE', label: 'Approved'     },
+  ];
+
+  const features = [
+    { icon: <RiCalendarCheckLine />, label: 'Attendance Tracking'  },
+    { icon: <RiBarChartBoxLine />,   label: 'Academic Results'     },
+    { icon: <RiTimeLine />,          label: 'Timetable & Schedule' },
+    { icon: <RiShieldCheckLine />,   label: 'Secure Access'        },
+  ];
+
+  const missions = [
+    'Ensuring excellent branch-wise infrastructural facilities',
+    'Making the institute a premier research and resource centre',
+    'Fostering strong industry-academia partnerships',
+    'Nurturing holistic development of every student',
+  ];
 
   return (
-    <>
-      <style>{CSS}</style>
-      <ToastContainer theme="dark" position="top-right" />
+    <div className="tkr-root">
+      <ToastContainer />
 
-      <div className="tkr-page">
-
-        {/* ══════════════════ HEADER ══════════════════ */}
-        <header className={`tkr-nav ${headerScrolled ? 'tkr-nav--solid' : ''}`}>
-          <div className="tkr-nav-inner">
-            <div className="tkr-nav-brand">
-              <div className="tkr-nav-emblem">
-                <img src="./images/logo.png" alt="TKRCET" />
-              </div>
-              <div className="tkr-nav-titles">
-                <span className="tkr-nav-name">T.K.R. College of Engineering & Technology</span>
-                <span className="tkr-nav-tagline">Affiliated to JNTUH · AICTE Approved · Est. 2002</span>
-              </div>
+      {/* HEADER */}
+      <header className="tkr-header">
+        <div className="tkr-header__inner">
+          <div className="tkr-header__brand">
+            <div className="tkr-header__logo-ring">
+              <img className="tkr-header__logo" src="./images/logo.png" alt="TKRCET" />
             </div>
-            <div className="tkr-nav-loc">
-              <span className="tkr-nav-loc-dot" />
-              Meerpet, Hyderabad
+            <div className="tkr-header__text">
+              <h1 className="tkr-header__title">T.K.R. College of Engineering &amp; Technology</h1>
+              <p className="tkr-header__sub">
+                <IoLocationSharp className="tkr-sub-icon" />
+                Meerpet, Hyderabad &nbsp;·&nbsp; JNTUH Affiliated &nbsp;·&nbsp; AICTE Approved
+              </p>
             </div>
           </div>
-        </header>
+          <div className="tkr-header__pills">
+            <span className="tkr-pill tkr-pill--year">Est. 2002</span>
+            <span className="tkr-pill tkr-pill--naac"><MdVerified className="tkr-pill-icon" /> NAAC</span>
+          </div>
+        </div>
+      </header>
 
-        {/* ══════════════════ HERO ══════════════════ */}
-        <section className="tkr-hero" ref={heroRef}>
-          {IMAGES.map((src, i) => (
-            <img
-              key={src}
-              className={`tkr-hero-img ${i === imgIdx ? (imgVisible ? 'visible' : '') : ''} ${i === imgIdx ? 'active' : ''}`}
-              src={src}
-              alt=""
-            />
+      {/* HERO */}
+      <section className="tkr-hero">
+        <img className={`tkr-hero__bg${imgFade ? ' in' : ''}`} src={imagesLoader[currentImageIndex]} alt="Campus" />
+        <div className="tkr-hero__veil" />
+        <div className="tkr-hero__body">
+          <div className="tkr-hero__eyebrow"><TbFlame className="tkr-hero__flame" /> Welcome to TKRCET</div>
+          <h2 className="tkr-hero__h">Shaping Tomorrow's<br /><em>Engineers</em> Today</h2>
+          <p className="tkr-hero__p">20 acres of serene campus · world-class faculty · excellence since 2002</p>
+          <div className="tkr-hero__dots">
+            {imagesLoader.map((_, i) => (
+              <button key={i} className={`tkr-dot${i === currentImageIndex ? ' on' : ''}`}
+                onClick={() => setCurrentImageIndex(i)} aria-label={`Slide ${i + 1}`} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* STATS */}
+      <div className="tkr-stats">
+        <div className="tkr-stats__inner">
+          {stats.map((s, i) => (
+            <div className="tkr-stat" key={i}>
+              <span className="tkr-stat__icon">{s.icon}</span>
+              <div className="tkr-stat__content">
+                <strong className="tkr-stat__num">{s.num}</strong>
+                <span className="tkr-stat__lbl">{s.label}</span>
+              </div>
+            </div>
           ))}
-          <div className="tkr-hero-grain" />
-          <div className="tkr-hero-vignette" />
+        </div>
+      </div>
 
-          <div className="tkr-hero-content">
-            <div className="tkr-hero-label">
-              <span className="tkr-hero-label-line" />
-              Welcome to TKRCET
-            </div>
-            <h1 className="tkr-hero-headline">
-              <span className="tkr-hero-hl-top">Shaping</span>
-              <span className="tkr-hero-hl-mid">Tomorrow's</span>
-              <span className="tkr-hero-hl-bot">Engineers</span>
-            </h1>
-            <p className="tkr-hero-sub">A premier institution of excellence since 2002 — where knowledge meets character.</p>
+      {/* ABOUT */}
+      <section className="tkr-about">
+        <div className="tkr-about__wrap">
+          <div className="tkr-tag"><FaUniversity className="tkr-tag__icon" /> About Us</div>
+          <h2 className="tkr-about__h">About TKRCET Campus</h2>
+          <div className="tkr-rule" />
+          <p className="tkr-about__p">TKR College of Engineering and Technology was established in 2002 in a sprawling, lush green 20-acre campus at Meerpet, Hyderabad. The college provides a serene and tranquil environment, preparing students in every aspect to face global competition with confidence and emerge victorious.</p>
+          <p className="tkr-about__p">Founded by Sri Teegala Krishna Reddy — Mayor of Hyderabad and a visionary philanthropist — TKRCET is driven by the mission to make quality education accessible to every student, bridging the rural-urban divide while upholding the highest moral and ethical standards.</p>
+          <p className="tkr-about__p">The college offers seven UG programmes in Civil, EEE, CSE, ECE, and Mechanical Engineering, along with PG courses in M.Tech (CSE, PE) and MBA. Affiliated to JNTUH, approved by AICTE, New Delhi, and recognized by the Government of Telangana.</p>
+        </div>
+      </section>
+
+      {/* DELEGATES */}
+      <section className="tkr-del">
+        <div className="tkr-del__wrap">
+          <div className="tkr-tag tkr-tag--lt"><RiTeamLine className="tkr-tag__icon" /> Leadership</div>
+          <h2 className="tkr-del__h">Our Magnificent Delegates</h2>
+          <div className="tkr-rule tkr-rule--lt" />
+
+          <div className="tkr-del__tabs">
+            {delegateKeys.map((key, i) => (
+              <button key={key}
+                className={`tkr-del__tab${i === currentDelegateIndex ? ' on' : ''}`}
+                onClick={() => handleTab(i)}>
+                {delegateInfo[key].role}
+              </button>
+            ))}
           </div>
 
-          <div className="tkr-hero-controls">
-            <div className="tkr-hero-dots">
-              {IMAGES.map((_, i) => (
-                <button
-                  key={i}
-                  className={`tkr-hero-dot ${i === imgIdx ? 'tkr-hero-dot--on' : ''}`}
-                  onClick={() => { setImgVisible(false); setTimeout(() => { setImgIdx(i); setImgVisible(true); }, 300); }}
-                  aria-label={`Image ${i + 1}`}
-                />
+          <div className={`tkr-del__profile${delegateFade ? ' in' : ''}`}>
+            <div className="tkr-del__photo-col">
+              <div className="tkr-del__frame">
+                <img className="tkr-del__photo" src={currentDelegate.photo} alt={currentDelegate.name} />
+              </div>
+              <div className="tkr-del__nav">
+                <button className="tkr-del__nav-btn" onClick={handlePrev}><FaChevronLeft /></button>
+                <span className="tkr-del__nav-count">{currentDelegateIndex + 1}/{delegateKeys.length}</span>
+                <button className="tkr-del__nav-btn" onClick={handleNext}><FaChevronRight /></button>
+              </div>
+            </div>
+            <div className="tkr-del__info">
+              <BiSolidQuoteLeft className="tkr-del__quote" />
+              <span className="tkr-del__role">{currentDelegate.role}</span>
+              <h3 className="tkr-del__name">{currentDelegate.name}</h3>
+              <p className="tkr-del__desc">{currentDelegate.description}</p>
+              <div className="tkr-del__badges">
+                <span className="tkr-del__badge"><RiMedalLine /> TKRCET Leadership</span>
+                <span className="tkr-del__badge"><RiShieldCheckLine /> Verified</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* VISION & MISSION */}
+      <section className="tkr-vm">
+        <div className="tkr-vm__wrap">
+          <div className="tkr-vm__panel tkr-vm__panel--v">
+            <div className="tkr-vm__icon-wrap"><FaEye /></div>
+            <h3 className="tkr-vm__h">Institution Vision</h3>
+            <div className="tkr-vm__rule" />
+            <p className="tkr-vm__p">To be a premier institution of excellence — empowering students with knowledge, skills, and ethical values to become innovative engineers and leaders who contribute meaningfully to society and the nation.</p>
+          </div>
+          <div className="tkr-vm__divider" />
+          <div className="tkr-vm__panel tkr-vm__panel--m">
+            <div className="tkr-vm__icon-wrap tkr-vm__icon-wrap--m"><FaBullseye /></div>
+            <h3 className="tkr-vm__h">Institution Mission</h3>
+            <div className="tkr-vm__rule tkr-vm__rule--m" />
+            <ul className="tkr-vm__list">
+              {missions.map((m, i) => (
+                <li key={i} className="tkr-vm__item">
+                  <BsCheck2Circle className="tkr-vm__check" /><span>{m}</span>
+                </li>
               ))}
-            </div>
-            <div className="tkr-hero-counter">{String(imgIdx + 1).padStart(2, '0')} / {String(IMAGES.length).padStart(2, '0')}</div>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* LOGIN */}
+      <section className="tkr-login">
+        <div className="tkr-login__wrap">
+          <div className="tkr-login__copy">
+            <div className="tkr-tag"><RiLoginBoxLine className="tkr-tag__icon" /> Portal Access</div>
+            <h2 className="tkr-login__h">Sign In to<br />Your Account</h2>
+            <p className="tkr-login__sub">Access your full academic dashboard — attendance, results, timetable and more. Available for both students and faculty.</p>
+            <ul className="tkr-login__feats">
+              {features.map((f, i) => (
+                <li key={i} className="tkr-login__feat">
+                  <span className="tkr-login__feat-icon">{f.icon}</span>
+                  <span>{f.label}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <div className="tkr-hero-scroll-cue">
-            <span>Scroll</span>
-            <span className="tkr-hero-scroll-arrow">↓</span>
-          </div>
-        </section>
-
-        {/* ══════════════════ ABOUT ══════════════════ */}
-        <section className="tkr-about">
-          <div className="tkr-about-bg-text" aria-hidden>TKRCET</div>
-          <div className="tkr-about-inner">
-            <div className="tkr-about-left">
-              <div className="tkr-eyebrow">
-                <span className="tkr-eyebrow-rule" />
-                About the Institution
-              </div>
-              <h2 className="tkr-about-heading">
-                A Modern Temple<br />
-                <em>of Learning</em>
-              </h2>
-              <div className="tkr-about-divider" />
-              <div className="tkr-about-stats">
-                {[
-                  { n: "20+", l: "Acre Campus" },
-                  { n: "7+",  l: "UG Programmes" },
-                  { n: "22",  l: "Years Legacy" },
-                  { n: "AICTE", l: "Approved" },
-                ].map(s => (
-                  <div className="tkr-astat" key={s.l}>
-                    <span className="tkr-astat-num">{s.n}</span>
-                    <span className="tkr-astat-label">{s.l}</span>
-                  </div>
-                ))}
+          <div className="tkr-login__box">
+            <div className="tkr-login__box-top">
+              <HiAcademicCap className="tkr-login__cap-icon" />
+              <div>
+                <p className="tkr-login__eyebrow">Student &amp; Faculty Portal</p>
+                <h3 className="tkr-login__box-title">Welcome Back</h3>
               </div>
             </div>
 
-            <div className="tkr-about-right">
-              <p className="tkr-about-para">
-                TKR College of Engineering and Technology — established in 2002 in a sprawling, lush green 20-acre campus at Meerpet, Hyderabad — provides a serene and tranquil environment boosting students' mental potential and preparing them to face global competition with confidence.
-              </p>
-              <p className="tkr-about-para">
-                Founded by <strong>Sri Teegala Krishna Reddy</strong>, Mayor of Hyderabad and a visionary philanthropist, TKRCET is driven by the mission to make quality education accessible to every student, upholding moral and ethical values. The college is affiliated to JNTUH, approved by AICTE, New Delhi, and the State Government of Telangana.
-              </p>
-              <p className="tkr-about-para">
-                TKRCET offers seven UG programmes — Civil, EEE, CSE, ECE, Mechanical Engineering — along with PG courses in M.Tech (CSE, PE) and MBA. The college also runs a second-shift Polytechnic in Civil, EEE, Mech, ECE & CSE.
-              </p>
-              <div className="tkr-about-accent-bar" />
-            </div>
-          </div>
-        </section>
-
-        {/* ══════════════════ VISION & MISSION ══════════════════ */}
-        <section className="tkr-vm">
-          <div className="tkr-vm-inner">
-            <div className="tkr-vm-block tkr-vm-block--vision">
-              <div className="tkr-vm-eyebrow">
-                <span className="tkr-vm-eyebrow-rule" />
-                Vision
-              </div>
-              <h3 className="tkr-vm-title">Institution<br /><em>Vision</em></h3>
-              <div className="tkr-vm-glyph">◈</div>
-              <p className="tkr-vm-text">
-                To be a premier institution of excellence — empowering students with knowledge, skills, and ethical values to become innovative engineers who contribute meaningfully to society and the nation.
-              </p>
+            <div className="tkr-login__field">
+              <label className="tkr-login__lbl">
+                <RiUser3Line className="tkr-login__lbl-icon" /> Username / Roll Number
+              </label>
+              <input className="tkr-login__input" type="text"
+                placeholder="e.g. D600 or 20A81A0501"
+                value={username} onChange={e => setUsername(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleLogin()}
+                disabled={loading} autoComplete="username" />
             </div>
 
-            <div className="tkr-vm-spine">
-              <div className="tkr-vm-spine-line" />
-              <div className="tkr-vm-spine-diamond">◆</div>
-              <div className="tkr-vm-spine-line" />
-            </div>
-
-            <div className="tkr-vm-block tkr-vm-block--mission">
-              <div className="tkr-vm-eyebrow tkr-vm-eyebrow--light">
-                <span className="tkr-vm-eyebrow-rule tkr-vm-eyebrow-rule--light" />
-                Mission
-              </div>
-              <h3 className="tkr-vm-title tkr-vm-title--light">Institution<br /><em>Mission</em></h3>
-              <div className="tkr-vm-glyph tkr-vm-glyph--light">◆</div>
-              <ul className="tkr-vm-list">
-                {[
-                  "Ensuring excellent branch-wise infrastructural facilities for all disciplines",
-                  "Making the institute a premier research and resource centre",
-                  "Fostering industry-academia partnerships for real-world exposure",
-                  "Nurturing holistic development — academic, personal, and professional",
-                ].map((item, i) => (
-                  <li key={i} className="tkr-vm-item">
-                    <span className="tkr-vm-item-num">{String(i + 1).padStart(2, '0')}</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {/* ══════════════════ DELEGATES ══════════════════ */}
-        <section className="tkr-del">
-          <div className="tkr-del-inner">
-            <div className="tkr-del-header">
-              <div className="tkr-eyebrow tkr-eyebrow--gold">
-                <span className="tkr-eyebrow-rule" />
-                Leadership
-              </div>
-              <h2 className="tkr-del-heading">Our Esteemed<br /><em>Delegates</em></h2>
-            </div>
-
-            <div className="tkr-del-layout">
-              {/* Left: selector list */}
-              <nav className="tkr-del-nav">
-                {DELEGATES.map((item, i) => (
-                  <button
-                    key={item.key}
-                    className={`tkr-del-btn ${i === delIdx ? 'tkr-del-btn--active' : ''}`}
-                    onClick={() => switchDelegate(i)}
-                  >
-                    <span className="tkr-del-btn-num">{String(i + 1).padStart(2, '0')}</span>
-                    <span className="tkr-del-btn-text">
-                      <span className="tkr-del-btn-role">{item.role}</span>
-                      <span className="tkr-del-btn-name">{item.name}</span>
-                    </span>
-                    <span className="tkr-del-btn-arrow">→</span>
-                  </button>
-                ))}
-              </nav>
-
-              {/* Right: profile display */}
-              <div className={`tkr-del-profile ${delVisible ? 'tkr-del-profile--in' : 'tkr-del-profile--out'}`}>
-                <div className="tkr-del-photo-area">
-                  <div className="tkr-del-photo-ring tkr-del-photo-ring--outer" />
-                  <div className="tkr-del-photo-ring tkr-del-photo-ring--inner" />
-                  <img className="tkr-del-photo" src={d.photo} alt={d.name} />
-                  <div className="tkr-del-photo-badge">{d.initial}</div>
-                </div>
-                <div className="tkr-del-info">
-                  <p className="tkr-del-role-label">{d.role}</p>
-                  <h3 className="tkr-del-name">{d.name}</h3>
-                  <blockquote className="tkr-del-quote">"{d.quote}"</blockquote>
-                  <p className="tkr-del-bio">{d.bio}</p>
-                  <div className="tkr-del-progress">
-                    {DELEGATES.map((_, i) => (
-                      <div key={i} className={`tkr-del-pip ${i === delIdx ? 'tkr-del-pip--on' : ''}`} />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ══════════════════ LOGIN ══════════════════ */}
-        <section className="tkr-auth">
-          <div className="tkr-auth-inner">
-
-            <div className="tkr-auth-left">
-              <div className="tkr-eyebrow">
-                <span className="tkr-eyebrow-rule" />
-                Portal Access
-              </div>
-              <h2 className="tkr-auth-heading">
-                Sign In to<br />Your <em>Account</em>
-              </h2>
-              <p className="tkr-auth-sub">
-                Access your academic dashboard, attendance records, results and more — available for both students and faculty members.
-              </p>
-
-              <div className="tkr-auth-features">
-                {[
-                  { icon: "📋", label: "Attendance Tracking" },
-                  { icon: "📊", label: "Academic Results" },
-                  { icon: "📅", label: "Timetable & Schedule" },
-                ].map(f => (
-                  <div className="tkr-auth-feat" key={f.label}>
-                    <span className="tkr-auth-feat-icon">{f.icon}</span>
-                    <span className="tkr-auth-feat-label">{f.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="tkr-auth-form-wrap">
-              <div className="tkr-auth-form-glow" />
-              <div className="tkr-auth-form">
-                <div className="tkr-auth-form-top">
-                  <span className="tkr-auth-form-eyebrow">Student & Faculty Portal</span>
-                  <h3 className="tkr-auth-form-title">Welcome Back</h3>
-                  <p className="tkr-auth-form-hint">Enter your credentials to continue</p>
-                </div>
-
-                <div className="tkr-auth-field">
-                  <label className="tkr-auth-label">Username / Roll Number</label>
-                  <input
-                    className="tkr-auth-input"
-                    type="text"
-                    placeholder="e.g. D600 or 20A81A0501"
-                    value={username}
-                    onChange={e => setUsername(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleLogin()}
-                    disabled={loading}
-                    autoComplete="username"
-                  />
-                </div>
-
-                <div className="tkr-auth-field">
-                  <label className="tkr-auth-label">Password</label>
-                  <input
-                    className="tkr-auth-input"
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleLogin()}
-                    disabled={loading}
-                    autoComplete="current-password"
-                  />
-                </div>
-
-                <button
-                  className={`tkr-auth-btn ${loading ? 'tkr-auth-btn--loading' : ''}`}
-                  onClick={handleLogin}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <span className="tkr-auth-spinner" />
-                  ) : (
-                    <>
-                      <span>Login</span>
-                      <span className="tkr-auth-btn-arrow">→</span>
-                    </>
-                  )}
+            <div className="tkr-login__field">
+              <label className="tkr-login__lbl">
+                <RiLockPasswordLine className="tkr-login__lbl-icon" /> Password
+              </label>
+              <div className="tkr-login__pw">
+                <input className="tkr-login__input" type={showPw ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  value={password} onChange={e => setPassword(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleLogin()}
+                  disabled={loading} autoComplete="current-password" />
+                <button className="tkr-login__eye" type="button"
+                  onClick={() => setShowPw(p => !p)} tabIndex={-1}>
+                  {showPw ? <RiEyeOffLine /> : <RiEyeLine />}
                 </button>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* ══════════════════ FOOTER ══════════════════ */}
-        <footer className="tkr-footer">
-          <div className="tkr-footer-inner">
-            <div className="tkr-footer-brand">
-              <img className="tkr-footer-logo" src="./images/logo.png" alt="TKRCET" />
-              <span className="tkr-footer-name">TKRCET</span>
-            </div>
-            <div className="tkr-footer-copy">
-              <p>Copyright © 2024 TKR College of Engineering & Technology. All Rights Reserved.</p>
-              <p>Designed & Developed by Mr. Md. Shakeel (TKRES)</p>
+            <button className={`tkr-login__btn${loading ? ' loading' : ''}`}
+              onClick={handleLogin} disabled={loading}>
+              {loading
+                ? <span className="tkr-spin" />
+                : <><RiArrowRightLine className="tkr-btn-arrow" /> Login to Portal</>}
+            </button>
+
+            <p className="tkr-login__secure"><RiShieldCheckLine /> Secure &amp; encrypted connection</p>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="tkr-footer">
+        <div className="tkr-footer__inner">
+          <div className="tkr-footer__brand">
+            <img className="tkr-footer__logo" src="./images/logo.png" alt="TKRCET" />
+            <div>
+              <p className="tkr-footer__name">TKRCET</p>
+              <p className="tkr-footer__tag">Engineering Excellence Since 2002</p>
             </div>
           </div>
-        </footer>
-
-      </div>
-    </>
+          <div className="tkr-footer__copy">
+            <p>© 2024 TKR College of Engineering &amp; Technology. All Rights Reserved.</p>
+            <p>Designed &amp; Developed by Mr. Md. Shakeel (TKRES)</p>
+          </div>
+        </div>
+      </footer>
+    </div>
   );
-}
+};
 
-
-  
-  
-  
-  
-  
+export default Homepage;
