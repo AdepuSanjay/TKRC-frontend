@@ -1,36 +1,52 @@
 /* ═══════════════════════════════════════════════════════════════
-   TKRCET Homepage.css — Startup / SaaS Minimalist Design
-   Theme: Off-White, Mint Green, Vibrant Orange, Deep Charcoal
+   TKRCET Homepage.css — Modern Light SaaS Design
+   Theme: Off-White, Mint Green, Charcoal Dark, Vibrant Orange
    ═══════════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
+  /* SaaS Color Palette */
   --bg-main:       #FAFAFA;
   --bg-white:      #FFFFFF;
   --bg-mint:       #E4F0EB;
-  --bg-dark:       #111315;
+  --bg-dark:       #16181A;
+  --bg-dark-card:  #222528;
+  
   --accent-orange: #F85E3D;
   --accent-hover:  #E04928;
-  
+  --accent-mint:   #8BB8A4;
+
   --text-dark:     #111827;
   --text-muted:    #6B7280;
   --text-light:    #F9FAFB;
-  
+  --text-light-mut:#9CA3AF;
+
   --border-light:  #E5E7EB;
-  --border-dark:   #272A30;
+  --border-dark:   #33373D;
 
   --font-main:     'Plus Jakarta Sans', sans-serif;
   --radius-sm:     8px;
   --radius-md:     16px;
   --radius-lg:     24px;
+  --radius-xl:     32px;
   --radius-pill:   100px;
   
   --ease:          cubic-bezier(0.25, 1, 0.5, 1);
 }
 
+/* ── Global Settings & Small Mobile Defaults ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
+
+html { 
+  scroll-behavior: smooth; 
+  /* Base size scales down on mobile */
+  font-size: 16px; 
+}
+@media (max-width: 600px) {
+  html { font-size: 14px; }
+}
+
 body {
   font-family: var(--font-main);
   background: var(--bg-main);
@@ -39,71 +55,42 @@ body {
 }
 img { display: block; max-width: 100%; }
 button { cursor: pointer; font-family: inherit; border: none; background: none; }
-input { font-family: inherit; }
+input { font-family: inherit; outline: none; }
+ul { list-style: none; }
 
-/* ── SHARED COMPONENTS ── */
-.saas-btn {
+/* ── Typography & Tags ── */
+.tkr-tag {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  border-radius: var(--radius-pill);
-  transition: all 0.2s var(--ease);
-}
-.saas-btn--primary {
-  background: var(--accent-orange);
-  color: var(--bg-white);
-}
-.saas-btn--primary:hover:not(:disabled) {
-  background: var(--accent-hover);
-  transform: translateY(-1px);
-}
-.saas-btn--outline {
-  border: 1px solid var(--border-light);
-  background: var(--bg-white);
-  color: var(--text-dark);
-}
-.saas-btn--outline:hover {
-  border-color: var(--text-dark);
-}
-.saas-btn--full { width: 100%; padding: 1rem; }
-.saas-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.saas-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.8rem;
+  padding: 0.4rem 1rem;
   background: var(--bg-white);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-pill);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-dark);
   margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
-.saas-badge--white {
-  background: var(--bg-white);
-  border: none;
-  color: var(--text-muted);
-}
-.saas-badge__icon { color: var(--accent-orange); font-size: 1rem; }
+.tkr-tag__icon { color: var(--accent-orange); font-size: 1rem; }
+.tkr-tag--lt { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.1); color: var(--text-light); box-shadow: none; }
+.tkr-rule { display: none; /* Removed for cleaner flat look */ }
 
-/* ── HEADER ── */
-.saas-header {
+/* ═══════════════════════════
+   HEADER (Light & Glassy)
+═══════════════════════════ */
+.tkr-header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 200;
   background: rgba(250, 250, 250, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-light);
 }
-.saas-header__inner {
+.tkr-header__inner {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem 2rem;
@@ -111,334 +98,321 @@ input { font-family: inherit; }
   align-items: center;
   justify-content: space-between;
 }
-.saas-header__brand { display: flex; align-items: center; gap: 0.75rem; }
-.saas-header__logo { width: 32px; height: 32px; border-radius: 8px; }
-.saas-header__title { font-weight: 700; font-size: 1.25rem; letter-spacing: -0.02em; }
-.saas-header__actions { display: flex; align-items: center; gap: 1rem; }
-.saas-pill { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
-
-/* ── HERO ── */
-.saas-hero {
-  max-width: 1200px;
-  margin: 4rem auto;
-  padding: 0 2rem;
-  text-align: center;
+.tkr-header__brand { display: flex; align-items: center; gap: 0.75rem; }
+.tkr-header__logo-ring { border-radius: var(--radius-sm); overflow: hidden; }
+.tkr-header__logo { width: 32px; height: 32px; }
+.tkr-header__title { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; color: var(--text-dark); }
+.tkr-header__sub { display: none; } /* Hidden for cleaner look like Lovable */
+.tkr-header__pills { display: flex; align-items: center; gap: 0.75rem; }
+.tkr-pill {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
   display: flex;
-  flex-direction: column;
   align-items: center;
+  gap: 0.4rem;
 }
-.saas-hero__content { max-width: 680px; margin-bottom: 3rem; }
-.saas-hero__title {
+.tkr-pill--naac { color: var(--text-dark); background: var(--bg-mint); padding: 0.3rem 0.75rem; border-radius: var(--radius-pill); }
+
+/* ═══════════════════════════
+   HERO (Light overlay)
+═══════════════════════════ */
+.tkr-hero {
+  position: relative;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  background: var(--bg-main);
+  padding: 4rem 2rem;
+}
+.tkr-hero__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease);
+}
+.tkr-hero__bg.in { opacity: 0.25; } /* Lightened opacity for dark text overlay */
+.tkr-hero__veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(250,250,250,0.6) 0%, var(--bg-main) 100%);
+}
+.tkr-hero__body {
+  position: relative;
+  z-index: 10;
+  max-width: 800px;
+}
+.tkr-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+.tkr-hero__flame { color: var(--accent-orange); font-size: 1.2rem; }
+.tkr-hero__h {
   font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 800;
+  color: var(--text-dark);
   line-height: 1.05;
   letter-spacing: -0.04em;
-  color: var(--text-dark);
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
-.saas-hero__subtitle {
-  font-size: clamp(1rem, 2vw, 1.25rem);
+.tkr-hero__h em { font-style: normal; color: var(--accent-orange); }
+.tkr-hero__p {
+  font-size: clamp(1.1rem, 2vw, 1.25rem);
   color: var(--text-muted);
-  line-height: 1.6;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  font-weight: 500;
 }
-.saas-hero__visual {
-  width: 100%;
-  max-width: 900px;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  position: relative;
-  background: var(--bg-mint);
-  padding: 0.5rem;
-  border: 1px solid var(--border-light);
+.tkr-hero__dots { display: flex; justify-content: center; gap: 0.5rem; }
+.tkr-dot {
+  width: 24px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--border-light);
+  transition: background 0.3s;
 }
-.saas-hero__img {
-  width: 100%;
-  aspect-ratio: 16/9;
-  object-fit: cover;
-  border-radius: var(--radius-md);
-  opacity: 0;
-  transition: opacity 0.5s var(--ease);
-}
-.saas-hero__img.in { opacity: 1; }
-.saas-hero__dots {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.5rem;
-}
-.saas-hero__dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.5);
-}
-.saas-hero__dot.on { background: var(--bg-white); }
+.tkr-dot.on { background: var(--accent-orange); }
 
-/* ── STATS ── */
-.saas-stats {
-  max-width: 1200px;
-  margin: 0 auto 5rem;
-  padding: 0 2rem;
-}
-.saas-stats__grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-}
-.saas-stat-card {
+/* ═══════════════════════════
+   STATS (Clean Cards)
+═══════════════════════════ */
+.tkr-stats { max-width: 1200px; margin: -2rem auto 4rem; position: relative; z-index: 20; padding: 0 2rem; }
+.tkr-stats__inner { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+.tkr-stat {
   background: var(--bg-white);
   padding: 1.5rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-light);
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 1rem;
 }
-.saas-stat-card__icon { font-size: 1.5rem; color: var(--text-muted); }
-.saas-stat-card__num { font-size: 1.75rem; font-weight: 700; color: var(--text-dark); }
-.saas-stat-card__lbl { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+.tkr-stat__icon { font-size: 2rem; color: var(--text-muted); }
+.tkr-stat__num { display: block; font-size: 1.5rem; font-weight: 800; color: var(--text-dark); }
+.tkr-stat__lbl { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
 
-/* ── MINT FEATURE CARD ── */
-.saas-feature {
-  max-width: 1200px;
-  margin: 0 auto 5rem;
-  padding: 0 2rem;
-}
-.saas-feature__card {
+/* ═══════════════════════════
+   ABOUT (Mint Card Section)
+═══════════════════════════ */
+.tkr-about { max-width: 1200px; margin: 0 auto 5rem; padding: 0 2rem; }
+.tkr-about__wrap {
   background: var(--bg-mint);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   padding: 4rem;
   text-align: center;
 }
-.saas-feature__title {
-  font-size: clamp(2rem, 4vw, 3.5rem);
+.tkr-about__h {
+  font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 800;
-  line-height: 1.1;
   letter-spacing: -0.03em;
-  margin-bottom: 1.5rem;
-}
-.saas-feature__desc {
-  font-size: 1.1rem;
-  color: var(--text-dark);
-  max-width: 600px;
-  margin: 0 auto 3rem;
-  line-height: 1.6;
-  opacity: 0.8;
-}
-.saas-feature__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  max-width: 800px;
-  margin: 0 auto;
-}
-.saas-feature-mini {
-  background: rgba(255,255,255,0.6);
-  padding: 2rem;
-  border-radius: var(--radius-md);
-  text-align: left;
-}
-.saas-feature-mini__icon { font-size: 1.5rem; color: var(--text-dark); margin-bottom: 1rem; }
-.saas-feature-mini h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
-.saas-feature-mini p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
-
-/* ── LEADERSHIP (DELEGATES) ── */
-.saas-delegates {
-  max-width: 1200px;
-  margin: 0 auto 5rem;
-  padding: 0 2rem;
-}
-.saas-section-header { text-align: center; margin-bottom: 3rem; }
-.saas-section-header h2 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.5rem;}
-.saas-section-header p { color: var(--text-muted); font-size: 1.1rem; }
-
-.saas-delegates__tabs-scroll {
-  overflow-x: auto;
-  padding-bottom: 1rem;
   margin-bottom: 2rem;
-  scrollbar-width: none;
+  color: var(--text-dark);
 }
-.saas-delegates__tabs-scroll::-webkit-scrollbar { display: none; }
-.saas-delegates__tabs {
+.tkr-about__p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-dark);
+  opacity: 0.8;
+  max-width: 800px;
+  margin: 0 auto 1rem;
+}
+
+/* ═══════════════════════════
+   DELEGATES
+═══════════════════════════ */
+.tkr-del { padding: 5rem 2rem; background: var(--bg-white); border-top: 1px solid var(--border-light); }
+.tkr-del__wrap { max-width: 1000px; margin: 0 auto; text-align: center; }
+.tkr-del__h {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 3rem;
+}
+.tkr-del__tabs {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  min-width: max-content;
+  margin-bottom: 3rem;
 }
-.saas-tab {
+.tkr-del__tab {
   padding: 0.6rem 1.25rem;
   border-radius: var(--radius-pill);
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-muted);
-  background: var(--bg-white);
+  background: var(--bg-main);
   border: 1px solid var(--border-light);
   transition: all 0.2s var(--ease);
 }
-.saas-tab.on { background: var(--text-dark); color: var(--bg-white); border-color: var(--text-dark); }
+.tkr-del__tab.on { background: var(--text-dark); color: var(--bg-white); border-color: var(--text-dark); }
 
-.saas-delegates__content {
-  background: var(--bg-white);
+.tkr-del__profile {
+  background: var(--bg-main);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  padding: 2rem;
+  padding: 2.5rem;
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: auto 1fr;
   gap: 3rem;
   align-items: center;
+  text-align: left;
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 0.3s, transform 0.3s;
 }
-.saas-delegates__content.in { opacity: 1; transform: translateY(0); }
-.saas-delegates__img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: var(--radius-md);
-  background: var(--bg-main);
-}
-.saas-delegates__role {
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--accent-orange);
-  letter-spacing: 0.05em;
-  display: block;
-  margin-bottom: 0.5rem;
-}
-.saas-delegates__name { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; letter-spacing: -0.02em;}
-.saas-delegates__desc { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; }
-
-/* ── DARK LOGIN SECTION ── */
-.saas-login {
-  background: var(--bg-dark);
-  padding: 6rem 2rem;
-  color: var(--text-light);
-}
-.saas-login__container {
-  max-width: 1000px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 4rem;
-  align-items: center;
-}
-.saas-login__text h2 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 1rem;
-  letter-spacing: -0.03em;
-}
-.saas-login__text p { font-size: 1.1rem; color: #9CA3AF; line-height: 1.6; }
-
-.saas-login__box {
-  background: #1C1E22;
-  border: 1px solid var(--border-dark);
+.tkr-del__profile.in { opacity: 1; transform: translateY(0); }
+.tkr-del__frame {
+  width: 200px;
+  height: 200px;
   border-radius: var(--radius-lg);
-  padding: 2.5rem;
+  overflow: hidden;
+  background: var(--bg-white);
 }
-.saas-login__header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem; }
-.saas-login__icon { font-size: 1.5rem; color: var(--bg-white); }
-.saas-login__header h3 { font-size: 1.1rem; font-weight: 600; }
-
-.saas-field { margin-bottom: 1.5rem; }
-.saas-field label {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: #9CA3AF;
-  margin-bottom: 0.5rem;
+.tkr-del__photo { width: 100%; height: 100%; object-fit: cover; }
+.tkr-del__nav { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; }
+.tkr-del__nav-btn {
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
 }
-.saas-field input {
-  width: 100%;
-  padding: 0.85rem 1rem;
-  background: #0D0E10;
-  border: 1px solid var(--border-dark);
-  border-radius: var(--radius-sm);
-  color: var(--bg-white);
-  font-size: 0.95rem;
-  transition: border-color 0.2s;
-}
-.saas-field input:focus { outline: none; border-color: var(--accent-orange); }
-.saas-field__pw { position: relative; }
-.saas-field__pw button {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #9CA3AF;
-}
-
-/* ── FOOTER ── */
-.saas-footer {
-  background: var(--bg-dark);
-  border-top: 1px solid var(--border-dark);
-  padding: 2rem;
-  color: #9CA3AF;
-}
-.saas-footer__inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.saas-footer__brand { display: flex; align-items: center; gap: 0.75rem; }
-.saas-footer__logo { width: 24px; height: 24px; border-radius: 4px; }
-.saas-footer__name { font-weight: 600; color: var(--bg-white); }
-.saas-footer__links { text-align: right; font-size: 0.85rem; }
+.tkr-del__nav-count { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+.tkr-del__quote { display: none; }
+.tkr-del__role { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--accent-orange); letter-spacing: 0.05em; display: block; margin-bottom: 0.5rem; }
+.tkr-del__name { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 1rem; }
+.tkr-del__desc { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem; }
+.tkr-del__badges { display: flex; gap: 1rem; }
+.tkr-del__badge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); background: var(--bg-white); padding: 0.4rem 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-light); }
 
 /* ═══════════════════════════
-   MOBILE RESPONSIVENESS (SMALL SIZES)
+   VISION & MISSION (Split Cards)
+═══════════════════════════ */
+.tkr-vm { padding: 0 2rem 5rem; background: var(--bg-white); }
+.tkr-vm__wrap { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.tkr-vm__panel {
+  background: var(--bg-main);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 3rem;
+}
+.tkr-vm__icon-wrap { width: 48px; height: 48px; background: var(--bg-white); border: 1px solid var(--border-light); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--text-dark); margin-bottom: 1.5rem; }
+.tkr-vm__h { font-size: 1.8rem; font-weight: 800; margin-bottom: 1rem; letter-spacing: -0.02em; }
+.tkr-vm__p { font-size: 1.05rem; color: var(--text-muted); line-height: 1.6; }
+.tkr-vm__list { display: flex; flex-direction: column; gap: 1rem; }
+.tkr-vm__item { display: flex; align-items: flex-start; gap: 0.75rem; font-size: 1.05rem; color: var(--text-muted); }
+.tkr-vm__check { color: var(--accent-orange); font-size: 1.25rem; flex-shrink: 0; margin-top: 0.2rem; }
+
+/* ═══════════════════════════
+   LOGIN (Dark Section)
+═══════════════════════════ */
+.tkr-login { background: var(--bg-dark); padding: 6rem 2rem; color: var(--text-light); }
+.tkr-login__wrap { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 420px; gap: 5rem; align-items: center; }
+.tkr-login__h { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -0.03em; }
+.tkr-login__sub { font-size: 1.1rem; color: var(--text-light-mut); line-height: 1.6; margin-bottom: 2.5rem; }
+.tkr-login__feats { display: flex; flex-direction: column; gap: 1.25rem; }
+.tkr-login__feat { display: flex; align-items: center; gap: 1rem; font-size: 1rem; font-weight: 500; }
+.tkr-login__feat-icon { width: 36px; height: 36px; background: var(--bg-dark-card); border: 1px solid var(--border-dark); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--text-light); }
+
+.tkr-login__box { background: var(--bg-dark-card); border: 1px solid var(--border-dark); border-radius: var(--radius-lg); padding: 2.5rem; }
+.tkr-login__box-top { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+.tkr-login__cap-icon { font-size: 1.8rem; color: var(--text-light); }
+.tkr-login__eyebrow { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-light-mut); }
+.tkr-login__box-title { font-size: 1.25rem; font-weight: 700; color: var(--text-light); }
+
+.tkr-login__field { margin-bottom: 1.5rem; }
+.tkr-login__lbl { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--text-light-mut); margin-bottom: 0.5rem; }
+.tkr-login__input { width: 100%; padding: 0.9rem 1rem; background: var(--bg-dark); border: 1px solid var(--border-dark); border-radius: var(--radius-sm); color: var(--text-light); font-size: 0.95rem; transition: border-color 0.2s; }
+.tkr-login__input:focus { border-color: var(--accent-orange); }
+.tkr-login__pw { position: relative; }
+.tkr-login__eye { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light-mut); }
+
+.tkr-login__btn { width: 100%; background: var(--accent-orange); color: var(--bg-white); padding: 1rem; border-radius: var(--radius-pill); font-size: 1rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; transition: background 0.2s, transform 0.2s; }
+.tkr-login__btn:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-1px); }
+.tkr-login__btn:disabled { opacity: 0.7; cursor: not-allowed; }
+.tkr-spin { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: var(--bg-white); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.tkr-login__secure { display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-light-mut); margin-top: 1.5rem; }
+
+/* ═══════════════════════════
+   FOOTER
+═══════════════════════════ */
+.tkr-footer { background: var(--bg-dark); border-top: 1px solid var(--border-dark); padding: 2rem; color: var(--text-light-mut); }
+.tkr-footer__inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.tkr-footer__brand { display: flex; align-items: center; gap: 0.75rem; }
+.tkr-footer__logo { width: 28px; height: 28px; border-radius: 6px; background: var(--bg-white); padding: 2px; }
+.tkr-footer__name { font-weight: 700; color: var(--text-light); }
+.tkr-footer__tag { font-size: 0.8rem; }
+.tkr-footer__copy { text-align: right; font-size: 0.85rem; line-height: 1.6; }
+
+/* ═══════════════════════════
+   MOBILE RESPONSIVENESS (SMALL NATIVE APP FEEL)
 ═══════════════════════════ */
 @media (max-width: 900px) {
-  .saas-stats__grid { grid-template-columns: repeat(2, 1fr); }
-  .saas-feature__grid { grid-template-columns: 1fr; }
-  .saas-delegates__content { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
-  .saas-delegates__img { max-width: 200px; margin: 0 auto; }
-  .saas-login__container { grid-template-columns: 1fr; text-align: center; gap: 2.5rem; }
+  .tkr-stats__inner { grid-template-columns: repeat(2, 1fr); }
+  .tkr-del__profile { grid-template-columns: 1fr; text-align: center; gap: 2rem; }
+  .tkr-del__frame { margin: 0 auto; }
+  .tkr-vm__wrap { grid-template-columns: 1fr; }
+  .tkr-login__wrap { grid-template-columns: 1fr; gap: 3rem; }
 }
 
 @media (max-width: 600px) {
-  /* Drastically reduce padding for mobile screens */
-  .saas-header__inner { padding: 1rem; }
-  .saas-pill { display: none; }
+  /* Aggressive padding reduction for mobile */
+  .tkr-header__inner { padding: 1rem; }
   
-  .saas-hero { margin: 2.5rem auto; padding: 0 1.25rem; }
-  .saas-hero__content { margin-bottom: 2rem; }
-  .saas-hero__title { font-size: 2.2rem; }
-  .saas-hero__subtitle { font-size: 0.95rem; margin-bottom: 1.5rem; }
-  .saas-btn { padding: 0.6rem 1.25rem; font-size: 0.85rem; }
+  .tkr-hero { padding: 2rem 1.25rem; min-height: 50vh; }
+  .tkr-hero__eyebrow { font-size: 0.75rem; margin-bottom: 1rem; }
+  .tkr-hero__h { font-size: 2.2rem; margin-bottom: 1rem; }
+  .tkr-hero__p { font-size: 0.95rem; margin-bottom: 1.5rem; }
   
-  .saas-stats { margin-bottom: 3rem; padding: 0 1.25rem; }
-  .saas-stats__grid { gap: 0.75rem; }
-  .saas-stat-card { padding: 1rem; }
-  .saas-stat-card__num { font-size: 1.35rem; }
+  .tkr-stats { padding: 0 1.25rem; margin: -1.5rem auto 3rem; }
+  .tkr-stats__inner { gap: 0.75rem; }
+  .tkr-stat { padding: 1rem; flex-direction: column; text-align: center; gap: 0.5rem; }
+  .tkr-stat__icon { font-size: 1.5rem; }
+  .tkr-stat__num { font-size: 1.25rem; }
+  .tkr-stat__lbl { font-size: 0.7rem; }
   
-  .saas-feature { margin-bottom: 3rem; padding: 0 1.25rem; }
-  .saas-feature__card { padding: 2.5rem 1.25rem; border-radius: var(--radius-md); }
-  .saas-feature__title { font-size: 1.8rem; }
-  .saas-feature__desc { font-size: 0.95rem; margin-bottom: 2rem; }
-  .saas-feature-mini { padding: 1.25rem; }
+  .tkr-about { padding: 0 1.25rem; margin-bottom: 3rem; }
+  .tkr-about__wrap { padding: 2rem 1.25rem; border-radius: var(--radius-lg); }
+  .tkr-about__h { font-size: 1.8rem; margin-bottom: 1rem; }
+  .tkr-about__p { font-size: 0.95rem; }
   
-  .saas-delegates { margin-bottom: 3rem; padding: 0 1.25rem; }
-  .saas-section-header h2 { font-size: 1.8rem; }
-  .saas-section-header p { font-size: 0.95rem; }
-  .saas-tab { padding: 0.5rem 1rem; font-size: 0.8rem; }
-  .saas-delegates__content { padding: 1.5rem; border-radius: var(--radius-md); }
-  .saas-delegates__name { font-size: 1.5rem; }
-  .saas-delegates__desc { font-size: 0.95rem; }
+  .tkr-del { padding: 3rem 1.25rem; }
+  .tkr-del__h { font-size: 1.8rem; margin-bottom: 2rem; }
+  .tkr-del__tab { padding: 0.5rem 1rem; font-size: 0.8rem; }
+  .tkr-del__profile { padding: 1.5rem; border-radius: var(--radius-md); }
+  .tkr-del__frame { width: 140px; height: 140px; }
+  .tkr-del__name { font-size: 1.6rem; }
+  .tkr-del__desc { font-size: 0.95rem; }
   
-  .saas-login { padding: 4rem 1.25rem; }
-  .saas-login__text h2 { font-size: 1.8rem; }
-  .saas-login__text p { font-size: 0.95rem; }
-  .saas-login__box { padding: 1.5rem; border-radius: var(--radius-md); }
+  .tkr-vm { padding: 0 1.25rem 3rem; }
+  .tkr-vm__panel { padding: 1.5rem; border-radius: var(--radius-md); }
+  .tkr-vm__h { font-size: 1.4rem; }
+  .tkr-vm__p, .tkr-vm__item { font-size: 0.95rem; }
   
-  .saas-footer__inner { flex-direction: column; gap: 1.25rem; text-align: center; }
-  .saas-footer__links { text-align: center; }
+  .tkr-login { padding: 3rem 1.25rem; }
+  .tkr-login__h { font-size: 1.8rem; }
+  .tkr-login__sub { font-size: 0.95rem; margin-bottom: 2rem; }
+  .tkr-login__feat { font-size: 0.9rem; }
+  .tkr-login__box { padding: 1.5rem; border-radius: var(--radius-md); }
+  .tkr-login__box-title { font-size: 1.1rem; }
+  .tkr-login__lbl { font-size: 0.75rem; }
+  .tkr-login__input { padding: 0.8rem 1rem; font-size: 0.9rem; }
+  .tkr-login__btn { padding: 0.85rem; font-size: 0.9rem; }
+  
+  .tkr-footer__inner { flex-direction: column; text-align: center; gap: 1.25rem; }
+  .tkr-footer__copy { text-align: center; font-size: 0.8rem; }
 }
