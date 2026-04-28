@@ -9,12 +9,11 @@ import { MdSchool, MdVerified } from 'react-icons/md';
 import {
   RiUser3Line, RiLockPasswordLine, RiArrowRightLine,
   RiLoginBoxLine, RiShieldCheckLine, RiMedalLine,
-  RiGroupLine, RiBuilding2Line,
-  RiCalendarCheckLine, RiBarChartBoxLine, RiTimeLine,
-  RiTeamLine, RiAwardLine, RiEyeLine, RiEyeOffLine,
+  RiGroupLine, RiCalendarCheckLine, RiBarChartBoxLine, 
+  RiTimeLine, RiTeamLine, RiAwardLine, RiEyeLine, RiEyeOffLine,
 } from 'react-icons/ri';
 import { FaUniversity, FaEye, FaBullseye, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { TbBuildingBank, TbFlame, TbCertificate } from 'react-icons/tb';
+import { TbBuildingBank, TbFlame } from 'react-icons/tb';
 import { BiSolidQuoteLeft } from 'react-icons/bi';
 import { IoLocationSharp } from 'react-icons/io5';
 import { BsCheck2Circle } from 'react-icons/bs';
@@ -134,6 +133,10 @@ const Homepage = () => {
     } finally { setLoading(false); }
   };
 
+  const scrollToLogin = () => {
+    document.getElementById('login-section')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const stats = [
     { icon: <TbBuildingBank />, num: '20+',   label: 'Acre Campus'  },
     { icon: <MdSchool />,       num: '7+',    label: 'UG Programs'  },
@@ -156,136 +159,132 @@ const Homepage = () => {
   ];
 
   return (
-    <div className="tkr-root">
-      <ToastContainer />
+    <div className="saas-root">
+      <ToastContainer position="top-center" hideProgressBar theme="light" />
 
       {/* HEADER */}
-      <header className="tkr-header">
-        <div className="tkr-header__inner">
-          <div className="tkr-header__brand">
-            <div className="tkr-header__logo-ring">
-              <img className="tkr-header__logo" src="./images/logo.png" alt="TKRCET" />
-            </div>
-            <div className="tkr-header__text">
-              <h1 className="tkr-header__title">T.K.R. College of Engineering &amp; Technology</h1>
-              <p className="tkr-header__sub">
-                <IoLocationSharp className="tkr-sub-icon" />
-                Meerpet, Hyderabad &nbsp;·&nbsp; JNTUH Affiliated &nbsp;·&nbsp; AICTE Approved
-              </p>
-            </div>
+      <header className="saas-header">
+        <div className="saas-header__inner">
+          <div className="saas-header__brand">
+            <img className="saas-header__logo" src="./images/logo.png" alt="TKRCET Logo" />
+            <span className="saas-header__title">TKRCET</span>
           </div>
-          <div className="tkr-header__pills">
-            <span className="tkr-pill tkr-pill--year">Est. 2002</span>
-            <span className="tkr-pill tkr-pill--naac"><MdVerified className="tkr-pill-icon" /> NAAC</span>
+          <div className="saas-header__actions">
+            <span className="saas-pill"><IoLocationSharp /> Meerpet, Hyderabad</span>
+            <button className="saas-btn saas-btn--outline" onClick={scrollToLogin}>Login</button>
           </div>
         </div>
       </header>
 
       {/* HERO */}
-      <section className="tkr-hero">
-        <img className={`tkr-hero__bg${imgFade ? ' in' : ''}`} src={imagesLoader[currentImageIndex]} alt="Campus" />
-        <div className="tkr-hero__veil" />
-        <div className="tkr-hero__body">
-          <div className="tkr-hero__eyebrow"><TbFlame className="tkr-hero__flame" /> Welcome to TKRCET</div>
-          <h2 className="tkr-hero__h">Shaping Tomorrow's<br /><em>Engineers</em> Today</h2>
-          <p className="tkr-hero__p">20 acres of serene campus · world-class faculty · excellence since 2002</p>
-          <div className="tkr-hero__dots">
+      <section className="saas-hero">
+        <div className="saas-hero__content">
+          <div className="saas-badge">
+            <TbFlame className="saas-badge__icon" /> Welcome to TKRCET
+          </div>
+          <h1 className="saas-hero__title">
+            Shaping Tomorrow's<br />Engineers Today
+          </h1>
+          <p className="saas-hero__subtitle">
+            20 acres of serene campus · world-class faculty · excellence since 2002.
+          </p>
+          <div className="saas-hero__actions">
+            <button className="saas-btn saas-btn--primary" onClick={scrollToLogin}>
+              Login to Portal <RiArrowRightLine />
+            </button>
+          </div>
+        </div>
+        
+        <div className="saas-hero__visual">
+          <img className={`saas-hero__img ${imgFade ? 'in' : ''}`} src={imagesLoader[currentImageIndex]} alt="Campus" />
+          <div className="saas-hero__dots">
             {imagesLoader.map((_, i) => (
-              <button key={i} className={`tkr-dot${i === currentImageIndex ? ' on' : ''}`}
-                onClick={() => setCurrentImageIndex(i)} aria-label={`Slide ${i + 1}`} />
+              <button key={i} className={`saas-hero__dot ${i === currentImageIndex ? 'on' : ''}`} onClick={() => setCurrentImageIndex(i)} aria-label={`Slide ${i + 1}`} />
             ))}
           </div>
         </div>
       </section>
 
       {/* STATS */}
-      <div className="tkr-stats">
-        <div className="tkr-stats__inner">
+      <section className="saas-stats">
+        <div className="saas-stats__grid">
           {stats.map((s, i) => (
-            <div className="tkr-stat" key={i}>
-              <span className="tkr-stat__icon">{s.icon}</span>
-              <div className="tkr-stat__content">
-                <strong className="tkr-stat__num">{s.num}</strong>
-                <span className="tkr-stat__lbl">{s.label}</span>
-              </div>
+            <div className="saas-stat-card" key={i}>
+              <div className="saas-stat-card__icon">{s.icon}</div>
+              <strong className="saas-stat-card__num">{s.num}</strong>
+              <span className="saas-stat-card__lbl">{s.label}</span>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
       {/* ABOUT */}
-      <section className="tkr-about">
-        <div className="tkr-about__wrap">
-          <div className="tkr-tag"><FaUniversity className="tkr-tag__icon" /> About Us</div>
-          <h2 className="tkr-about__h">About TKRCET Campus</h2>
-          <div className="tkr-rule" />
-          <p className="tkr-about__p">TKR College of Engineering and Technology was established in 2002 in a sprawling, lush green 20-acre campus at Meerpet, Hyderabad. The college provides a serene and tranquil environment, preparing students in every aspect to face global competition with confidence and emerge victorious.</p>
-          <p className="tkr-about__p">Founded by Sri Teegala Krishna Reddy — Mayor of Hyderabad and a visionary philanthropist — TKRCET is driven by the mission to make quality education accessible to every student, bridging the rural-urban divide while upholding the highest moral and ethical standards.</p>
-          <p className="tkr-about__p">The college offers seven UG programmes in Civil, EEE, CSE, ECE, and Mechanical Engineering, along with PG courses in M.Tech (CSE, PE) and MBA. Affiliated to JNTUH, approved by AICTE, New Delhi, and recognized by the Government of Telangana.</p>
+      <section className="saas-about">
+        <div className="saas-about__inner">
+          <div className="saas-badge saas-badge--white"><FaUniversity className="saas-badge__icon" /> About Us</div>
+          <h2 className="saas-section-title">About TKRCET Campus</h2>
+          <div className="saas-about__content">
+            <p>TKR College of Engineering and Technology was established in 2002 in a sprawling, lush green 20-acre campus at Meerpet, Hyderabad. The college provides a serene and tranquil environment, preparing students in every aspect to face global competition with confidence and emerge victorious.</p>
+            <p>Founded by Sri Teegala Krishna Reddy — Mayor of Hyderabad and a visionary philanthropist — TKRCET is driven by the mission to make quality education accessible to every student, bridging the rural-urban divide while upholding the highest moral and ethical standards.</p>
+            <p>The college offers seven UG programmes in Civil, EEE, CSE, ECE, and Mechanical Engineering, along with PG courses in M.Tech (CSE, PE) and MBA. Affiliated to JNTUH, approved by AICTE, New Delhi, and recognized by the Government of Telangana.</p>
+          </div>
         </div>
       </section>
 
       {/* DELEGATES */}
-      <section className="tkr-del">
-        <div className="tkr-del__wrap">
-          <div className="tkr-tag tkr-tag--lt"><RiTeamLine className="tkr-tag__icon" /> Leadership</div>
-          <h2 className="tkr-del__h">Our Magnificent Delegates</h2>
-          <div className="tkr-rule tkr-rule--lt" />
+      <section className="saas-delegates">
+        <div className="saas-section-header">
+          <div className="saas-badge"><RiTeamLine className="saas-badge__icon" /> Leadership</div>
+          <h2 className="saas-section-title">Our Magnificent Delegates</h2>
+        </div>
 
-          <div className="tkr-del__tabs">
+        <div className="saas-delegates__tabs-scroll">
+          <div className="saas-delegates__tabs">
             {delegateKeys.map((key, i) => (
-              <button key={key}
-                className={`tkr-del__tab${i === currentDelegateIndex ? ' on' : ''}`}
-                onClick={() => handleTab(i)}>
+              <button key={key} className={`saas-tab ${i === currentDelegateIndex ? 'on' : ''}`} onClick={() => handleTab(i)}>
                 {delegateInfo[key].role}
               </button>
             ))}
           </div>
+        </div>
 
-          <div className={`tkr-del__profile${delegateFade ? ' in' : ''}`}>
-            <div className="tkr-del__photo-col">
-              <div className="tkr-del__frame">
-                <img className="tkr-del__photo" src={currentDelegate.photo} alt={currentDelegate.name} />
-              </div>
-              <div className="tkr-del__nav">
-                <button className="tkr-del__nav-btn" onClick={handlePrev}><FaChevronLeft /></button>
-                <span className="tkr-del__nav-count">{currentDelegateIndex + 1}/{delegateKeys.length}</span>
-                <button className="tkr-del__nav-btn" onClick={handleNext}><FaChevronRight /></button>
-              </div>
+        <div className={`saas-delegates__content ${delegateFade ? 'in' : ''}`}>
+          <div className="saas-delegates__photo-wrapper">
+            <img className="saas-delegates__img" src={currentDelegate.photo} alt={currentDelegate.name} />
+            <div className="saas-delegates__nav">
+              <button onClick={handlePrev}><FaChevronLeft /></button>
+              <span>{currentDelegateIndex + 1} / {delegateKeys.length}</span>
+              <button onClick={handleNext}><FaChevronRight /></button>
             </div>
-            <div className="tkr-del__info">
-              <BiSolidQuoteLeft className="tkr-del__quote" />
-              <span className="tkr-del__role">{currentDelegate.role}</span>
-              <h3 className="tkr-del__name">{currentDelegate.name}</h3>
-              <p className="tkr-del__desc">{currentDelegate.description}</p>
-              <div className="tkr-del__badges">
-                <span className="tkr-del__badge"><RiMedalLine /> TKRCET Leadership</span>
-                <span className="tkr-del__badge"><RiShieldCheckLine /> Verified</span>
-              </div>
+          </div>
+          <div className="saas-delegates__info">
+            <BiSolidQuoteLeft className="saas-quote-icon" />
+            <span className="saas-delegates__role">{currentDelegate.role}</span>
+            <h3 className="saas-delegates__name">{currentDelegate.name}</h3>
+            <p className="saas-delegates__desc">{currentDelegate.description}</p>
+            <div className="saas-delegates__badges">
+              <span className="saas-del-badge"><RiMedalLine /> Leadership</span>
+              <span className="saas-del-badge"><RiShieldCheckLine /> Verified</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* VISION & MISSION */}
-      <section className="tkr-vm">
-        <div className="tkr-vm__wrap">
-          <div className="tkr-vm__panel tkr-vm__panel--v">
-            <div className="tkr-vm__icon-wrap"><FaEye /></div>
-            <h3 className="tkr-vm__h">Institution Vision</h3>
-            <div className="tkr-vm__rule" />
-            <p className="tkr-vm__p">To be a premier institution of excellence — empowering students with knowledge, skills, and ethical values to become innovative engineers and leaders who contribute meaningfully to society and the nation.</p>
+      <section className="saas-vm">
+        <div className="saas-vm__grid">
+          <div className="saas-vm__card">
+            <div className="saas-vm__icon"><FaEye /></div>
+            <h3>Institution Vision</h3>
+            <p>To be a premier institution of excellence — empowering students with knowledge, skills, and ethical values to become innovative engineers and leaders who contribute meaningfully to society and the nation.</p>
           </div>
-          <div className="tkr-vm__divider" />
-          <div className="tkr-vm__panel tkr-vm__panel--m">
-            <div className="tkr-vm__icon-wrap tkr-vm__icon-wrap--m"><FaBullseye /></div>
-            <h3 className="tkr-vm__h">Institution Mission</h3>
-            <div className="tkr-vm__rule tkr-vm__rule--m" />
-            <ul className="tkr-vm__list">
+          
+          <div className="saas-vm__card saas-vm__card--mint">
+            <div className="saas-vm__icon"><FaBullseye /></div>
+            <h3>Institution Mission</h3>
+            <ul className="saas-vm__list">
               {missions.map((m, i) => (
-                <li key={i} className="tkr-vm__item">
-                  <BsCheck2Circle className="tkr-vm__check" /><span>{m}</span>
-                </li>
+                <li key={i}><BsCheck2Circle className="saas-list-check" /> <span>{m}</span></li>
               ))}
             </ul>
           </div>
@@ -293,84 +292,68 @@ const Homepage = () => {
       </section>
 
       {/* LOGIN */}
-      <section className="tkr-login">
-        <div className="tkr-login__wrap">
-          <div className="tkr-login__copy">
-            <div className="tkr-tag"><RiLoginBoxLine className="tkr-tag__icon" /> Portal Access</div>
-            <h2 className="tkr-login__h">Sign In to<br />Your Account</h2>
-            <p className="tkr-login__sub">Access your full academic dashboard — attendance, results, timetable and more. Available for both students and faculty.</p>
-            <ul className="tkr-login__feats">
+      <section id="login-section" className="saas-login">
+        <div className="saas-login__container">
+          <div className="saas-login__text">
+            <div className="saas-badge saas-badge--dark"><RiLoginBoxLine className="saas-badge__icon" /> Portal Access</div>
+            <h2>Login to<br/>Your Account</h2>
+            <p>Access your full academic dashboard — attendance, results, timetable and more. Available for both students and faculty.</p>
+            <ul className="saas-login__feats">
               {features.map((f, i) => (
-                <li key={i} className="tkr-login__feat">
-                  <span className="tkr-login__feat-icon">{f.icon}</span>
+                <li key={i}>
+                  <div className="saas-feat-icon">{f.icon}</div>
                   <span>{f.label}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="tkr-login__box">
-            <div className="tkr-login__box-top">
-              <HiAcademicCap className="tkr-login__cap-icon" />
+          <div className="saas-login__box">
+            <div className="saas-login__header">
+              <HiAcademicCap className="saas-login__icon" />
               <div>
-                <p className="tkr-login__eyebrow">Student &amp; Faculty Portal</p>
-                <h3 className="tkr-login__box-title">Welcome Back</h3>
+                <p className="saas-login__eyebrow">Student & Faculty Portal</p>
+                <h3>Welcome Back</h3>
               </div>
             </div>
 
-            <div className="tkr-login__field">
-              <label className="tkr-login__lbl">
-                <RiUser3Line className="tkr-login__lbl-icon" /> Username / Roll Number
-              </label>
-              <input className="tkr-login__input" type="text"
-                placeholder="e.g. D600 or 20A81A0501"
-                value={username} onChange={e => setUsername(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleLogin()}
-                disabled={loading} autoComplete="username" />
+            <div className="saas-field">
+              <label><RiUser3Line /> Username / Roll Number</label>
+              <input type="text" placeholder="e.g. D600 or 20A81A0501" value={username} onChange={e => setUsername(e.target.value)} disabled={loading} autoComplete="username" />
             </div>
 
-            <div className="tkr-login__field">
-              <label className="tkr-login__lbl">
-                <RiLockPasswordLine className="tkr-login__lbl-icon" /> Password
-              </label>
-              <div className="tkr-login__pw">
-                <input className="tkr-login__input" type={showPw ? 'text' : 'password'}
-                  placeholder="Enter your password"
-                  value={password} onChange={e => setPassword(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleLogin()}
-                  disabled={loading} autoComplete="current-password" />
-                <button className="tkr-login__eye" type="button"
-                  onClick={() => setShowPw(p => !p)} tabIndex={-1}>
+            <div className="saas-field">
+              <label><RiLockPasswordLine /> Password</label>
+              <div className="saas-field__pw">
+                <input type={showPw ? 'text' : 'password'} placeholder="Enter your password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleLogin()} disabled={loading} autoComplete="current-password" />
+                <button type="button" onClick={() => setShowPw(!showPw)} tabIndex={-1}>
                   {showPw ? <RiEyeOffLine /> : <RiEyeLine />}
                 </button>
               </div>
             </div>
 
-            <button className={`tkr-login__btn${loading ? ' loading' : ''}`}
-              onClick={handleLogin} disabled={loading}>
-              {loading
-                ? <span className="tkr-spin" />
-                : <><RiArrowRightLine className="tkr-btn-arrow" /> Login to Portal</>}
+            <button className="saas-btn saas-btn--primary saas-btn--full" onClick={handleLogin} disabled={loading}>
+              {loading ? <span className="saas-spin" /> : <>Login to Portal <RiArrowRightLine /></>}
             </button>
-
-            <p className="tkr-login__secure"><RiShieldCheckLine /> Secure &amp; encrypted connection</p>
+            
+            <p className="saas-login__secure"><RiShieldCheckLine /> Secure & encrypted connection</p>
           </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="tkr-footer">
-        <div className="tkr-footer__inner">
-          <div className="tkr-footer__brand">
-            <img className="tkr-footer__logo" src="./images/logo.png" alt="TKRCET" />
+      <footer className="saas-footer">
+        <div className="saas-footer__inner">
+          <div className="saas-footer__brand">
+            <img className="saas-footer__logo" src="./images/logo.png" alt="TKRCET" />
             <div>
-              <p className="tkr-footer__name">TKRCET</p>
-              <p className="tkr-footer__tag">Engineering Excellence Since 2002</p>
+              <p className="saas-footer__name">TKRCET</p>
+              <p className="saas-footer__tag">Engineering Excellence Since 2002</p>
             </div>
           </div>
-          <div className="tkr-footer__copy">
-            <p>© 2024 TKR College of Engineering &amp; Technology. All Rights Reserved.</p>
-            <p>Designed &amp; Developed by Mr. Md. Shakeel (TKRES)</p>
+          <div className="saas-footer__links">
+            <p>© 2024 TKR College of Engineering & Technology.</p>
+            <p>Designed & Developed by Mr. Md. Shakeel (TKRES)</p>
           </div>
         </div>
       </footer>
