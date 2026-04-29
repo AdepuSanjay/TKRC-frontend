@@ -1,15 +1,57 @@
-/* Video.css */
+/* ═══════════════════════════════════════════════════════════════
+   VideoSection.css — SaaS Media Player
+   Theme: Consistent with Homepage (Framed aesthetic, rounded edges)
+   ═══════════════════════════════════════════════════════════════ */
 
-.video {
+.saas-video-section {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+/* Creates a subtle "device frame" around the video */
+.saas-video-wrapper {
+  width: 100%;
+  max-width: 1000px;
+  border-radius: var(--radius-lg, 24px);
+  background: var(--bg-mint, #D9EBE3); /* Ties into the mint accent color */
+  border: 1px solid var(--border-light, #E5E7EB);
+  padding: 0.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+}
+
+.saas-video {
   width: 100%;
   height: auto;
-  position: relative;
-  top: 1px;
+  max-height: 70vh; /* Prevents the video from being too tall on desktop */
+  display: block;
+  border-radius: var(--radius-md, 16px);
+  object-fit: cover;
+  background: var(--bg-dark, #111315); /* Dark background while loading */
 }
-@media (max-width: 768px) {
-  .video{
-    position: relative;
-    top:20px;
+
+/* ═══════════════════════════
+   MOBILE RESPONSIVENESS
+═══════════════════════════ */
+@media (max-width: 900px) {
+  .saas-video-section {
+    padding: 3rem 1.5rem;
   }
 }
-  
+
+@media (max-width: 600px) {
+  .saas-video-section {
+    padding: 2rem 1rem;
+  }
+
+  .saas-video-wrapper {
+    border-radius: var(--radius-md, 16px);
+    padding: 0.35rem; /* Smaller frame on mobile */
+  }
+
+  .saas-video {
+    border-radius: var(--radius-sm, 10px);
+  }
+}
