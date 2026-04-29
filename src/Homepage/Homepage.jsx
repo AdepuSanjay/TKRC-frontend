@@ -112,7 +112,7 @@ const Homepage = () => {
     if (!username || !password) { toast.warning('Please fill in all fields.'); return; }
     setLoading(true);
     try {
-      const r = await axios.post('https://tkrc-backend.vercel.app/faculty/login', { username, password });
+      const r = await axios.post('https://tkrc-backend1.vercel.app/faculty/login', { username, password });
       if (r.data.success) {
         localStorage.setItem('facultyId', r.data.faculty.id);
         toast.success(`Welcome, ${r.data.faculty.name}!`);
@@ -121,7 +121,7 @@ const Homepage = () => {
       }
     } catch (_) {}
     try {
-      const r = await axios.post('https://tkrcet-backend-g3zu.onrender.com/Section/login', { rollNumber: username, password });
+      const r = await axios.post('https://tkrc-backend1.vercel.app/Section/login', { rollNumber: username, password });
       if (r.data.success && r.data.student?.id) {
         localStorage.setItem('studentId', r.data.student.rollNumber);
         toast.success(`Welcome, ${r.data.student.name}!`);
