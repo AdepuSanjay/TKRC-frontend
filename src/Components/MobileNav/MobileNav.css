@@ -1,21 +1,21 @@
 /* ═══════════════════════════════════════════════════════════════
-   MobileNav.css — SaaS Mobile Navigation
-   Theme: Consistent with Homepage (Off-White, Mint, Orange, Charcoal)
+   MobileNav.css — Premium SaaS Mobile Navigation
+   Theme: Frosted Glass, Animated Hamburger, Charcoal & Orange
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  --nav-bg: rgba(255, 255, 255, 0.95);
-  --nav-blur: blur(12px);
+  --nav-bg: rgba(255, 255, 255, 0.85);
+  --nav-blur: blur(16px);
   --nav-text: #111827;
   --nav-muted: #6B7280;
-  --nav-border: #E5E7EB;
+  --nav-border: rgba(229, 231, 235, 0.8);
   --nav-mint: #D9EBE3;
   --nav-orange: #F85E3D;
   --nav-font: 'Plus Jakarta Sans', sans-serif;
 }
 
 /* ── CONTAINER & HEADER ── */
-.mobile-nav-container {
+.saas-mobile-nav-container {
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -23,89 +23,139 @@
   font-family: var(--nav-font);
 }
 
-.header {
+.saas-mobile-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
+  padding: 0.85rem 1.25rem;
   background: var(--nav-bg);
   backdrop-filter: var(--nav-blur);
   -webkit-backdrop-filter: var(--nav-blur);
   border-bottom: 1px solid var(--nav-border);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
-.logo {
-  font-size: 1.25rem;
+/* ── BRANDING ── */
+.saas-mobile-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.saas-mobile-logo-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: contain;
+  background: #FFFFFF;
+  padding: 2px;
+  border: 1px solid var(--nav-border);
+}
+
+.saas-mobile-logo-text {
+  font-size: 1.15rem;
   font-weight: 800;
   color: var(--nav-text);
   letter-spacing: -0.02em;
 }
 
-.menu-toggle {
+/* ── ANIMATED HAMBURGER MENU ── */
+.saas-hamburger {
   background: transparent;
   border: none;
-  font-size: 1.5rem;
-  color: var(--nav-text);
   cursor: pointer;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  transition: background 0.2s ease;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  padding: 0;
+  z-index: 1001; /* Keeps it above menu */
 }
 
-.menu-toggle:hover, 
-.menu-toggle:active {
-  background: rgba(0, 0, 0, 0.05);
+.hamburger-line {
+  display: block;
+  width: 100%;
+  height: 2.5px;
+  background-color: var(--nav-text);
+  border-radius: 4px;
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transform-origin: left center; /* Critical for the X animation */
+}
+
+/* Transform hamburger to an X when open */
+.saas-hamburger.open .hamburger-line:nth-child(1) {
+  transform: rotate(45deg);
+  width: 26px; /* Adjust length to form perfect X */
+}
+
+.saas-hamburger.open .hamburger-line:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-10px); /* Slides out smoothly */
+}
+
+.saas-hamburger.open .hamburger-line:nth-child(3) {
+  transform: rotate(-45deg);
+  width: 26px;
 }
 
 /* ── MAIN MENU DROPDOWN ── */
-.menu {
+.saas-mobile-menu {
   position: absolute;
   top: 100%;
   left: 0;
   width: 100%;
   background: #FFFFFF;
   border-bottom: 1px solid var(--nav-border);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  padding: 1rem 1.5rem 2rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+  padding: 1rem 1.25rem 2rem;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  animation: slideDown 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-  max-height: calc(100vh - 70px);
+  animation: slideDownMenu 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  max-height: calc(100vh - 60px);
   overflow-y: auto;
 }
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
+@keyframes slideDownMenu {
+  from { opacity: 0; transform: translateY(-15px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 /* ── USER WELCOME ── */
-.user-welcome {
-  display: block;
-  font-size: 0.75rem;
+.saas-mobile-welcome {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--nav-muted);
+  color: var(--nav-text);
   margin-bottom: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--nav-border);
 }
 
+.welcome-avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--nav-mint);
+  color: var(--nav-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
 /* ── MENU ITEMS ── */
-.menu a {
+.saas-mobile-menu a {
   text-decoration: none;
   color: inherit;
   display: block;
 }
 
-.menu-item {
+.saas-mobile-item {
   padding: 0.85rem 1rem;
   font-size: 1rem;
   font-weight: 600;
@@ -118,18 +168,17 @@
   justify-content: space-between;
 }
 
-.menu-item:hover {
-  background: var(--nav-mint);
-  color: var(--nav-text);
+.saas-mobile-item:active {
+  background: rgba(0, 0, 0, 0.03);
 }
 
-.menu-item.active {
+.saas-mobile-item.active {
   background: rgba(248, 94, 61, 0.08); /* Faint orange */
   color: var(--nav-orange);
 }
 
 /* ── NESTED DROPDOWNS (Hierarchy) ── */
-.dropdown {
+.saas-mobile-dropdown {
   display: none;
   flex-direction: column;
   gap: 0.2rem;
@@ -137,53 +186,48 @@
   margin-top: 0.25rem;
   padding-left: 1rem;
   border-left: 2px solid var(--nav-border);
-  animation: fadeIn 0.3s ease;
+  animation: fadeInMenu 0.3s ease;
 }
 
-.dropdown.open {
+.saas-mobile-dropdown.open {
   display: flex;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes fadeInMenu {
+  from { opacity: 0; transform: translateX(-5px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 /* Sub-menu item styling */
-.dropdown .menu-item {
+.saas-mobile-dropdown .saas-mobile-item {
   font-size: 0.9rem;
   font-weight: 500;
   padding: 0.75rem 1rem;
   color: var(--nav-muted);
 }
 
-.dropdown .menu-item:hover {
-  background: rgba(0, 0, 0, 0.03);
-  color: var(--nav-text);
-}
-
-.dropdown .menu-item.active {
+.saas-mobile-dropdown .saas-mobile-item.active {
   color: var(--nav-orange);
   background: transparent;
   font-weight: 700;
 }
 
-/* Third-level deep nesting (e.g., Dynamic Classes list) */
-.dropdown .dropdown {
-  border-left-color: var(--nav-mint);
+/* Third-level deep nesting (Dynamic Classes list) */
+.saas-mobile-dropdown .saas-mobile-dropdown {
+  border-left-color: var(--nav-orange); /* Highlight deep nesting */
   margin-top: 0;
 }
 
-.dropdown .dropdown .menu-item {
+.saas-mobile-dropdown .saas-mobile-dropdown .saas-mobile-item {
   font-size: 0.85rem;
   padding: 0.6rem 1rem;
 }
 
 /* ── LOGOUT SPECIFIC OVERRIDE ── */
-.menu-item:last-child[label="Logout"] {
+.saas-mobile-item[label="Logout"] {
   color: #DC2626; /* Red for logout */
+  margin-top: 0.5rem;
 }
-.menu-item:last-child[label="Logout"]:hover {
+.saas-mobile-item[label="Logout"]:active {
   background: rgba(220, 38, 38, 0.08);
-  color: #DC2626;
 }
