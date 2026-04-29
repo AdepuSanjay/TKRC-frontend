@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from "react";      
 import "./MobileNav.css";      
 import { Link, useNavigate } from "react-router-dom";      
@@ -5,7 +7,7 @@ import axios from "axios";
 
 const MenuItem = ({ label, onClick, active }) => (      
   <div      
-    className={`saas-mobile-item ${active ? "active" : ""}`}      
+    className={`menu-item ${active ? "active" : ""}`}      
     onClick={onClick}      
     role="button"      
     tabIndex="0"      
@@ -16,7 +18,7 @@ const MenuItem = ({ label, onClick, active }) => (
 );      
 
 const Dropdown = ({ children, isOpen }) => (      
-  <div className={`saas-mobile-dropdown ${isOpen ? "open" : ""}`}>{children}</div>      
+  <div className={`dropdown ${isOpen ? "open" : ""}`}>{children}</div>      
 );      
 
 const MobileNav = () => {      
@@ -106,14 +108,12 @@ const MobileNav = () => {
     navigate(      
       `/attendance?programYear=${programYear}&department=${department}&section=${section}&subject=${subject}`      
     );      
-    setMenuOpen(false); // Close menu on navigation
   };      
 
   // Handle Attendance Click      
   const handleAttendanceClick = () => {      
     if (userData?.role === "student") {      
       navigate("/student");      
-      setMenuOpen(false);
     } else {      
       setActiveMenu(activeMenu === "attendance" ? null : "attendance");      
     }      
@@ -132,40 +132,28 @@ const MobileNav = () => {
   }, [userData]);      
 
   return (      
-    <div className="saas-mobile-nav-container">      
-      <div className="saas-mobile-header">      
-        <div className="saas-mobile-brand">
-          <img src="./images/logo.png" alt="TKRCET Logo" className="saas-mobile-logo-img" />
-          <span className="saas-mobile-logo-text">TKRCET</span>      
-        </div>
-        
-        {/* Animated Hamburger Menu */}
+    <div className="mobile-nav-container">      
+      <div className="header">      
+        <span className="logo">TKRCET</span>      
         <button      
-          className={`saas-hamburger ${menuOpen ? "open" : ""}`}      
+          className="menu-toggle"      
           onClick={toggleMenu}      
           aria-label={menuOpen ? "Close menu" : "Open menu"}      
         >      
-          <span className="hamburger-line"></span>
-          <span className="hamburger-line"></span>
-          <span className="hamburger-line"></span>
+          {menuOpen ? "X" : "☰"}      
         </button>      
       </div>      
 
       {menuOpen && (      
-        <div className="saas-mobile-menu">      
-          <div className="saas-mobile-welcome">
-            <div className="welcome-avatar">
-              {userData?.name ? userData.name.charAt(0).toUpperCase() : "U"}
-            </div>
-            <span>Welcome, {userData?.name || "User"}</span>
-          </div>      
+        <div className="menu">      
+          <span className="user-welcome">Welcome, {userData?.name || "User"}</span>      
 
-          <Link to="/index" onClick={() => setMenuOpen(false)}>      
+          <Link id="h" to="/index">      
             <MenuItem label="Home" />      
           </Link>      
 
-          <Link to={studentId ? "/Schedule" : "/timetable"} onClick={() => setMenuOpen(false)}>      
-            <MenuItem label="Timetable" />      
+          <Link id="h" to={studentId ? "/Schedule" : "/timetable"}>      
+            <MenuItem  label="Timetable" />      
           </Link>      
 
           <MenuItem label="Notifications" />      
@@ -203,15 +191,15 @@ const MobileNav = () => {
                       )}      
                     </Dropdown>      
                   )}      
-                  <Link to="/register" onClick={() => setMenuOpen(false)}>      
+                  <Link id="h" to="/register">      
                     <MenuItem label="Register" />      
                   </Link>      
-                  <Link to="/activity" onClick={() => setMenuOpen(false)}>      
+                  <Link id="h" to="/activity">      
                     <MenuItem label="Activity Diary" />      
                   </Link>      
                 </>      
               ) : (      
-                <MenuItem label="Go to Attendance" onClick={() => { navigate("/student"); setMenuOpen(false); }} />      
+                <MenuItem label="Go to Attendance" onClick={() => navigate("/student")} />      
               )}      
             </Dropdown>      
           )}      
@@ -234,4 +222,4 @@ const MobileNav = () => {
   );      
 };      
 
-export default MobileNav;
+export default MobileNav;  
