@@ -1,170 +1,216 @@
+/* ═══════════════════════════════════════════════════════════════
+   Timetable.css — SaaS Dashboard Aesthetic
+   Theme: Clean Whites, Charcoal Text, Orange Accents
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --bg-main:       #FAFAFA;
+  --bg-white:      #FFFFFF;
+  --bg-orange-sub: rgba(248, 94, 61, 0.08); /* Faint orange */
+  --accent-orange: #F85E3D;                 /* Vibrant orange */
+  
+  --text-dark:     #111827;
+  --text-muted:    #6B7280;
+  
+  --border-light:  #E5E7EB;
+  --border-dark:   #D1D5DB;
+
+  --radius-md:     16px;
+  --radius-sm:     8px;
+  
+  --font-main:     'Plus Jakarta Sans', sans-serif;
+  --ease:          cubic-bezier(0.25, 1, 0.5, 1);
+}
+
 .timetable-container {
-    font-family: "Arial", sans-serif;
-    margin: 20px;
-    margin-top:35px;
+  max-width: 1200px;
+  margin: 3rem auto 5rem;
+  padding: 0 2rem;
+  font-family: var(--font-main);
+  color: var(--text-dark);
+  animation: saasFadeIn 0.4s var(--ease);
 }
 
-.navigation,
-.mobile-navigation {
-    margin-bottom: 20px;
+@keyframes saasFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Faculty Profile Section */
+/* ── FACULTY PROFILE CARD ── */
 .faculty-profile {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  margin-bottom: 3rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
 }
 
 .profile-table {
-    width: 80%;
-    border-collapse: collapse;
-    background: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.label {
-    font-weight: bold;
-    background: #ececec;
-    padding: 10px;
-    margin-left:8px;
+.profile-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.profile-table tr:last-child td {
+  border-bottom: none;
+}
+
+.profile-table .label {
+  font-weight: 700;
+  color: var(--text-muted);
+  width: 150px;
+  letter-spacing: 0.02em;
 }
 
 .profile-image-cell {
-    text-align: center;
-    padding: 10px;
+  text-align: right;
+  vertical-align: middle;
+  width: 140px;
 }
 
 .profile-image {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid var(--border-light);
+  background: var(--bg-main);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
-/* Timetable Section */
+/* ── TIMETABLE GRID ── */
 .timetable-heading {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
 }
 
 .timetable-content {
-    display: flex;
-    justify-content: center;
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  /* This enables smooth horizontal scrolling on mobile */
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-dark) transparent;
 }
+
+/* Custom Scrollbar for the table */
+.timetable-content::-webkit-scrollbar { height: 6px; }
+.timetable-content::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 10px; }
 
 .timetable-table {
-    width: 90%;
-    border-collapse: collapse;
-    background: #fff;
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px; /* Forces table to maintain shape and trigger scroll on small screens */
 }
 
-.timetable-table th,
+.timetable-table th, 
 .timetable-table td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: center;
+  padding: 1.15rem 1rem;
+  text-align: center;
+  border: 1px solid var(--border-light);
+  font-size: 0.85rem;
 }
+
+/* Remove outer borders so it sits flush with the container */
+.timetable-table th { border-top: none; }
+.timetable-table tr:last-child td { border-bottom: none; }
+.timetable-table th:first-child, .timetable-table td:first-child { border-left: none; }
+.timetable-table th:last-child, .timetable-table td:last-child { border-right: none; }
 
 .timetable-table th {
-    background: #6495ED;
-    color: white;
+  background: var(--bg-main);
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
 }
 
 .day-cell {
-    font-weight: bold;
-    background: #f3f3f3;
+  font-weight: 800;
+  background: var(--bg-main);
+  color: var(--text-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .period-cell {
-    background: #e8f4ff;
-}
-.profile-table td:not(.profile-image-cell) {
-    padding-left: 10px;
+  color: var(--text-dark);
+  font-weight: 600;
+  line-height: 1.5;
+  transition: background 0.2s var(--ease);
 }
 
+.period-cell:hover {
+  background: var(--bg-orange-sub);
+}
+
+/* Highlight the lunch column */
 .lunch-cell {
-    font-weight: bold;
-    background: #ffefc1;
+  background: var(--bg-orange-sub);
+  color: var(--accent-orange);
+  font-weight: 800;
+  letter-spacing: 0.05em;
 }
 
-/* No Data */
 .no-data {
-    text-align: center;
-    font-size: 18px;
-    color: #666;
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
-/* Responsive Scaling for Mobile */
-@media (max-width: 1024px) {
-    .profile-table {
-        width: 95%;
-    }
-
-    .timetable-table {
-        width: 100%;
-    }
-}
-
+/* ═══════════════════════════
+   MOBILE RESPONSIVENESS
+═══════════════════════════ */
 @media (max-width: 768px) {
-    .profile-table {
-        font-size: 14px;
-    }
+  .timetable-container {
+    padding: 0 1.25rem;
+    margin: 1.5rem auto 3rem;
+  }
 
-    .profile-image {
-        width: 90px !important;
-        height: 90px !important;
-           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  .faculty-profile {
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+  }
 
-    }
+  .profile-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+  }
 
-    .timetable-table th,
-    .timetable-table td {
-        padding: 10px;
-        font-size: 12px;
-    }
+  .profile-table .label {
+    width: 100px;
+    font-size: 0.8rem;
+  }
 
-    .timetable-heading {
-        font-size: 20px;
-    }
-}
+  .profile-image-cell {
+    width: 80px;
+  }
 
-@media (max-width: 480px) {
-    .timetable-container {
-        margin: 10px;
-    }
+  .profile-image {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+  }
 
-    .profile-table {
-        width: 100%;
-        font-size: 12px;
-    }
-
-    .profile-image {
-        width: 60px;
-        height: 60px;
-    }
-
-    .timetable-table {
-        width: 100%;
-        font-size: 10px;
-    }
-
-    .timetable-table th,
-    .timetable-table td {
-        padding: 6px;
-        font-size: 10px;
-    }
-
-    .timetable-heading {
-        font-size: 18px;
-    }
-
-    .day-cell {
-        font-size: 11px;
-    }
+  .timetable-heading {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
 }
