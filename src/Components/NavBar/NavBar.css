@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    NavBar.css — SaaS Desktop Navigation
-   Theme: Frosted Glass, Mint/Orange Accents, Crisp Typography
+   Theme: Frosted Glass, Orange Accents, Crisp Typography
    ═══════════════════════════════════════════════════════════════ */
 
 nav {
@@ -106,10 +106,11 @@ nav {
   display: block; /* Overrides the flex display from parent nav */
 }
 
+/* UPDATED: Changed from Mint Green to Faint Orange */
 .menu-dropdown-content li:hover, 
 .account-menu-content li:hover {
-  background: var(--bg-mint, #D9EBE3);
-  color: var(--text-dark, #111827);
+  background: rgba(248, 94, 61, 0.1); /* Faint orange background */
+  color: var(--accent-orange, #F85E3D); /* Vibrant orange text */
   transform: translateX(4px); /* Slight slide effect on hover */
 }
 
@@ -124,6 +125,7 @@ nav {
 .account-menu-content li:last-child:hover {
   background: rgba(220, 38, 38, 0.08);
   color: #DC2626;
+  transform: translateX(4px);
 }
 
 /* ── RIGHT SECTION (USER PROFILE) ── */
