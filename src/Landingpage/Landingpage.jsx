@@ -10,8 +10,7 @@ const Landingpage=()=>{
   return(
     <div>
       
-                <Header />
-                
+               
               <div class="nav">
           <NavBar/>
         </div>
@@ -22,6 +21,8 @@ const Landingpage=()=>{
         <VideoSection/>
         
           <DelegatesInfo/>
+  <Header />
+               
     </div>
     )
 }
