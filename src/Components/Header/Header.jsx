@@ -3,38 +3,34 @@ import './Header.css';
 
 function Header() {
   return (
-    <div className="header-container">
-      
-      <div className="info-left">
-        <p className="college-code">COLLEGE CODE: K9</p>
-        <p className="address">
+    <div className="saas-doc-header">
+      <div className="saas-doc-header__left">
+        <span className="saas-doc-badge">COLLEGE CODE: K9</span>
+        <p className="saas-doc-text">
           Survey No.8/A, Medbowli, Meerpet<br />
           Hyderabad - 500097, Telangana, INDIA
         </p>
-        <p>
-          <a href="http://www.tkrct.ac.in" className="website-link" target="_blank" rel="noopener noreferrer">
-            www.tkrct.ac.in
-          </a>
-        </p>
+        <a href="http://www.tkrct.ac.in" className="saas-doc-link">
+          www.tkrct.ac.in
+        </a>
       </div>
 
-      <div className="content-center">
-        <img src="./images/logo.png" alt="TKRCET Logo" className="college-logo" />
-        <h1 className="college-name">
+      <div className="saas-doc-header__center">
+        <img src="./images/logo.png" alt="TKRCET Logo" className="saas-doc-logo" />
+        <h1 className="saas-doc-title">
           TKR COLLEGE OF ENGINEERING & TECHNOLOGY
         </h1>
       </div>
 
-      <div className="info-right">
-        <p className="autonomous-text">An Autonomous Institution</p>
-        <p className="accreditation-info">
+      <div className="saas-doc-header__right">
+        <span className="saas-doc-highlight">An Autonomous Institution</span>
+        <p className="saas-doc-text">
           Accredited with 'A+' Grade by NAAC<br />
           Approved by AICTE, New Delhi<br />
           Affiliated to JNTUH<br />
           Recognized under 2(f) & 12(B) of UGC
         </p>
       </div>
-
     </div>
   );
 }
