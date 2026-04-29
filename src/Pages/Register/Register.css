@@ -107,23 +107,28 @@ body {
   letter-spacing: 0.05em;
 }
 
-/* ── TABLE STYLING (DESKTOP) ── */
+/* ── TABLE WRAPPER (SCROLLING LOGIC) ── */
 .saas-table-wrapper {
   overflow-x: auto;
   width: 100%;
+  -webkit-overflow-scrolling: touch; /* Smooth momentum scrolling for iOS */
   scrollbar-width: thin;
   scrollbar-color: #CBD5E1 transparent;
+  /* Adds a subtle inner shadow on the right to hint at more content */
+  box-shadow: inset -10px 0 10px -10px rgba(0,0,0,0.05); 
 }
 
 .saas-table-wrapper::-webkit-scrollbar { height: 8px; }
 .saas-table-wrapper::-webkit-scrollbar-track { background: transparent; }
 .saas-table-wrapper::-webkit-scrollbar-thumb { background-color: #CBD5E1; border-radius: 10px; }
 
+/* ── TABLE STYLING ── */
 .saas-attendance-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate; /* Required for sticky columns to work perfectly */
+  border-spacing: 0;
   text-align: center;
-  min-width: 800px;
+  min-width: max-content; /* Forces the table to expand, making scrolling necessary and obvious */
 }
 
 /* Headers */
@@ -132,7 +137,7 @@ body {
   color: var(--text-dark);
   font-weight: 700;
   font-size: 0.85rem;
-  padding: 1rem;
+  padding: 1rem 1.5rem;
   text-transform: uppercase;
   letter-spacing: 0.02em;
   border-bottom: 1px solid var(--border-light);
@@ -140,15 +145,10 @@ body {
 }
 
 .saas-attendance-table th.sub-header {
-  background: #F1F5F9; 
+  background: #F1F5F9; /* Distinct color for period numbers */
   font-size: 0.75rem;
   color: var(--text-muted);
   padding: 0.6rem 1rem;
-}
-
-.saas-attendance-table th:last-child,
-.saas-attendance-table td:last-child {
-  border-right: none;
 }
 
 /* Cells */
@@ -159,6 +159,7 @@ body {
   border-right: 1px solid var(--border-light);
   color: var(--text-dark);
   vertical-align: middle;
+  background: var(--bg-white);
   transition: background 0.2s ease;
 }
 
@@ -166,27 +167,29 @@ body {
   background: rgba(0, 0, 0, 0.015);
 }
 
-.saas-attendance-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
 .fw-bold { font-weight: 700; }
 .empty-cell { color: #CBD5E1 !important; }
 
-/* Sticky Left Column for Roll Numbers */
+/* ── INTUITIVE STICKY COLUMN (Roll No.) ── */
 .sticky-col {
   position: sticky;
   left: 0;
-  background: var(--bg-white);
   z-index: 10;
-  border-right: 2px solid var(--border-light) !important;
+  /* Visual cue: A shadow that makes it look like the other columns slide underneath */
+  box-shadow: 4px 0 8px -2px rgba(0,0,0,0.06); 
+  /* Prevent double borders */
+  border-right: none !important; 
 }
+
+/* Ensure the sticky header stays above the sticky body cells */
 .saas-attendance-table th.sticky-col {
   background: var(--bg-mint);
-  z-index: 11;
+  z-index: 12;
 }
+
 .saas-attendance-table th.sub-header.sticky-col {
   background: #F1F5F9;
+  z-index: 12;
 }
 
 /* ── STATUS PILLS ── */
@@ -194,22 +197,15 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 800;
 }
 
-.saas-status-pill.present {
-  background: #D1FAE5;
-  color: #059669;
-}
-
-.saas-status-pill.absent {
-  background: #FEE2E2;
-  color: #DC2626;
-}
+.saas-status-pill.present { background: #D1FAE5; color: #059669; }
+.saas-status-pill.absent { background: #FEE2E2; color: #DC2626; }
 
 /* Percentage Pills */
 .saas-percentage-pill {
@@ -219,16 +215,8 @@ body {
   font-size: 0.75rem;
   font-weight: 700;
 }
-
-.saas-percentage-pill.high {
-  background: #D1FAE5;
-  color: #059669;
-}
-
-.saas-percentage-pill.low {
-  background: #FEE2E2;
-  color: #DC2626;
-}
+.saas-percentage-pill.high { background: #D1FAE5; color: #059669; }
+.saas-percentage-pill.low { background: #FEE2E2; color: #DC2626; }
 
 .saas-no-data {
   padding: 4rem !important;
@@ -238,92 +226,50 @@ body {
 }
 
 /* ═══════════════════════════
-   MOBILE RESPONSIVENESS 
-   (STRICT: NO HORIZONTAL SCROLL)
+   MOBILE RESPONSIVENESS
 ═══════════════════════════ */
 @media (max-width: 768px) {
   .saas-register-container {
-    padding: 0 0.5rem; /* Maximize screen space */
+    padding: 0 1rem;
     margin-top: 1rem;
+  }
+
+  .saas-dropdown-section {
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .saas-select-menu {
+    max-width: 100%;
   }
 
   .saas-table-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.5rem;
-    padding: 1rem;
+    gap: 0.75rem;
+    padding: 1.25rem 1rem;
   }
 
   .saas-table-title {
-    font-size: 1rem;
-    line-height: 1.3;
+    font-size: 1.1rem;
+    line-height: 1.4;
   }
 
   .saas-table-subtitle {
     display: block;
-    margin-top: 0.2rem;
+    margin-top: 0.25rem;
+  }
+
+  /* Make table cells slightly more compact on mobile, but rely on scrolling */
+  .saas-attendance-table th,
+  .saas-attendance-table td {
+    padding: 0.75rem 1rem; 
     font-size: 0.85rem;
   }
 
-  /* KILL HORIZONTAL SCROLL */
-  .saas-table-wrapper {
-    overflow-x: hidden !important; 
-  }
-
-  .saas-attendance-table {
-    min-width: 100% !important; /* Overrides the 800px minimum */
-    width: 100%;
-    table-layout: fixed; /* Forces columns to squeeze into viewport */
-    word-wrap: break-word;
-  }
-
-  /* Micro Typography to fit everything */
-  .saas-attendance-table th,
-  .saas-attendance-table td {
-    padding: 0.2rem 0.1rem;
-    font-size: 0.5rem;
-  }
-
-  /* Rotate the date headers vertically to save massive amounts of horizontal space */
-  .date-header {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    height: 60px; 
-    font-size: 0.45rem !important;
-    text-align: left;
-    padding-left: 0.2rem !important;
-    white-space: nowrap;
-  }
-
-  .stat-header {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    height: 45px;
-    font-size: 0.45rem !important;
-  }
-
-  .sub-header {
-    font-size: 0.4rem !important;
-    padding: 0.1rem !important;
-  }
-
-  /* Shrink Pills for Mobile */
   .saas-status-pill {
-    width: 12px;
-    height: 12px;
-    font-size: 0.45rem;
-    border-radius: 2px;
-  }
-
-  .saas-percentage-pill {
-    padding: 0.15rem 0.2rem;
-    font-size: 0.45rem;
-  }
-
-  /* Give the Roll Number column just enough space so it doesn't break */
-  .sticky-col {
-    width: 35px;
-    font-size: 0.5rem !important;
-    border-right: 1px solid var(--border-light) !important;
+    width: 24px;
+    height: 24px;
+    font-size: 0.7rem;
   }
 }
