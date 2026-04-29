@@ -1,19 +1,20 @@
-// VideoSection.js
 import React from 'react';
 import './VideoSection.css';
 
 function VideoSection() {
   return (
-    <div className="video-section">
-      <video
-        src="./images/tkr.mp4"
-        autoPlay
-        loop
-        muted
-        className="video"
-
-      ></video>
-    </div>
+    <section className="saas-video-section">
+      <div className="saas-video-wrapper">
+        <video
+          src="./images/tkr.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline /* Required for iOS mobile autoplay */
+          className="saas-video"
+        />
+      </div>
+    </section>
   );
 }
 
