@@ -1,223 +1,170 @@
-/* General Styling */
+/* ═══════════════════════════════════════════════════════════════
+   NavBar.css — SaaS Desktop Navigation
+   Theme: Frosted Glass, Mint/Orange Accents, Crisp Typography
+   ═══════════════════════════════════════════════════════════════ */
+
 nav {
   display: flex;
   justify-content: space-between;
-  padding: 10px 20px;
-  background-color: red;
-  border-bottom: 1px solid #ddd;
   align-items: center;
-}
-#j{
-  text-decoration: none;
-  list-style: none;
-  color:#4b4b4bcd;
-}
-#g{
-  color:black;
-  font-size:bold;
-  
-}
-#time{
-text-decoration:none;
-color:white;
- font-size:bold;
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-light, #E5E7EB);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  font-family: var(--font-main, 'Plus Jakarta Sans', sans-serif);
 }
 
+/* ── LEFT SECTION (LINKS) ── */
 .nav-left-section {
   display: flex;
   align-items: center;
 }
 
 .nav-menu-links {
-  list-style: none;
   display: flex;
-  gap: 20px;
-}
-
-.nav-menu-links li {
-  position: relative;
-}
-
-.nav-menu-links a {
-  text-decoration: none;
-  color: #fff;
-  font-weight: bold;
-  
-}
-
-.nav-menu-links a:hover {
-  color: #6495ED;
-  
-  
-  
-  
-}
-
-/* Dropdown Styling */
-.menu-dropdown {
-  position: relative;
-}
-
-.menu-drop-container {
-  position: absolute;
-  top: 30px;
-  left: 0;
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-  z-index: 100;
-  width: 240px;
-}
-
-.menu-dropdown-content {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 10px;
-  text-align: center;
-}
-
-.menu-dropdown-content ul {
+  gap: 2rem;
   list-style: none;
-  padding: 0;
   margin: 0;
-}
-
-.menu-dropdown-content ul li {
-  padding: 8px;
-  background-color: #f9f9f9;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.menu-dropdown-content ul li:hover {
-  background-color: #e0e0e0;
-}
-
-.menu-dropdown-content ul ul {
-  margin-top: 10px;
-  padding-left: 20px;
-}
-
-/* Account Dropdown Styling */
-.nav-user-profile {
-  display: flex;
+  padding: 0;
   align-items: center;
-  gap: 10px;
 }
 
-.account-menu {
-  position: relative;
-}
-
-.account-menu-button {
-  background-color: #e6e7e8;
-  color: #2e2c2c;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.account-menu-button:hover {
-  background-color: #005bb5;
-  color: #fff;
-}
-
-.account-menu-content {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  z-index: 100;
-  padding: 10px;
-  width: 150px;
-}
-
-.account-menu-content a {
-  display: block;
-  padding: 8px;
-  color: #333;
+/* Base link styling (handles <a>, <Link>, and <li> acting as links) */
+.nav-menu-links a,
+.nav-menu-links li {
   text-decoration: none;
+  color: var(--text-muted, #6B7280);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  display: inline-block;
 }
 
-.account-menu-content a:hover {
-  background-color: #f0f0f0;
-  border-radius: 4px;
+.nav-menu-links a:hover,
+.nav-menu-links li:hover {
+  color: var(--text-dark, #111827);
 }
 
-/* Media Queries */
-@media (max-width: 768px) {
-  .nav-left-section,
-  .nav-user-profile {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .nav-menu-links {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .account-menu-content {
-    width: 100%;
-  }
-}
-/* Account Dropdown Styling */
-.nav-user-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
+/* ── DROPDOWNS (Attendance & Account) ── */
+.menu-dropdown, 
 .account-menu {
   position: relative;
 }
 
-.account-menu-button {
-  background-color: #e6e7e8;
-  color: #2e2c2c;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.account-menu-button:hover {
-  background-color: #ffb005;
-  color: #fff;
-}
-
+/* The popup containers */
+.menu-dropdown-content, 
 .account-menu-content {
   position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
-  z-index: 100;
-  padding: 10px;
-  width: 150px;
+  top: calc(100% + 1rem); /* Drops down just below the nav */
+  left: 0;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light, #E5E7EB);
+  border-radius: var(--radius-md, 12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  min-width: 220px;
+  padding: 0.5rem;
+  animation: navDropFade 0.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  z-index: 1001;
 }
 
+/* Align the account menu to the right side so it doesn't spill off screen */
+.account-menu-content {
+  left: auto;
+  right: 0;
+}
+
+@keyframes navDropFade {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Dropdown Lists */
+.menu-dropdown-content ul, 
 .account-menu-content ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.account-menu-content ul li {
-  padding: 8px;
-  background-color: #f9f9f9;
-  border-radius: 4px;
+/* Dropdown Items */
+.menu-dropdown-content li, 
+.account-menu-content li {
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  color: var(--text-dark, #111827);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: block; /* Overrides the flex display from parent nav */
+}
+
+.menu-dropdown-content li:hover, 
+.account-menu-content li:hover {
+  background: var(--bg-mint, #D9EBE3);
+  color: var(--text-dark, #111827);
+  transform: translateX(4px); /* Slight slide effect on hover */
+}
+
+/* Logout button specific styling */
+.account-menu-content li:last-child {
+  color: #DC2626;
+  border-top: 1px solid var(--border-light, #E5E7EB);
+  margin-top: 0.25rem;
+  border-radius: 0 0 8px 8px;
+}
+
+.account-menu-content li:last-child:hover {
+  background: rgba(220, 38, 38, 0.08);
+  color: #DC2626;
+}
+
+/* ── RIGHT SECTION (USER PROFILE) ── */
+.nav-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-user-profile span {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-dark, #111827);
+  letter-spacing: -0.01em;
+}
+
+.account-menu-button {
+  background: var(--text-dark, #111827);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-pill, 100px);
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
 }
 
-.account-menu-content ul li:hover {
-  background-color: #e0e0e0;
+.account-menu-button:hover {
+  background: var(--accent-orange, #F85E3D);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(248, 94, 61, 0.25);
+}
+
+/* ═══════════════════════════
+   RESPONSIVENESS
+═══════════════════════════ */
+/* Assuming you hide this on mobile in favor of MobileNav.jsx */
+@media (max-width: 900px) {
+  nav {
+    display: none; /* Usually hidden on small screens */
   }
-    
+}
