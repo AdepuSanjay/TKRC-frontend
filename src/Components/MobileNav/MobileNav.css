@@ -1,175 +1,189 @@
-/* General Styles */
-body {
-  margin: 0;
-  font-family: 'Roboto', sans-serif;  /* Modern font */
-  background-color: #f4f4f9; /* Light background for the page */
-  color: #333;
-}
-#h{
-  text-decoration: none;
-}
-#link {
-  text-decoration: none;
+/* ═══════════════════════════════════════════════════════════════
+   MobileNav.css — SaaS Mobile Navigation
+   Theme: Consistent with Homepage (Off-White, Mint, Orange, Charcoal)
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --nav-blur: blur(12px);
+  --nav-text: #111827;
+  --nav-muted: #6B7280;
+  --nav-border: #E5E7EB;
+  --nav-mint: #D9EBE3;
+  --nav-orange: #F85E3D;
+  --nav-font: 'Plus Jakarta Sans', sans-serif;
 }
 
+/* ── CONTAINER & HEADER ── */
 .mobile-nav-container {
-  width: 100%; /* Occupy full screen width */
-  margin: 0 auto;
-  background-color: #fff;
-  border-radius: 0; /* Removed radius for straight edges */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
-  overflow: hidden;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  font-family: var(--nav-font);
 }
 
-/* Header */
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
-  background-color: red; /* Dark Blue for a professional look */
-  color: white;
-  border-bottom: 2px solid #ecf0f1;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--nav-bg);
+  backdrop-filter: var(--nav-blur);
+  -webkit-backdrop-filter: var(--nav-blur);
+  border-bottom: 1px solid var(--nav-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
 }
 
 .logo {
-  font-size: 1.6em;
-  font-weight: bold;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--nav-text);
+  letter-spacing: -0.02em;
 }
 
 .menu-toggle {
-  font-size: 1.5em;
-  background: none;
+  background: transparent;
   border: none;
-  color: white;
+  font-size: 1.5rem;
+  color: var(--nav-text);
   cursor: pointer;
-  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
 }
 
-/* Main Menu */
+.menu-toggle:hover, 
+.menu-toggle:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* ── MAIN MENU DROPDOWN ── */
 .menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--nav-border);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  padding: 1rem 1.5rem 2rem;
   display: flex;
   flex-direction: column;
-  background-color: #fff;
-  padding: 10px;
-  border-top: 1px solid #ddd;
-list-style:none;
+  gap: 0.25rem;
+  animation: slideDown 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  max-height: calc(100vh - 70px);
+  overflow-y: auto;
 }
 
-.menu-item {
-  text-align: center;
-  padding: 14px;
-  font-size: 1.1em;
-  font-weight: 500;
-  color: #333;
-  background-color: #fff;
-  border: 1px solid #ecf0f1;
-  border-radius: 5px;
-  margin: 5px 0;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-list-style:none;
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.menu-item:hover {
-  background-color: #2980B9; /* Professional hover color - Blue */
-  color: white;
-  transform: translateY(-3px); /* Slight lift effect */
+/* ── USER WELCOME ── */
+.user-welcome {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--nav-muted);
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--nav-border);
 }
 
-.menu-item.active {
-  background-color: #1ABC9C; /* Active color - Teal */
-  color: white;
-}
-
-/* Dropdown */
-.dropdown {
-  display: none;
-  background-color: #f9f9f9;
-  padding: 10px;
-  margin-left: 20px;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
-}
-
-.dropdown.open {
+/* ── MENU ITEMS ── */
+.menu a {
+  text-decoration: none;
+  color: inherit;
   display: block;
 }
 
-.dropdown-item {
-  padding: 12px;
-  background-color: #fff;
-  color: #333;
+.menu-item {
+  padding: 0.85rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--nav-text);
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  border: 1px solid #ecf0f1;
-  border-radius: 5px;
-  margin-bottom: 5px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.dropdown-item:hover {
-  background-color: #2980B9; /* Professional hover color - Blue */
-  color: white;
-  transform: translateY(-3px);
+.menu-item:hover {
+  background: var(--nav-mint);
+  color: var(--nav-text);
 }
 
-.dropdown-item.active {
-  background-color: #1ABC9C; /* Active color - Teal */
-  color: white;
+.menu-item.active {
+  background: rgba(248, 94, 61, 0.08); /* Faint orange */
+  color: var(--nav-orange);
 }
 
-/* Styling for when the dropdown is open */
-.dropdown.open .dropdown-item {
-  background-color: #e8f0fe;
+/* ── NESTED DROPDOWNS (Hierarchy) ── */
+.dropdown {
+  display: none;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-left: 1rem;
+  margin-top: 0.25rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--nav-border);
+  animation: fadeIn 0.3s ease;
 }
 
-.dropdown-item + .dropdown-item {
-  margin-top: 5px;
+.dropdown.open {
+  display: flex;
 }
 
-/* Submenu (Class, Register, Activity Diary) */
-.dropdown.open .submenu {
-  margin-left: 20px;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Style for Year dropdown */
-.dropdown .submenu-item {
-  background-color: #e6f7ff;
-  padding: 12px;
-  border-radius: 5px;
-  margin: 5px 0;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+/* Sub-menu item styling */
+.dropdown .menu-item {
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  color: var(--nav-muted);
 }
 
-.submenu-item:hover {
-  background-color: #b3e0ff;
-  transform: translateY(-3px);
+.dropdown .menu-item:hover {
+  background: rgba(0, 0, 0, 0.03);
+  color: var(--nav-text);
 }
 
-.submenu-item.active {
-  background-color: #2980B9; /* Professional active hover color */
-  color: white;
+.dropdown .menu-item.active {
+  color: var(--nav-orange);
+  background: transparent;
+  font-weight: 700;
 }
 
-/* Active State Styling */
-.submenu-item.active {
-  background-color: #1ABC9C; /* Active color - Teal */
-  color: white;
+/* Third-level deep nesting (e.g., Dynamic Classes list) */
+.dropdown .dropdown {
+  border-left-color: var(--nav-mint);
+  margin-top: 0;
 }
 
-/* Make dropdowns responsive */
-@media (max-width: 768px) {
-  .header {
-    padding: 10px;
-  }
+.dropdown .dropdown .menu-item {
+  font-size: 0.85rem;
+  padding: 0.6rem 1rem;
+}
 
-  .menu-item {
-    font-size: 1em;
-    padding: 12px;
-  }
-
-  .dropdown-item {
-    font-size: 0.9em;
-  }
-  }
+/* ── LOGOUT SPECIFIC OVERRIDE ── */
+.menu-item:last-child[label="Logout"] {
+  color: #DC2626; /* Red for logout */
+}
+.menu-item:last-child[label="Logout"]:hover {
+  background: rgba(220, 38, 38, 0.08);
+  color: #DC2626;
+}
