@@ -1,46 +1,281 @@
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-  margin: 20px auto;
+/* ═══════════════════════════════════════════════════════════════
+   Register.css — SaaS Attendance Dashboard
+   Theme: Mint Green, Vibrant Orange, Deep Charcoal, Frosted White
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  --bg-main:       #FAFAFA;
+  --bg-white:      #FFFFFF;
+  --bg-mint:       #D9EBE3; 
+  --bg-dark:       #111315;
+  --accent-orange: #F85E3D;
+  
+  --text-dark:     #111827;
+  --text-muted:    #6B7280;
+  
+  --border-light:  #E5E7EB;
+  
+  --font-main:     'Plus Jakarta Sans', sans-serif;
+  --radius-sm:     8px;
+  --radius-md:     16px;
+  --radius-lg:     24px;
 }
 
-.attendance-table {
+body {
+  background-color: var(--bg-main);
+  font-family: var(--font-main);
+}
+
+.saas-register-container {
+  max-width: 1200px;
+  margin: 2rem auto 5rem;
+  padding: 0 2rem;
+}
+
+/* ── DROPDOWN SECTION ── */
+.saas-dropdown-section {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+}
+
+.saas-select-menu {
+  width: 100%;
+  max-width: 320px;
+  padding: 0.85rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  background-color: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  appearance: none; /* Removes default OS styling */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23111827%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem top 50%;
+  background-size: 0.65rem auto;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.saas-select-menu:focus {
+  outline: none;
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 0 3px rgba(248, 94, 61, 0.15);
+}
+
+/* ── TABLE CARD & HEADER ── */
+.saas-attendance-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+}
+
+.saas-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--bg-white);
+}
+
+.saas-table-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.saas-table-subtitle {
+  font-weight: 500;
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+.saas-table-year {
+  background: var(--bg-mint);
+  color: var(--text-dark);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-pill, 100px);
+  letter-spacing: 0.05em;
+}
+
+/* ── TABLE STYLING ── */
+.saas-table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+  /* Custom sleek scrollbar for webkit */
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
+}
+
+.saas-table-wrapper::-webkit-scrollbar { height: 8px; }
+.saas-table-wrapper::-webkit-scrollbar-track { background: transparent; }
+.saas-table-wrapper::-webkit-scrollbar-thumb { background-color: #CBD5E1; border-radius: 10px; }
+
+.saas-attendance-table {
   width: 100%;
   border-collapse: collapse;
   text-align: center;
+  min-width: 800px; /* Forces scrolling on small screens */
 }
 
-.attendance-table th, 
-.attendance-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
+/* Headers */
+.saas-attendance-table th {
+  background: var(--bg-mint);
+  color: var(--text-dark);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid var(--border-light);
+  border-right: 1px solid rgba(0,0,0,0.05);
 }
 
-.attendance-table th {
-  background-color: #b3e5fc;
-  color: #4a148c;
-  font-weight: bold;
+.saas-attendance-table th.sub-header {
+  background: #F1F5F9; /* Slightly darker than mint for the second row */
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 0.6rem 1rem;
 }
 
-.header-title {
-  background-color: #e0f7fa;
-  font-size: 18px;
-  font-weight: bold;
-  text-align: center;
-  padding: 10px;
+.saas-attendance-table th:last-child,
+.saas-attendance-table td:last-child {
+  border-right: none;
 }
 
-.present {
-  color: green;
-  font-weight: bold;
+/* Cells */
+.saas-attendance-table td {
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--border-light);
+  border-right: 1px solid var(--border-light);
+  color: var(--text-dark);
+  vertical-align: middle;
+  transition: background 0.2s ease;
 }
 
-.absent {
-  color: red;
-  font-weight: bold;
+.saas-attendance-table tbody tr:hover td {
+  background: rgba(0, 0, 0, 0.015);
 }
 
-.low-attendance {
-  background-color: #ffccbc;
-  font-weight: bold;
+.saas-attendance-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.fw-bold { font-weight: 700; }
+.empty-cell { color: #CBD5E1 !important; }
+
+/* Sticky Left Column for Roll Numbers */
+.sticky-col {
+  position: sticky;
+  left: 0;
+  background: var(--bg-white);
+  z-index: 10;
+  border-right: 2px solid var(--border-light) !important; /* Stronger border to separate sticky col */
+}
+.saas-attendance-table th.sticky-col {
+  background: var(--bg-mint);
+  z-index: 11;
+}
+.saas-attendance-table th.sub-header.sticky-col {
+  background: #F1F5F9;
+}
+
+/* ── STATUS PILLS ── */
+.saas-status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.saas-status-pill.present {
+  background: #D1FAE5; /* Soft Green */
+  color: #059669; /* Dark Green */
+}
+
+.saas-status-pill.absent {
+  background: #FEE2E2; /* Soft Red */
+  color: #DC2626; /* Dark Red */
+}
+
+/* Percentage Pills */
+.saas-percentage-pill {
+  display: inline-block;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--radius-pill, 100px);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.saas-percentage-pill.high {
+  background: #D1FAE5;
+  color: #059669;
+}
+
+.saas-percentage-pill.low {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.saas-no-data {
+  padding: 4rem !important;
+  color: var(--text-muted) !important;
+  font-size: 1rem !important;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════
+   MOBILE RESPONSIVENESS
+═══════════════════════════ */
+@media (max-width: 768px) {
+  .saas-register-container {
+    padding: 0 1rem;
+    margin-top: 1rem;
+  }
+
+  .saas-dropdown-section {
+    justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .saas-select-menu {
+    max-width: 100%;
+  }
+
+  .saas-table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem 1rem;
+  }
+
+  .saas-table-title {
+    font-size: 1.1rem;
+    line-height: 1.4;
+  }
+
+  .saas-table-subtitle {
+    display: block;
+    margin-top: 0.25rem;
+  }
+
+  .saas-attendance-table th,
+  .saas-attendance-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.8rem;
+  }
 }
