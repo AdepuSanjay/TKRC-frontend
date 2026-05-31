@@ -83,7 +83,7 @@ const Homepage = () => {
       setTimeout(() => { setCurrentImageIndex(p => (p + 1) % imagesLoader.length); setImgFade(true); }, 400);
     }, 5000);
     return () => clearInterval(t);
-  }, [imagesLoader.length]);
+  }, []);
 
   const doSwitchDelegate = (nextIndex) => {
     setDelegateFade(false);
@@ -96,7 +96,7 @@ const Homepage = () => {
       doSwitchDelegate((currentDelegateIndex + 1) % delegateKeys.length);
     }, 6000);
     return () => clearInterval(delegateTimerRef.current);
-  }, [currentDelegateIndex, delegateKeys.length]);
+  }, [currentDelegateIndex]);
 
   const handlePrev = () => doSwitchDelegate((currentDelegateIndex - 1 + delegateKeys.length) % delegateKeys.length);
   const handleNext = () => doSwitchDelegate((currentDelegateIndex + 1) % delegateKeys.length);
@@ -108,7 +108,7 @@ const Homepage = () => {
   const [password, setPassword] = useState('');
   const [showPw, setShowPw]     = useState(false);
 
-  // Updated Unified Login Function for Spring Boot backend
+  // --- UPDATED LOGIN LOGIC FOR SPRING BOOT ---
   const handleLogin = async () => {
     if (!username || !password) { 
       toast.warning('Please fill in all fields.'); 
@@ -118,36 +118,34 @@ const Homepage = () => {
     setLoading(true);
     
     try {
-      // Connect to your new Spring Boot endpoint deployed on Render
-      const response = await axios.post('https://my-section-data-api.onrender.com/api/auth/login', { 
+      // Calls the unified Spring Boot auth endpoint
+      const response = await axios.post('http://localhost:8080/api/auth/login', { 
         userId: username, 
         password: password 
       });
 
-      const data = response.data; // Extract JSON payload { token, role, name, profileImage }
+      const { token, role, name, profileImage } = response.data;
 
-      // Store JWT token and generic user info globally
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('userRole', data.role);
-      localStorage.setItem('userName', data.name);
+      // 1. Save the JWT Token for future API calls
+      localStorage.setItem('token', token);
       
-      if (data.profileImage) {
-        localStorage.setItem('profileImage', data.profileImage);
-      }
+      // 2. Save common user details
+      localStorage.setItem('userName', name);
+      localStorage.setItem('userRole', role);
+      if (profileImage) localStorage.setItem('profileImage', profileImage);
 
-      // Store role-specific IDs so the rest of your app routes properly
-      if (data.role === 'teacher') {
+      // 3. Maintain compatibility with your other routes by setting specific IDs
+      if (role === 'teacher' || role === 'admin') {
         localStorage.setItem('facultyId', username);
       } else {
         localStorage.setItem('studentId', username);
       }
 
-      toast.success(`Welcome, ${data.name}!`);
+      toast.success(`Welcome, ${name}!`);
       setTimeout(() => navigate('/index'), 2000);
 
     } catch (error) {
       toast.error('Invalid credentials. Please try again.');
-      console.error("Login Failed:", error.response?.data || error.message);
     } finally { 
       setLoading(false); 
     }
@@ -339,7 +337,7 @@ const Homepage = () => {
 
             <div className="saas-field">
               <label><RiUser3Line /> Username / Roll Number</label>
-              <input type="text" placeholder="e.g. D600 or 20A81A0501" value={username} onChange={e => setUsername(e.target.value)} disabled={loading} autoComplete="username" />
+              <input type="text" placeholder="e.g. FAC2026 or 20A81A0501" value={username} onChange={e => setUsername(e.target.value)} disabled={loading} autoComplete="username" />
             </div>
 
             <div className="saas-field">
