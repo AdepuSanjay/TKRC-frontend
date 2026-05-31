@@ -108,44 +108,56 @@ const Homepage = () => {
   const [password, setPassword] = useState('');
   const [showPw, setShowPw]     = useState(false);
 
-  // --- UPDATED LOGIN LOGIC FOR SPRING BOOT ---
+  // --- INTEGRATED SPRING BOOT LOGIN LOGIC ---
   const handleLogin = async () => {
     if (!username || !password) { 
       toast.warning('Please fill in all fields.'); 
       return; 
     }
-    
+
     setLoading(true);
-    
+
     try {
-      // Calls the unified Spring Boot auth endpoint
+      // Pointing directly to your local Spring Boot unified Auth Controller
       const response = await axios.post('http://localhost:8080/api/auth/login', { 
         userId: username, 
         password: password 
       });
 
+      // Extracting the exact fields confirmed by your Postman response
       const { token, role, name, profileImage } = response.data;
 
-      // 1. Save the JWT Token for future API calls
+      // 1. Save the JWT Token for subsequent secure API calls
       localStorage.setItem('token', token);
-      
-      // 2. Save common user details
+
+      // 2. Save common user details for the frontend UI
       localStorage.setItem('userName', name);
       localStorage.setItem('userRole', role);
-      if (profileImage) localStorage.setItem('profileImage', profileImage);
+      
+      if (profileImage) {
+        localStorage.setItem('profileImage', profileImage);
+      }
 
-      // 3. Maintain compatibility with your other routes by setting specific IDs
+      // 3. Set specific ID markers based on role to maintain route compatibility
       if (role === 'teacher' || role === 'admin') {
         localStorage.setItem('facultyId', username);
       } else {
         localStorage.setItem('studentId', username);
       }
 
-      toast.success(`Welcome, ${name}!`);
+      // Beautiful capitalized greeting
+      const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
+      toast.success(`Welcome back, ${formattedName}!`);
+      
+      // Navigate to your dashboard component
       setTimeout(() => navigate('/index'), 2000);
 
     } catch (error) {
-      toast.error('Invalid credentials. Please try again.');
+      if (error.response && error.response.status === 401) {
+        toast.error('Invalid credentials. Please check your user ID and password.');
+      } else {
+        toast.error('Server error. Ensure your backend is running.');
+      }
     } finally { 
       setLoading(false); 
     }
