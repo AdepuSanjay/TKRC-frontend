@@ -83,7 +83,7 @@ const Homepage = () => {
       setTimeout(() => { setCurrentImageIndex(p => (p + 1) % imagesLoader.length); setImgFade(true); }, 400);
     }, 5000);
     return () => clearInterval(t);
-  }, []);
+  }, [imagesLoader.length]);
 
   const doSwitchDelegate = (nextIndex) => {
     setDelegateFade(false);
@@ -96,7 +96,7 @@ const Homepage = () => {
       doSwitchDelegate((currentDelegateIndex + 1) % delegateKeys.length);
     }, 6000);
     return () => clearInterval(delegateTimerRef.current);
-  }, [currentDelegateIndex]);
+  }, [currentDelegateIndex, delegateKeys.length]);
 
   const handlePrev = () => doSwitchDelegate((currentDelegateIndex - 1 + delegateKeys.length) % delegateKeys.length);
   const handleNext = () => doSwitchDelegate((currentDelegateIndex + 1) % delegateKeys.length);
@@ -108,29 +108,49 @@ const Homepage = () => {
   const [password, setPassword] = useState('');
   const [showPw, setShowPw]     = useState(false);
 
+  // Updated Unified Login Function for Spring Boot backend
   const handleLogin = async () => {
-    if (!username || !password) { toast.warning('Please fill in all fields.'); return; }
+    if (!username || !password) { 
+      toast.warning('Please fill in all fields.'); 
+      return; 
+    }
+    
     setLoading(true);
+    
     try {
-      const r = await axios.post('https://tkrc-backend1.vercel.app/faculty/login', { username, password });
-      if (r.data.success) {
-        localStorage.setItem('facultyId', r.data.faculty.id);
-        toast.success(`Welcome, ${r.data.faculty.name}!`);
-        setTimeout(() => navigate('/index'), 2000);
-        return;
+      // Connect to your new Spring Boot endpoint deployed on Render
+      const response = await axios.post('https://my-section-data-api.onrender.com/api/auth/login', { 
+        userId: username, 
+        password: password 
+      });
+
+      const data = response.data; // Extract JSON payload { token, role, name, profileImage }
+
+      // Store JWT token and generic user info globally
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userRole', data.role);
+      localStorage.setItem('userName', data.name);
+      
+      if (data.profileImage) {
+        localStorage.setItem('profileImage', data.profileImage);
       }
-    } catch (_) {}
-    try {
-      const r = await axios.post('https://tkrc-backend1.vercel.app/Section/login', { rollNumber: username, password });
-      if (r.data.success && r.data.student?.id) {
-        localStorage.setItem('studentId', r.data.student.rollNumber);
-        toast.success(`Welcome, ${r.data.student.name}!`);
-        setTimeout(() => navigate('/index'), 2000);
-        return;
+
+      // Store role-specific IDs so the rest of your app routes properly
+      if (data.role === 'teacher') {
+        localStorage.setItem('facultyId', username);
+      } else {
+        localStorage.setItem('studentId', username);
       }
-    } catch (_) {
+
+      toast.success(`Welcome, ${data.name}!`);
+      setTimeout(() => navigate('/index'), 2000);
+
+    } catch (error) {
       toast.error('Invalid credentials. Please try again.');
-    } finally { setLoading(false); }
+      console.error("Login Failed:", error.response?.data || error.message);
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   const scrollToLogin = () => {
@@ -194,7 +214,7 @@ const Homepage = () => {
             </button>
           </div>
         </div>
-        
+
         <div className="saas-hero__visual">
           <img className={`saas-hero__img ${imgFade ? 'in' : ''}`} src={imagesLoader[currentImageIndex]} alt="Campus" />
           <div className="saas-hero__dots">
@@ -278,7 +298,7 @@ const Homepage = () => {
             <h3>Institution Vision</h3>
             <p>To be a premier institution of excellence — empowering students with knowledge, skills, and ethical values to become innovative engineers and leaders who contribute meaningfully to society and the nation.</p>
           </div>
-          
+
           <div className="saas-vm__card saas-vm__card--mint">
             <div className="saas-vm__icon"><FaBullseye /></div>
             <h3>Institution Mission</h3>
@@ -335,7 +355,7 @@ const Homepage = () => {
             <button className="saas-btn saas-btn--primary saas-btn--full" onClick={handleLogin} disabled={loading}>
               {loading ? <span className="saas-spin" /> : <>Login to Portal <RiArrowRightLine /></>}
             </button>
-            
+
             <p className="saas-login__secure"><RiShieldCheckLine /> Secure & encrypted connection</p>
           </div>
         </div>
