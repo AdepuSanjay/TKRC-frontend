@@ -13,15 +13,15 @@ const Timetable = () => {
     const [subjectFacultyMap, setSubjectFacultyMap] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    // Safeguard against case-sensitivity issues
     const role = localStorage.getItem("userRole");
-    const isStudent = role === "student";
+    const isStudent = role?.toLowerCase() === "student";
 
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
                 const loadingToast = toast.loading("Loading your schedule...", { theme: "colored" });
-                
-                // Read from LocalStorage
+
                 const facId = localStorage.getItem("facultyId");
                 const stuId = localStorage.getItem("studentId");
                 const token = localStorage.getItem("token");
@@ -32,8 +32,8 @@ const Timetable = () => {
                     // 1. FETCH FACULTY DATA
                     // ==========================================
                     const response = await axios.get("http://localhost:8080/api/faculty", { headers });
-                    const me = response.data.find(f => f.employeeId === facId);
-                    
+                    const me = response.data.find(f => String(f.employeeId).trim() === String(facId).trim());
+
                     if (me) {
                         setProfileDetails({
                             name: me.name,
@@ -42,7 +42,6 @@ const Timetable = () => {
                             image: me.image
                         });
 
-                        // Convert flat personalTimetable to grouped array by Day for the UI
                         const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
                         const groupedTimetable = days.map(dayName => {
                             const daySlots = me.personalTimetable?.filter(s => s.day === dayName) || [];
@@ -50,12 +49,11 @@ const Timetable = () => {
                                 day: dayName,
                                 periods: daySlots.map(s => ({
                                     periodNumber: s.periodNumber,
-                                    // Append location info for the teacher
                                     subject: `${s.subject} (${s.yearId}, ${s.deptName}-${s.sectionName})` 
                                 }))
                             };
                         });
-                        
+
                         setTimetable(groupedTimetable);
                     }
                 } else {
@@ -66,13 +64,24 @@ const Timetable = () => {
                     let myTimetable = [];
                     let myProfile = {};
                     let facultyMappingObj = {};
+                    let studentFound = false;
 
-                    // Traverse the nested JSON tree to find the logged-in student
-                    response.data.forEach(year => {
-                        year.departments?.forEach(dept => {
-                            dept.sections?.forEach(section => {
-                                const foundStudent = section.students?.find(st => st.rollNumber === stuId);
-                                
+                    // FIX: Using for...of loops so we can BREAK immediately once the student is found
+                    // This prevents empty sections from overwriting a valid timetable!
+                    for (const year of response.data) {
+                        if (studentFound) break;
+
+                        for (const dept of year.departments || []) {
+                            if (studentFound) break;
+
+                            for (const section of dept.sections || []) {
+                                if (studentFound) break;
+
+                                // FIX: Convert both to Strings to avoid Number vs String strict equality failure
+                                const foundStudent = section.students?.find(
+                                    st => String(st.rollNumber).trim() === String(stuId).trim()
+                                );
+
                                 if (foundStudent) {
                                     myProfile = {
                                         name: foundStudent.name,
@@ -80,9 +89,9 @@ const Timetable = () => {
                                         designation: "Student",
                                         image: foundStudent.image
                                     };
+                                    
                                     myTimetable = section.timetable || [];
 
-                                    // Extract unique Subject -> Faculty mappings
                                     myTimetable.forEach(day => {
                                         day.periods?.forEach(period => {
                                             if (period.subject && !facultyMappingObj[period.subject]) {
@@ -93,12 +102,13 @@ const Timetable = () => {
                                             }
                                         });
                                     });
-                                }
-                            });
-                        });
-                    });
 
-                    // Convert map object to array for rendering
+                                    studentFound = true; // Trigger the break out of all loops
+                                }
+                            }
+                        }
+                    }
+
                     const facultyMappingArray = Object.keys(facultyMappingObj).map(subject => ({
                         subject,
                         facultyName: facultyMappingObj[subject].facultyName,
@@ -154,7 +164,7 @@ const Timetable = () => {
             <div className="mob-nav">
                 <MobileNav />
             </div>
-            
+
             <div className="timetable-container">
                 {loading ? (
                     <div style={{ textAlign: "center", padding: "2rem" }}>Loading schedule...</div>
@@ -215,16 +225,25 @@ const Timetable = () => {
                                             );
 
                                             const periodsBeforeLunch = processPeriods(periods.slice(0, 3));
-                                            const lunchPeriod = periods[3]; // Period 4 slot used for Lunch
+                                            const lunchPeriod = periods[3]; 
                                             const periodsAfterLunch = processPeriods(periods.slice(4));
 
                                             return (
                                                 <tr key={index}>
-                                                    <td className="day-cell">{dayData.day || "N/A"}</td>
-                                                    
+                                                    <td className="day-cell" style={{fontWeight: 'bold'}}>{dayData.day || "N/A"}</td>
+
                                                     {periodsBeforeLunch.map((merged, i) => (
                                                         <td key={`pre-${i}`} colSpan={merged.span} className="period-cell">
-                                                            {merged.period ? merged.period.subject : "-"}
+                                                            {merged.period ? (
+                                                                <>
+                                                                    <span style={{ display: 'block' }}>{merged.period.subject}</span>
+                                                                    {isStudent && merged.period.facultyName && (
+                                                                        <span style={{ display: 'block', fontSize: '0.85em', color: '#555' }}>
+                                                                            ({merged.period.facultyName})
+                                                                        </span>
+                                                                    )}
+                                                                </>
+                                                            ) : "-"}
                                                         </td>
                                                     ))}
 
@@ -236,7 +255,16 @@ const Timetable = () => {
 
                                                     {periodsAfterLunch.map((merged, i) => (
                                                         <td key={`post-${i}`} colSpan={merged.span} className="period-cell">
-                                                            {merged.period ? merged.period.subject : "-"}
+                                                            {merged.period ? (
+                                                                <>
+                                                                    <span style={{ display: 'block' }}>{merged.period.subject}</span>
+                                                                    {isStudent && merged.period.facultyName && (
+                                                                        <span style={{ display: 'block', fontSize: '0.85em', color: '#555' }}>
+                                                                            ({merged.period.facultyName})
+                                                                        </span>
+                                                                    )}
+                                                                </>
+                                                            ) : "-"}
                                                         </td>
                                                     ))}
                                                 </tr>
@@ -275,7 +303,6 @@ const Timetable = () => {
                                 </section>
                             </>
                         )}
-
                     </>
                 )}
             </div>
