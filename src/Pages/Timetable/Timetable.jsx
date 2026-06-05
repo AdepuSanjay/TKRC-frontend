@@ -13,7 +13,6 @@ const Timetable = () => {
     const [subjectFacultyMap, setSubjectFacultyMap] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Safeguard against case-sensitivity issues
     const role = localStorage.getItem("userRole");
     const isStudent = role?.toLowerCase() === "student";
 
@@ -26,6 +25,9 @@ const Timetable = () => {
                 const stuId = localStorage.getItem("studentId");
                 const token = localStorage.getItem("token");
                 const headers = { Authorization: `Bearer ${token}` };
+
+                // Define standard days to guarantee a uniform 6-day grid for everyone
+                const standardDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
                 if (!isStudent) {
                     // ==========================================
@@ -42,8 +44,7 @@ const Timetable = () => {
                             image: me.image
                         });
 
-                        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-                        const groupedTimetable = days.map(dayName => {
+                        const groupedTimetable = standardDays.map(dayName => {
                             const daySlots = me.personalTimetable?.filter(s => s.day === dayName) || [];
                             return {
                                 day: dayName,
@@ -66,8 +67,6 @@ const Timetable = () => {
                     let facultyMappingObj = {};
                     let studentFound = false;
 
-                    // FIX: Using for...of loops so we can BREAK immediately once the student is found
-                    // This prevents empty sections from overwriting a valid timetable!
                     for (const year of response.data) {
                         if (studentFound) break;
 
@@ -77,7 +76,6 @@ const Timetable = () => {
                             for (const section of dept.sections || []) {
                                 if (studentFound) break;
 
-                                // FIX: Convert both to Strings to avoid Number vs String strict equality failure
                                 const foundStudent = section.students?.find(
                                     st => String(st.rollNumber).trim() === String(stuId).trim()
                                 );
@@ -90,9 +88,19 @@ const Timetable = () => {
                                         image: foundStudent.image
                                     };
                                     
-                                    myTimetable = section.timetable || [];
+                                    const dbTimetable = section.timetable || [];
 
-                                    myTimetable.forEach(day => {
+                                    // Force map to 6 days so the grid ALWAYS renders, even if DB is empty
+                                    myTimetable = standardDays.map(dayName => {
+                                        const existingDay = dbTimetable.find(d => d.day === dayName);
+                                        return {
+                                            day: dayName,
+                                            periods: existingDay ? existingDay.periods : []
+                                        };
+                                    });
+
+                                    // Extract faculty mappings from whatever data does exist in DB
+                                    dbTimetable.forEach(day => {
                                         day.periods?.forEach(period => {
                                             if (period.subject && !facultyMappingObj[period.subject]) {
                                                 facultyMappingObj[period.subject] = {
@@ -103,7 +111,7 @@ const Timetable = () => {
                                         });
                                     });
 
-                                    studentFound = true; // Trigger the break out of all loops
+                                    studentFound = true; 
                                 }
                             }
                         }
