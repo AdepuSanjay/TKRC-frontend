@@ -59,89 +59,52 @@ const Timetable = () => {
                     }
                 } else {
                     // ==========================================
-                    // 2. FETCH STUDENT DATA (FOOLPROOF FLATTENING)
+                    // 2. FETCH STUDENT DATA (CLEAN API INTEGRATION)
                     // ==========================================
-                    console.log("Searching for Student ID from LocalStorage:", stuId); // DEBUG LOG
                     
-                    const response = await axios.get("http://localhost:8080/api/section-data", { headers });
-                    
-                    // Fallback to instantly show known details from Login Cache
-                    let myProfile = {
-                        name: localStorage.getItem("userName") || "Student",
-                        image: localStorage.getItem("profileImage") || "",
+                    // Directly call the new backend endpoint for this specific student
+                    const response = await axios.get(`http://localhost:8080/api/students/${stuId}/dashboard`, { headers });
+                    const data = response.data;
+
+                    // Set Profile Info directly from the clean API response
+                    setProfileDetails({
+                        name: data.student.name || localStorage.getItem("userName"),
+                        department: `${data.academicYear} - ${data.department} (Section ${data.sectionName})`,
                         designation: "Student",
-                        department: "Loading Class Details..."
-                    };
-                    
-                    let myTimetable = [];
+                        image: data.student.image || localStorage.getItem("profileImage") || "/images/logo.png"
+                    });
+
+                    const dbTimetable = data.timetable || [];
                     let facultyMappingObj = {};
 
-                    // Step A: Flatten safely by renaming section 'name' to 'sectionName'
-                    const allSections = (response.data || []).flatMap(year => 
-                        (year.departments || []).flatMap(dept => 
-                            (dept.sections || []).map(sec => ({
-                                yearName: year.year,
-                                deptName: dept.name,
-                                sectionName: sec.name,
-                                timetable: sec.timetable || [],
-                                students: sec.students || []
-                            }))
-                        )
-                    );
-
-                    // Step B: Find the exact section (Case-insensitive & space-trimmed)
-                    const targetStudentId = String(stuId).trim().toLowerCase();
-                    const mySection = allSections.find(sec => 
-                        sec.students.some(st => String(st.rollNumber).trim().toLowerCase() === targetStudentId)
-                    );
-
-                    if (mySection) {
-                        console.log("Section successfully found:", mySection.sectionName); // DEBUG LOG
-                        
-                        const me = mySection.students.find(st => String(st.rollNumber).trim().toLowerCase() === targetStudentId);
-                        
-                        myProfile = {
-                            name: me.name || myProfile.name,
-                            department: `${mySection.yearName} - ${mySection.deptName} (Section ${mySection.sectionName})`,
-                            designation: "Student",
-                            image: me.image || myProfile.image
+                    // Build robust 6-day grid
+                    const mappedTimetable = standardDays.map(dayName => {
+                        const existingDay = dbTimetable.find(d => d.day === dayName);
+                        return {
+                            day: dayName,
+                            periods: existingDay ? existingDay.periods : []
                         };
+                    });
 
-                        const dbTimetable = mySection.timetable || [];
-
-                        // Build robust 6-day grid
-                        myTimetable = standardDays.map(dayName => {
-                            const existingDay = dbTimetable.find(d => d.day === dayName);
-                            return {
-                                day: dayName,
-                                periods: existingDay ? existingDay.periods : []
-                            };
+                    // Extract Unique Faculty Mapping for the Directory
+                    dbTimetable.forEach(day => {
+                        day.periods?.forEach(period => {
+                            if (period.subject && !facultyMappingObj[period.subject]) {
+                                facultyMappingObj[period.subject] = {
+                                    facultyName: period.facultyName || "TBA",
+                                    phoneNumber: period.phoneNumber || "N/A"
+                                };
+                            }
                         });
+                    });
 
-                        // Extract Unique Faculty Mapping
-                        dbTimetable.forEach(day => {
-                            day.periods?.forEach(period => {
-                                if (period.subject && !facultyMappingObj[period.subject]) {
-                                    facultyMappingObj[period.subject] = {
-                                        facultyName: period.facultyName || "TBA",
-                                        phoneNumber: period.phoneNumber || "N/A"
-                                    };
-                                }
-                            });
-                        });
-                    } else {
-                        console.warn("WARNING: Student ID not found in any section array!"); // DEBUG LOG
-                    }
-
-                    // Convert map to array
                     const facultyMappingArray = Object.keys(facultyMappingObj).map(subject => ({
                         subject,
                         ...facultyMappingObj[subject]
                     }));
 
                     // Set States
-                    setProfileDetails(myProfile);
-                    setTimetable(myTimetable);
+                    setTimetable(mappedTimetable);
                     setSubjectFacultyMap(facultyMappingArray);
                 }
 
@@ -150,6 +113,7 @@ const Timetable = () => {
 
             } catch (error) {
                 toast.dismiss();
+                console.error("Dashboard Fetch Error:", error);
                 toast.error("Error fetching data! Ensure backend is running.", { theme: "colored" });
                 setLoading(false);
             }
