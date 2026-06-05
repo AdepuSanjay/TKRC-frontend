@@ -34,7 +34,7 @@ const Timetable = () => {
                     // 1. FETCH FACULTY DATA
                     // ==========================================
                     const response = await axios.get("http://localhost:8080/api/faculty", { headers });
-                    const me = response.data.find(f => String(f.employeeId).trim() === String(facId).trim());
+                    const me = response.data.find(f => String(f.employeeId).trim().toLowerCase() === String(facId).trim().toLowerCase());
 
                     if (me) {
                         setProfileDetails({
@@ -59,8 +59,10 @@ const Timetable = () => {
                     }
                 } else {
                     // ==========================================
-                    // 2. FETCH STUDENT DATA (REFACTORED)
+                    // 2. FETCH STUDENT DATA (FOOLPROOF FLATTENING)
                     // ==========================================
+                    console.log("Searching for Student ID from LocalStorage:", stuId); // DEBUG LOG
+                    
                     const response = await axios.get("http://localhost:8080/api/section-data", { headers });
                     
                     // Fallback to instantly show known details from Login Cache
@@ -68,35 +70,39 @@ const Timetable = () => {
                         name: localStorage.getItem("userName") || "Student",
                         image: localStorage.getItem("profileImage") || "",
                         designation: "Student",
-                        department: "Loading Class..."
+                        department: "Loading Class Details..."
                     };
                     
                     let myTimetable = [];
                     let facultyMappingObj = {};
 
-                    // Step A: Flatten the deeply nested JSON into a single list of all sections
-                    const allSections = response.data.flatMap(year => 
+                    // Step A: Flatten safely by renaming section 'name' to 'sectionName'
+                    const allSections = (response.data || []).flatMap(year => 
                         (year.departments || []).flatMap(dept => 
                             (dept.sections || []).map(sec => ({
                                 yearName: year.year,
                                 deptName: dept.name,
-                                ...sec
+                                sectionName: sec.name,
+                                timetable: sec.timetable || [],
+                                students: sec.students || []
                             }))
                         )
                     );
 
-                    // Step B: Find the exact section that contains our student
+                    // Step B: Find the exact section (Case-insensitive & space-trimmed)
+                    const targetStudentId = String(stuId).trim().toLowerCase();
                     const mySection = allSections.find(sec => 
-                        sec.students?.some(st => String(st.rollNumber).trim() === String(stuId).trim())
+                        sec.students.some(st => String(st.rollNumber).trim().toLowerCase() === targetStudentId)
                     );
 
-                    // Step C: If found, extract the exact data
                     if (mySection) {
-                        const me = mySection.students.find(st => String(st.rollNumber).trim() === String(stuId).trim());
+                        console.log("Section successfully found:", mySection.sectionName); // DEBUG LOG
+                        
+                        const me = mySection.students.find(st => String(st.rollNumber).trim().toLowerCase() === targetStudentId);
                         
                         myProfile = {
                             name: me.name || myProfile.name,
-                            department: `${mySection.yearName} - ${mySection.deptName} (Section ${mySection.name})`,
+                            department: `${mySection.yearName} - ${mySection.deptName} (Section ${mySection.sectionName})`,
                             designation: "Student",
                             image: me.image || myProfile.image
                         };
@@ -123,6 +129,8 @@ const Timetable = () => {
                                 }
                             });
                         });
+                    } else {
+                        console.warn("WARNING: Student ID not found in any section array!"); // DEBUG LOG
                     }
 
                     // Convert map to array
