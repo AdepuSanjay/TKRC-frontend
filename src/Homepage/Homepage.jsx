@@ -1,21 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import './Homepage.css';
 
-import { MdSchool, MdVerified } from 'react-icons/md';
+import { MdVerified } from 'react-icons/md';
 import {
   RiUser3Line, RiLockPasswordLine, RiArrowRightLine,
-  RiLoginBoxLine, RiShieldCheckLine, RiMedalLine,
-  RiGroupLine, RiCalendarCheckLine, RiBarChartBoxLine, 
-  RiTimeLine, RiTeamLine, RiAwardLine, RiEyeLine, RiEyeOffLine,
-  RiBookReadLine
+  RiLoginBoxLine, RiShieldCheckLine, RiGroupLine, 
+  RiCalendarCheckLine, RiBarChartBoxLine, RiTimeLine, 
+  RiAwardLine, RiEyeLine, RiEyeOffLine, RiBookReadLine
 } from 'react-icons/ri';
-import { FaUniversity, FaEye, FaBullseye, FaChevronLeft, FaChevronRight, FaBus, FaLaptopCode } from 'react-icons/fa';
+import { FaUniversity, FaEye, FaBullseye, FaBus, FaLaptopCode } from 'react-icons/fa';
 import { TbBuildingBank, TbFlame } from 'react-icons/tb';
-import { BiSolidQuoteLeft } from 'react-icons/bi';
 import { IoLocationSharp } from 'react-icons/io5';
 import { BsCheck2Circle } from 'react-icons/bs';
 import { HiAcademicCap } from 'react-icons/hi';
@@ -34,76 +32,17 @@ const Homepage = () => {
   const [imgFade, setImgFade] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const delegateInfo = {
-    chairman: {
-      name: "Sri Teegala Krishna Reddy",
-      role: "Chairman",
-      photo: "../images/tkrcet-chairman.webp",
-      description: "TKRCET has grown in leaps and bounds through the collaborative effort of Management, Staff and Students. My vision is to see every student excel while upholding the moral values that define our institution's character and enduring legacy.",
-    },
-    secretary: {
-      name: "Dr. T. Harinath Reddy",
-      role: "Secretary",
-      photo: "../images/tkrcet-secretary.webp",
-      description: "Engineers play the most vital role in nation building. TKRES is committed to providing world-class technical education, empowering students to become leaders who contribute to both the nation and the global community.",
-    },
-    treasurer: {
-      name: "Sri. T. Amaranath Reddy",
-      role: "Treasurer",
-      photo: "../images/tkres-treasurer1.webp",
-      description: "Our emphasis is not only on academic excellence but the holistic development of a student's personality. We ensure new ideas are not merely discussed but executed, turning every student's promise into remarkable achievement.",
-    },
-    principal: {
-      name: "Dr. D. V. Ravi Shankar",
-      role: "Principal",
-      photo: "../images/tkr-principal.webp",
-      description: "With M.Tech from NIT Suratkal and Ph.D from JNTUH, I bring 23 years of academic distinction. My goal is to foster an environment where curiosity thrives, innovation flourishes, and every student reaches their full potential.",
-    },
-    dean: {
-      name: "Dr. A. Suresh Rao",
-      role: "Vice Principal & Dean",
-      photo: "../images/suresh_cse.webp",
-      description: "Holding a Ph.D from NIT Warangal, I oversee academics with a commitment to excellence. My 20 years bridging industry and academia ensures our curriculum remains rigorous, relevant, and aligned with global industry demands.",
-    },
-    coe: {
-      name: "Dr. D. Nageshwar Rao",
-      role: "Controller of Examinations",
-      photo: "../images/coe.webp",
-      description: "With a Ph.D in VLSI from GITAM University and 20 years of teaching experience, I ensure examination integrity and academic standards. My research and industry interactions keep our academic processes truly world-class.",
-    },
-  };
-
-  const delegateKeys = Object.keys(delegateInfo);
-  const [currentDelegateIndex, setCurrentDelegateIndex] = useState(0);
-  const [delegateFade, setDelegateFade] = useState(true);
-  const delegateTimerRef = useRef(null);
-
+  // Smooth image slider interval
   useEffect(() => {
     const t = setInterval(() => {
       setImgFade(false);
-      setTimeout(() => { setCurrentImageIndex(p => (p + 1) % imagesLoader.length); setImgFade(true); }, 400);
+      setTimeout(() => { 
+        setCurrentImageIndex(p => (p + 1) % imagesLoader.length); 
+        setImgFade(true); 
+      }, 500); // slightly longer fade for smoothness
     }, 5000);
     return () => clearInterval(t);
   }, []);
-
-  const doSwitchDelegate = (nextIndex) => {
-    setDelegateFade(false);
-    setTimeout(() => { setCurrentDelegateIndex(nextIndex); setDelegateFade(true); }, 250);
-  };
-
-  useEffect(() => {
-    clearInterval(delegateTimerRef.current);
-    delegateTimerRef.current = setInterval(() => {
-      doSwitchDelegate((currentDelegateIndex + 1) % delegateKeys.length);
-    }, 6000);
-    return () => clearInterval(delegateTimerRef.current);
-  }, [currentDelegateIndex]);
-
-  const handlePrev = () => doSwitchDelegate((currentDelegateIndex - 1 + delegateKeys.length) % delegateKeys.length);
-  const handleNext = () => doSwitchDelegate((currentDelegateIndex + 1) % delegateKeys.length);
-  const handleTab  = (i) => { if (i !== currentDelegateIndex) doSwitchDelegate(i); };
-
-  const currentDelegate = delegateInfo[delegateKeys[currentDelegateIndex]];
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -159,7 +98,6 @@ const Homepage = () => {
     document.getElementById('login-section')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // ENRICHED: Added NAAC and Autonomous tags
   const stats = [
     { icon: <TbBuildingBank />, num: '20+',    label: 'Acre Campus'  },
     { icon: <MdVerified />,     num: 'NAAC A', label: 'Grade Accredited' },
@@ -181,7 +119,6 @@ const Homepage = () => {
     'Nurturing holistic development of every student',
   ];
 
-  // ENRICHED: Added facilities based on real TKRCET details
   const facilities = [
     { icon: <TbFlame />, title: "Sports Complex", desc: "Home to a world-class international standard cricket ground and indoor arenas." },
     { icon: <FaLaptopCode />, title: "Modern Labs", desc: "State-of-the-art laboratories for AI, ML, Data Science, and core engineering." },
@@ -190,14 +127,95 @@ const Homepage = () => {
   ];
 
   return (
-    <div className="saas-root">
+    <div className="saas-root smooth-wrapper">
       <ToastContainer position="top-center" hideProgressBar theme="light" />
+
+      {/* INJECTED STYLES FOR SMOOTHING & NEW FACILITIES UI */}
+      <style>
+        {`
+          .smooth-wrapper {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            animation: fadeIn 0.8s ease-out forwards;
+          }
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          .saas-hero__img {
+            transition: opacity 0.5s ease-in-out;
+          }
+          
+          /* Consistent Facilities Grid */
+          .saas-facilities-wrap {
+            padding: 5rem 2rem;
+            background-color: var(--bg-secondary, #f8fafc);
+          }
+          .saas-facilities__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+          }
+          .saas-facility-card {
+            background: #ffffff;
+            padding: 2.5rem 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            position: relative;
+            overflow: hidden;
+          }
+          .saas-facility-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+            border-color: rgba(0,0,0,0.1);
+          }
+          .saas-facility-icon {
+            font-size: 2.5rem;
+            color: #ff5722; /* Vibrant accent color */
+            margin-bottom: 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 87, 34, 0.1);
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+          }
+          .saas-facility-card:hover .saas-facility-icon {
+            transform: scale(1.1);
+          }
+          .saas-facility-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.01em;
+          }
+          .saas-facility-desc {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.6;
+          }
+          
+          /* Button smoothing */
+          .saas-btn {
+            transition: all 0.2s ease-in-out;
+          }
+          .saas-btn:active {
+            transform: scale(0.98);
+          }
+        `}
+      </style>
 
       {/* HEADER */}
       <header className="saas-header">
         <div className="saas-header__inner">
           <div className="saas-header__brand">
-            {/* INLINE STYLE: Reduced logo size slightly */}
             <img className="saas-header__logo" src="./images/logo.png" alt="TKRCET Logo" style={{ height: '40px' }} />
             <span className="saas-header__title">TKRCET</span>
           </div>
@@ -228,7 +246,6 @@ const Homepage = () => {
         </div>
 
         <div className="saas-hero__visual">
-          {/* INLINE STYLE: Shrunk hero image size to 85% */}
           <img 
             className={`saas-hero__img ${imgFade ? 'in' : ''}`} 
             src={imagesLoader[currentImageIndex]} 
@@ -256,7 +273,7 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* ABOUT - ENRICHED WITH TKRCET FACTS */}
+      {/* ABOUT */}
       <section className="saas-about">
         <div className="saas-about__inner">
           <div className="saas-badge saas-badge--white"><FaUniversity className="saas-badge__icon" /> About Us</div>
@@ -269,65 +286,20 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* NEW: FACILITIES SECTION */}
-      <section className="saas-facilities" style={{ padding: '4rem 2rem', backgroundColor: '#f9fafb' }}>
-        <div className="saas-section-header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
+      {/* FACILITIES (STYLED TO MATCH SAAS TEMPLATE) */}
+      <section className="saas-facilities-wrap">
+        <div className="saas-section-header" style={{ textAlign: 'center', marginBottom: '4rem' }}>
           <div className="saas-badge" style={{ margin: '0 auto' }}><RiAwardLine className="saas-badge__icon" /> Campus Life</div>
           <h2 className="saas-section-title">World-Class Facilities</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="saas-facilities__grid">
           {facilities.map((fac, idx) => (
-            <div key={idx} style={{ background: '#fff', padding: '2rem', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-              <div style={{ fontSize: '2rem', color: '#0056b3', marginBottom: '1rem' }}>{fac.icon}</div>
-              <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: '#111827' }}>{fac.title}</h3>
-              <p style={{ color: '#4b5563', fontSize: '0.95rem', lineHeight: '1.5' }}>{fac.desc}</p>
+            <div key={idx} className="saas-facility-card">
+              <div className="saas-facility-icon">{fac.icon}</div>
+              <h3 className="saas-facility-title">{fac.title}</h3>
+              <p className="saas-facility-desc">{fac.desc}</p>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* DELEGATES */}
-      <section className="saas-delegates">
-        <div className="saas-section-header">
-          <div className="saas-badge"><RiTeamLine className="saas-badge__icon" /> Leadership</div>
-          <h2 className="saas-section-title">Our Magnificent Delegates</h2>
-        </div>
-
-        <div className="saas-delegates__tabs-scroll">
-          <div className="saas-delegates__tabs">
-            {delegateKeys.map((key, i) => (
-              <button key={key} className={`saas-tab ${i === currentDelegateIndex ? 'on' : ''}`} onClick={() => handleTab(i)}>
-                {delegateInfo[key].role}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className={`saas-delegates__content ${delegateFade ? 'in' : ''}`}>
-          <div className="saas-delegates__photo-wrapper" style={{ textAlign: 'center' }}>
-            {/* INLINE STYLE: Reduced delegate photo size slightly to 130px */}
-            <img 
-              className="saas-delegates__img" 
-              src={currentDelegate.photo} 
-              alt={currentDelegate.name} 
-              style={{ width: '130px', height: '130px', objectFit: 'cover', borderRadius: '50%', margin: '0 auto', display: 'block' }}
-            />
-            <div className="saas-delegates__nav" style={{ justifyContent: 'center', marginTop: '15px' }}>
-              <button onClick={handlePrev}><FaChevronLeft /></button>
-              <span>{currentDelegateIndex + 1} / {delegateKeys.length}</span>
-              <button onClick={handleNext}><FaChevronRight /></button>
-            </div>
-          </div>
-          <div className="saas-delegates__info">
-            <BiSolidQuoteLeft className="saas-quote-icon" />
-            <span className="saas-delegates__role">{currentDelegate.role}</span>
-            <h3 className="saas-delegates__name">{currentDelegate.name}</h3>
-            <p className="saas-delegates__desc">{currentDelegate.description}</p>
-            <div className="saas-delegates__badges">
-              <span className="saas-del-badge"><RiMedalLine /> Leadership</span>
-              <span className="saas-del-badge"><RiShieldCheckLine /> Verified</span>
-            </div>
-          </div>
         </div>
       </section>
 
