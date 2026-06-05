@@ -26,7 +26,7 @@ const Timetable = () => {
                 const token = localStorage.getItem("token");
                 const headers = { Authorization: `Bearer ${token}` };
 
-                // Define standard days to guarantee a uniform 6-day grid for everyone
+                // Standard 6-day week for the grid
                 const standardDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
                 if (!isStudent) {
@@ -59,70 +59,79 @@ const Timetable = () => {
                     }
                 } else {
                     // ==========================================
-                    // 2. FETCH STUDENT DATA
+                    // 2. FETCH STUDENT DATA (REFACTORED)
                     // ==========================================
                     const response = await axios.get("http://localhost:8080/api/section-data", { headers });
+                    
+                    // Fallback to instantly show known details from Login Cache
+                    let myProfile = {
+                        name: localStorage.getItem("userName") || "Student",
+                        image: localStorage.getItem("profileImage") || "",
+                        designation: "Student",
+                        department: "Loading Class..."
+                    };
+                    
                     let myTimetable = [];
-                    let myProfile = {};
                     let facultyMappingObj = {};
-                    let studentFound = false;
 
-                    for (const year of response.data) {
-                        if (studentFound) break;
+                    // Step A: Flatten the deeply nested JSON into a single list of all sections
+                    const allSections = response.data.flatMap(year => 
+                        (year.departments || []).flatMap(dept => 
+                            (dept.sections || []).map(sec => ({
+                                yearName: year.year,
+                                deptName: dept.name,
+                                ...sec
+                            }))
+                        )
+                    );
 
-                        for (const dept of year.departments || []) {
-                            if (studentFound) break;
+                    // Step B: Find the exact section that contains our student
+                    const mySection = allSections.find(sec => 
+                        sec.students?.some(st => String(st.rollNumber).trim() === String(stuId).trim())
+                    );
 
-                            for (const section of dept.sections || []) {
-                                if (studentFound) break;
+                    // Step C: If found, extract the exact data
+                    if (mySection) {
+                        const me = mySection.students.find(st => String(st.rollNumber).trim() === String(stuId).trim());
+                        
+                        myProfile = {
+                            name: me.name || myProfile.name,
+                            department: `${mySection.yearName} - ${mySection.deptName} (Section ${mySection.name})`,
+                            designation: "Student",
+                            image: me.image || myProfile.image
+                        };
 
-                                const foundStudent = section.students?.find(
-                                    st => String(st.rollNumber).trim() === String(stuId).trim()
-                                );
+                        const dbTimetable = mySection.timetable || [];
 
-                                if (foundStudent) {
-                                    myProfile = {
-                                        name: foundStudent.name,
-                                        department: `${year.year} - ${dept.name} (Section ${section.name})`,
-                                        designation: "Student",
-                                        image: foundStudent.image
+                        // Build robust 6-day grid
+                        myTimetable = standardDays.map(dayName => {
+                            const existingDay = dbTimetable.find(d => d.day === dayName);
+                            return {
+                                day: dayName,
+                                periods: existingDay ? existingDay.periods : []
+                            };
+                        });
+
+                        // Extract Unique Faculty Mapping
+                        dbTimetable.forEach(day => {
+                            day.periods?.forEach(period => {
+                                if (period.subject && !facultyMappingObj[period.subject]) {
+                                    facultyMappingObj[period.subject] = {
+                                        facultyName: period.facultyName || "TBA",
+                                        phoneNumber: period.phoneNumber || "N/A"
                                     };
-                                    
-                                    const dbTimetable = section.timetable || [];
-
-                                    // Force map to 6 days so the grid ALWAYS renders, even if DB is empty
-                                    myTimetable = standardDays.map(dayName => {
-                                        const existingDay = dbTimetable.find(d => d.day === dayName);
-                                        return {
-                                            day: dayName,
-                                            periods: existingDay ? existingDay.periods : []
-                                        };
-                                    });
-
-                                    // Extract faculty mappings from whatever data does exist in DB
-                                    dbTimetable.forEach(day => {
-                                        day.periods?.forEach(period => {
-                                            if (period.subject && !facultyMappingObj[period.subject]) {
-                                                facultyMappingObj[period.subject] = {
-                                                    facultyName: period.facultyName || "TBA",
-                                                    phoneNumber: period.phoneNumber || "N/A"
-                                                };
-                                            }
-                                        });
-                                    });
-
-                                    studentFound = true; 
                                 }
-                            }
-                        }
+                            });
+                        });
                     }
 
+                    // Convert map to array
                     const facultyMappingArray = Object.keys(facultyMappingObj).map(subject => ({
                         subject,
-                        facultyName: facultyMappingObj[subject].facultyName,
-                        phoneNumber: facultyMappingObj[subject].phoneNumber
+                        ...facultyMappingObj[subject]
                     }));
 
+                    // Set States
                     setProfileDetails(myProfile);
                     setTimetable(myTimetable);
                     setSubjectFacultyMap(facultyMappingArray);
