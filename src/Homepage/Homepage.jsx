@@ -11,8 +11,9 @@ import {
   RiLoginBoxLine, RiShieldCheckLine, RiMedalLine,
   RiGroupLine, RiCalendarCheckLine, RiBarChartBoxLine, 
   RiTimeLine, RiTeamLine, RiAwardLine, RiEyeLine, RiEyeOffLine,
+  RiBookReadLine
 } from 'react-icons/ri';
-import { FaUniversity, FaEye, FaBullseye, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaUniversity, FaEye, FaBullseye, FaChevronLeft, FaChevronRight, FaBus, FaLaptopCode } from 'react-icons/fa';
 import { TbBuildingBank, TbFlame } from 'react-icons/tb';
 import { BiSolidQuoteLeft } from 'react-icons/bi';
 import { IoLocationSharp } from 'react-icons/io5';
@@ -118,38 +119,29 @@ const Homepage = () => {
     setLoading(true);
 
     try {
-      // Pointing directly to your local Spring Boot unified Auth Controller
       const response = await axios.post('http://localhost:8080/api/auth/login', { 
         userId: username, 
         password: password 
       });
 
-      // Extracting the exact fields confirmed by your Postman response
       const { token, role, name, profileImage } = response.data;
 
-      // 1. Save the JWT Token for subsequent secure API calls
       localStorage.setItem('token', token);
-
-      // 2. Save common user details for the frontend UI
       localStorage.setItem('userName', name);
       localStorage.setItem('userRole', role);
-      
+
       if (profileImage) {
         localStorage.setItem('profileImage', profileImage);
       }
 
-      // 3. Set specific ID markers based on role to maintain route compatibility
       if (role === 'teacher' || role === 'admin') {
         localStorage.setItem('facultyId', username);
       } else {
         localStorage.setItem('studentId', username);
       }
 
-      // Beautiful capitalized greeting
       const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
       toast.success(`Welcome back, ${formattedName}!`);
-      
-      // Navigate to your dashboard component
       setTimeout(() => navigate('/index'), 2000);
 
     } catch (error) {
@@ -167,11 +159,12 @@ const Homepage = () => {
     document.getElementById('login-section')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // ENRICHED: Added NAAC and Autonomous tags
   const stats = [
-    { icon: <TbBuildingBank />, num: '20+',   label: 'Acre Campus'  },
-    { icon: <MdSchool />,       num: '7+',    label: 'UG Programs'  },
-    { icon: <RiGroupLine />,    num: '5000+', label: 'Students'     },
-    { icon: <RiAwardLine />,    num: 'AICTE', label: 'Approved'     },
+    { icon: <TbBuildingBank />, num: '20+',    label: 'Acre Campus'  },
+    { icon: <MdVerified />,     num: 'NAAC A', label: 'Grade Accredited' },
+    { icon: <RiAwardLine />,    num: 'UGC',    label: 'Autonomous'   },
+    { icon: <RiGroupLine />,    num: '5000+',  label: 'Students'     },
   ];
 
   const features = [
@@ -188,6 +181,14 @@ const Homepage = () => {
     'Nurturing holistic development of every student',
   ];
 
+  // ENRICHED: Added facilities based on real TKRCET details
+  const facilities = [
+    { icon: <TbFlame />, title: "Sports Complex", desc: "Home to a world-class international standard cricket ground and indoor arenas." },
+    { icon: <FaLaptopCode />, title: "Modern Labs", desc: "State-of-the-art laboratories for AI, ML, Data Science, and core engineering." },
+    { icon: <RiBookReadLine />, title: "Central Library", desc: "Vast collection of physical volumes, e-journals, and digital resources." },
+    { icon: <FaBus />, title: "Transport Fleet", desc: "Extensive bus network ensuring safe transit across Hyderabad and Secunderabad." }
+  ];
+
   return (
     <div className="saas-root">
       <ToastContainer position="top-center" hideProgressBar theme="light" />
@@ -196,7 +197,8 @@ const Homepage = () => {
       <header className="saas-header">
         <div className="saas-header__inner">
           <div className="saas-header__brand">
-            <img className="saas-header__logo" src="./images/logo.png" alt="TKRCET Logo" />
+            {/* INLINE STYLE: Reduced logo size slightly */}
+            <img className="saas-header__logo" src="./images/logo.png" alt="TKRCET Logo" style={{ height: '40px' }} />
             <span className="saas-header__title">TKRCET</span>
           </div>
           <div className="saas-header__actions">
@@ -216,7 +218,7 @@ const Homepage = () => {
             Shaping Tomorrow's<br />Engineers Today
           </h1>
           <p className="saas-hero__subtitle">
-            20 acres of serene campus · world-class faculty · excellence since 2002.
+            UGC Autonomous · NAAC 'A' Grade · NBA Accredited · Excellence since 2002.
           </p>
           <div className="saas-hero__actions">
             <button className="saas-btn saas-btn--primary" onClick={scrollToLogin}>
@@ -226,8 +228,14 @@ const Homepage = () => {
         </div>
 
         <div className="saas-hero__visual">
-          <img className={`saas-hero__img ${imgFade ? 'in' : ''}`} src={imagesLoader[currentImageIndex]} alt="Campus" />
-          <div className="saas-hero__dots">
+          {/* INLINE STYLE: Shrunk hero image size to 85% */}
+          <img 
+            className={`saas-hero__img ${imgFade ? 'in' : ''}`} 
+            src={imagesLoader[currentImageIndex]} 
+            alt="Campus" 
+            style={{ maxWidth: '85%', height: 'auto', margin: '0 auto', display: 'block', borderRadius: '16px' }}
+          />
+          <div className="saas-hero__dots" style={{ justifyContent: 'center', marginTop: '10px' }}>
             {imagesLoader.map((_, i) => (
               <button key={i} className={`saas-hero__dot ${i === currentImageIndex ? 'on' : ''}`} onClick={() => setCurrentImageIndex(i)} aria-label={`Slide ${i + 1}`} />
             ))}
@@ -248,16 +256,33 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* ABOUT */}
+      {/* ABOUT - ENRICHED WITH TKRCET FACTS */}
       <section className="saas-about">
         <div className="saas-about__inner">
           <div className="saas-badge saas-badge--white"><FaUniversity className="saas-badge__icon" /> About Us</div>
           <h2 className="saas-section-title">About TKRCET Campus</h2>
           <div className="saas-about__content">
-            <p>TKR College of Engineering and Technology was established in 2002 in a sprawling, lush green 20-acre campus at Meerpet, Hyderabad. The college provides a serene and tranquil environment, preparing students in every aspect to face global competition with confidence and emerge victorious.</p>
-            <p>Founded by Sri Teegala Krishna Reddy — Mayor of Hyderabad and a visionary philanthropist — TKRCET is driven by the mission to make quality education accessible to every student, bridging the rural-urban divide while upholding the highest moral and ethical standards.</p>
-            <p>The college offers seven UG programmes in Civil, EEE, CSE, ECE, and Mechanical Engineering, along with PG courses in M.Tech (CSE, PE) and MBA. Affiliated to JNTUH, approved by AICTE, New Delhi, and recognized by the Government of Telangana.</p>
+            <p>TKR College of Engineering and Technology (TKRCET) was established in 2002 in a sprawling, lush green 20-acre campus at Meerpet, Hyderabad. Conferred with <strong>UGC Autonomous status</strong> and accredited by <strong>NAAC with an 'A' Grade</strong>, the college provides a serene environment, preparing students to face global competition.</p>
+            <p>Founded by Sri Teegala Krishna Reddy — Mayor of Hyderabad and a visionary philanthropist — TKRCET is driven by the mission to make quality education accessible, bridging the rural-urban divide while upholding ethical standards.</p>
+            <p>The college offers cutting-edge B.Tech programmes in <strong>CSE, AI & ML, Data Science, IT, ECE, EEE, Civil, and Mechanical Engineering</strong>, alongside PG courses in M.Tech and MBA. Many of our core programs are <strong>NBA Accredited</strong>, and the institution is proudly affiliated to JNTUH and approved by AICTE.</p>
           </div>
+        </div>
+      </section>
+
+      {/* NEW: FACILITIES SECTION */}
+      <section className="saas-facilities" style={{ padding: '4rem 2rem', backgroundColor: '#f9fafb' }}>
+        <div className="saas-section-header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <div className="saas-badge" style={{ margin: '0 auto' }}><RiAwardLine className="saas-badge__icon" /> Campus Life</div>
+          <h2 className="saas-section-title">World-Class Facilities</h2>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+          {facilities.map((fac, idx) => (
+            <div key={idx} style={{ background: '#fff', padding: '2rem', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+              <div style={{ fontSize: '2rem', color: '#0056b3', marginBottom: '1rem' }}>{fac.icon}</div>
+              <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: '#111827' }}>{fac.title}</h3>
+              <p style={{ color: '#4b5563', fontSize: '0.95rem', lineHeight: '1.5' }}>{fac.desc}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -279,9 +304,15 @@ const Homepage = () => {
         </div>
 
         <div className={`saas-delegates__content ${delegateFade ? 'in' : ''}`}>
-          <div className="saas-delegates__photo-wrapper">
-            <img className="saas-delegates__img" src={currentDelegate.photo} alt={currentDelegate.name} />
-            <div className="saas-delegates__nav">
+          <div className="saas-delegates__photo-wrapper" style={{ textAlign: 'center' }}>
+            {/* INLINE STYLE: Reduced delegate photo size slightly to 130px */}
+            <img 
+              className="saas-delegates__img" 
+              src={currentDelegate.photo} 
+              alt={currentDelegate.name} 
+              style={{ width: '130px', height: '130px', objectFit: 'cover', borderRadius: '50%', margin: '0 auto', display: 'block' }}
+            />
+            <div className="saas-delegates__nav" style={{ justifyContent: 'center', marginTop: '15px' }}>
               <button onClick={handlePrev}><FaChevronLeft /></button>
               <span>{currentDelegateIndex + 1} / {delegateKeys.length}</span>
               <button onClick={handleNext}><FaChevronRight /></button>
@@ -375,14 +406,14 @@ const Homepage = () => {
       <footer className="saas-footer">
         <div className="saas-footer__inner">
           <div className="saas-footer__brand">
-            <img className="saas-footer__logo" src="./images/logo.png" alt="TKRCET" />
+            <img className="saas-footer__logo" src="./images/logo.png" alt="TKRCET" style={{ height: '30px' }} />
             <div>
               <p className="saas-footer__name">TKRCET</p>
               <p className="saas-footer__tag">Engineering Excellence Since 2002</p>
             </div>
           </div>
           <div className="saas-footer__links">
-            <p>© 2024 TKR College of Engineering & Technology.</p>
+            <p>© 2024 TKR College of Engineering & Technology. All Rights Reserved.</p>
             <p>Designed & Developed by Mr. Md. Shakeel (TKRES)</p>
           </div>
         </div>
