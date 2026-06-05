@@ -10,9 +10,9 @@ import {
   RiUser3Line, RiLockPasswordLine, RiArrowRightLine,
   RiLoginBoxLine, RiShieldCheckLine, RiGroupLine, 
   RiCalendarCheckLine, RiBarChartBoxLine, RiTimeLine, 
-  RiAwardLine, RiEyeLine, RiEyeOffLine, RiBookReadLine
+  RiAwardLine, RiEyeLine, RiEyeOffLine
 } from 'react-icons/ri';
-import { FaUniversity, FaEye, FaBullseye, FaBus, FaLaptopCode } from 'react-icons/fa';
+import { FaUniversity, FaEye, FaBullseye } from 'react-icons/fa';
 import { TbBuildingBank, TbFlame } from 'react-icons/tb';
 import { IoLocationSharp } from 'react-icons/io5';
 import { BsCheck2Circle } from 'react-icons/bs';
@@ -119,18 +119,11 @@ const Homepage = () => {
     'Nurturing holistic development of every student',
   ];
 
-  const facilities = [
-    { icon: <TbFlame />, title: "Sports Complex", desc: "Home to a world-class international standard cricket ground and indoor arenas." },
-    { icon: <FaLaptopCode />, title: "Modern Labs", desc: "State-of-the-art laboratories for AI, ML, Data Science, and core engineering." },
-    { icon: <RiBookReadLine />, title: "Central Library", desc: "Vast collection of physical volumes, e-journals, and digital resources." },
-    { icon: <FaBus />, title: "Transport Fleet", desc: "Extensive bus network ensuring safe transit across Hyderabad and Secunderabad." }
-  ];
-
   return (
     <div className="saas-root smooth-wrapper">
       <ToastContainer position="top-center" hideProgressBar theme="light" />
 
-      {/* INJECTED STYLES FOR SMOOTHING & NEW FACILITIES UI */}
+      {/* INJECTED STYLES FOR SMOOTHING */}
       <style>
         {`
           .smooth-wrapper {
@@ -144,62 +137,6 @@ const Homepage = () => {
           }
           .saas-hero__img {
             transition: opacity 0.5s ease-in-out;
-          }
-          
-          /* Consistent Facilities Grid */
-          .saas-facilities-wrap {
-            padding: 5rem 2rem;
-            background-color: var(--bg-secondary, #f8fafc);
-          }
-          .saas-facilities__grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-          }
-          .saas-facility-card {
-            background: #ffffff;
-            padding: 2.5rem 2rem;
-            border-radius: 16px;
-            border: 1px solid rgba(0,0,0,0.05);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-            position: relative;
-            overflow: hidden;
-          }
-          .saas-facility-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-            border-color: rgba(0,0,0,0.1);
-          }
-          .saas-facility-icon {
-            font-size: 2.5rem;
-            color: #ff5722; /* Vibrant accent color */
-            margin-bottom: 1.5rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 87, 34, 0.1);
-            border-radius: 12px;
-            transition: transform 0.3s ease;
-          }
-          .saas-facility-card:hover .saas-facility-icon {
-            transform: scale(1.1);
-          }
-          .saas-facility-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 0.75rem;
-            letter-spacing: -0.01em;
-          }
-          .saas-facility-desc {
-            color: #64748b;
-            font-size: 0.95rem;
-            line-height: 1.6;
           }
           
           /* Button smoothing */
@@ -283,23 +220,6 @@ const Homepage = () => {
             <p>Founded by Sri Teegala Krishna Reddy — Mayor of Hyderabad and a visionary philanthropist — TKRCET is driven by the mission to make quality education accessible, bridging the rural-urban divide while upholding ethical standards.</p>
             <p>The college offers cutting-edge B.Tech programmes in <strong>CSE, AI & ML, Data Science, IT, ECE, EEE, Civil, and Mechanical Engineering</strong>, alongside PG courses in M.Tech and MBA. Many of our core programs are <strong>NBA Accredited</strong>, and the institution is proudly affiliated to JNTUH and approved by AICTE.</p>
           </div>
-        </div>
-      </section>
-
-      {/* FACILITIES (STYLED TO MATCH SAAS TEMPLATE) */}
-      <section className="saas-facilities-wrap">
-        <div className="saas-section-header" style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <div className="saas-badge" style={{ margin: '0 auto' }}><RiAwardLine className="saas-badge__icon" /> Campus Life</div>
-          <h2 className="saas-section-title">World-Class Facilities</h2>
-        </div>
-        <div className="saas-facilities__grid">
-          {facilities.map((fac, idx) => (
-            <div key={idx} className="saas-facility-card">
-              <div className="saas-facility-icon">{fac.icon}</div>
-              <h3 className="saas-facility-title">{fac.title}</h3>
-              <p className="saas-facility-desc">{fac.desc}</p>
-            </div>
-          ))}
         </div>
       </section>
 
