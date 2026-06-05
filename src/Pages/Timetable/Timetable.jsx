@@ -26,7 +26,14 @@ const Timetable = () => {
                 const token = localStorage.getItem("token");
                 const headers = { Authorization: `Bearer ${token}` };
 
-                // Standard 6-day week for the grid
+                // Prevent execution if localStorage is empty
+                if (isStudent && !stuId) {
+                    toast.dismiss();
+                    toast.error("You are not properly logged in. Please log out and log back in.", { theme: "colored" });
+                    setLoading(false);
+                    return;
+                }
+
                 const standardDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
                 if (!isStudent) {
@@ -59,14 +66,11 @@ const Timetable = () => {
                     }
                 } else {
                     // ==========================================
-                    // 2. FETCH STUDENT DATA (CLEAN API INTEGRATION)
+                    // 2. FETCH STUDENT DATA (CLEAN API)
                     // ==========================================
-                    
-                    // Directly call the new backend endpoint for this specific student
                     const response = await axios.get(`http://localhost:8080/api/students/${stuId}/dashboard`, { headers });
                     const data = response.data;
 
-                    // Set Profile Info directly from the clean API response
                     setProfileDetails({
                         name: data.student.name || localStorage.getItem("userName"),
                         department: `${data.academicYear} - ${data.department} (Section ${data.sectionName})`,
@@ -77,7 +81,6 @@ const Timetable = () => {
                     const dbTimetable = data.timetable || [];
                     let facultyMappingObj = {};
 
-                    // Build robust 6-day grid
                     const mappedTimetable = standardDays.map(dayName => {
                         const existingDay = dbTimetable.find(d => d.day === dayName);
                         return {
@@ -86,7 +89,6 @@ const Timetable = () => {
                         };
                     });
 
-                    // Extract Unique Faculty Mapping for the Directory
                     dbTimetable.forEach(day => {
                         day.periods?.forEach(period => {
                             if (period.subject && !facultyMappingObj[period.subject]) {
@@ -103,7 +105,6 @@ const Timetable = () => {
                         ...facultyMappingObj[subject]
                     }));
 
-                    // Set States
                     setTimetable(mappedTimetable);
                     setSubjectFacultyMap(facultyMappingArray);
                 }
@@ -114,7 +115,15 @@ const Timetable = () => {
             } catch (error) {
                 toast.dismiss();
                 console.error("Dashboard Fetch Error:", error);
-                toast.error("Error fetching data! Ensure backend is running.", { theme: "colored" });
+                
+                // SMART ERROR ALERTS
+                if (error.response && error.response.status === 404) {
+                    toast.error(`Student ID ${localStorage.getItem("studentId")} not found in database! Please Re-Login.`, { theme: "colored", autoClose: 5000 });
+                } else if (error.message === "Network Error") {
+                    toast.error("Network Blocked! You cannot mix Vercel (HTTPS) with Localhost (HTTP).", { theme: "colored", autoClose: 6000 });
+                } else {
+                    toast.error("Server error. Ensure backend is running.", { theme: "colored" });
+                }
                 setLoading(false);
             }
         };
@@ -300,4 +309,3 @@ const Timetable = () => {
 };
 
 export default Timetable;
- 
