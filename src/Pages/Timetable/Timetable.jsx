@@ -115,12 +115,12 @@ const Timetable = () => {
             } catch (error) {
                 toast.dismiss();
                 console.error("Dashboard Fetch Error:", error);
-                
+
                 // SMART ERROR ALERTS
                 if (error.response && error.response.status === 404) {
                     toast.error(`Student ID ${localStorage.getItem("studentId")} not found in database! Please Re-Login.`, { theme: "colored", autoClose: 5000 });
                 } else if (error.message === "Network Error") {
-                    toast.error("Network Blocked! You cannot mix Vercel (HTTPS) with Localhost (HTTP).", { theme: "colored", autoClose: 6000 });
+                    toast.error("Network Blocked! Ensure backend is running and CORS is allowed.", { theme: "colored", autoClose: 6000 });
                 } else {
                     toast.error("Server error. Ensure backend is running.", { theme: "colored" });
                 }
