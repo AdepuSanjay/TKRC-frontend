@@ -9,76 +9,64 @@ function NavBar() {
   const [loading, setLoading] = useState(false);
   const [accountMenuVisible, setAccountMenuVisible] = useState(false);
   const [showDynamicClasses, setShowDynamicClasses] = useState(false);
-  const [userData, setUserData] = useState(null); // Store user details
+  const [userData, setUserData] = useState(null); 
 
   const navRef = useRef(null);
   const navigate = useNavigate();
+  
   const studentId = localStorage.getItem("studentId");
   const facultyId = localStorage.getItem("facultyId");
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("userRole")?.toLowerCase();
 
-  // Fetch user details based on ID
+  // Fetch user details dynamically from the correct local backend server
   const fetchUserData = async () => {
     try {
-      if (facultyId) {
-        const response = await axios.get(
-          `https://tkrc-backend.vercel.app/faculty/${facultyId}`
-        );
-        setUserData(response.data);
-      } else if (studentId) {
-        const response = await axios.get(
-          `https://tkrcet-backend-g3zu.onrender.com/Section/${studentId}`
-        );
-        setUserData(response.data.student);
+      const headers = { Authorization: `Bearer ${token}` };
+      
+      if (role === 'teacher' || role === 'admin') {
+        const response = await axios.get("http://localhost:8080/api/faculty", { headers });
+        const me = response.data.find(f => String(f.employeeId).trim() === String(facultyId).trim());
+        if (me) setUserData({ ...me, role: "faculty" });
+      } else if (role === 'student') {
+        // Hits the clean dashboard API we created for students
+        const response = await axios.get(`http://localhost:8080/api/students/${studentId}/dashboard`, { headers });
+        if (response.data && response.data.student) {
+          setUserData({ ...response.data.student, role: "student" });
+        }
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("Error fetching user data from local server:", error);
     }
   };
 
-  // Fetch today's timetable dynamically for faculty
+  // Fetch today's classes for faculty
   const fetchClassOptions = async () => {
     if (!userData || userData.role !== "faculty") return;
-
     setLoading(true);
     try {
-      const response = await axios.get(
-        `https://tkrc-backend.vercel.app/faculty/${userData.facultyId}/timetable-today`
-      );
-
-      let classes = response.data.classes || [];
-
-      // Remove empty periods and duplicate classes
-      const uniqueClasses = classes
-        .filter((period) => period.subject && period.subject.trim() !== "")
-        .filter((period, index, self) => {
-          return (
-            self.findIndex(
-              (item) =>
-                item.subject === period.subject &&
-                item.programYear === period.programYear &&
-                item.department === period.department &&
-                item.section === period.section
-            ) === index
-          );
-        });
-
-      setClassOptions(uniqueClasses);
+      // Adjusted to read from the structured personalTimetable map on localhost
+      const response = await axios.get(`http://localhost:8080/api/faculty`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const me = response.data.find(f => String(f.employeeId).trim() === String(facultyId).trim());
+      
+      // Filter out slots that represent actual classes taught today
+      const classes = me?.personalTimetable || [];
+      setClassOptions(classes);
     } catch (error) {
-      console.error("Error fetching class options:", error);
+      console.error("Error fetching class choices:", error);
       setClassOptions([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Logout function
   const handleLogout = () => {
-    localStorage.removeItem("facultyId");
-    localStorage.removeItem("studentId");
-    navigate("/"); // Redirect to login page
+    localStorage.clear(); // Safely clear all tokens and ghost keys at once
+    navigate("/"); 
   };
 
-  // Handle Attendance click (Student Redirects Only on Click)
   const handleAttendanceClick = () => {
     if (userData?.role === "student") {
       navigate("/student");
@@ -87,19 +75,10 @@ function NavBar() {
     }
   };
 
-  // Handle class selection for faculty
-  const handleClassSelect = (option) => {
-    const { programYear, department, section, subject } = option;
-    const route = `/attendance?programYear=${programYear}&department=${department}&section=${section}&subject=${subject}`;
-    navigate(route);
-  };
-
-  // Fetch user data on mount
   useEffect(() => {
     fetchUserData();
-  }, []);
+  }, [role, studentId, facultyId]);
 
-  // Fetch timetable once faculty data is available
   useEffect(() => {
     if (userData?.role === "faculty") {
       fetchClassOptions();
@@ -114,14 +93,14 @@ function NavBar() {
             <li>Home</li>
           </Link>
 
-          {/* Timetable Navigation based on Role */}
-          <li id="time" onClick={() => navigate(studentId ? "/Schedule" : "/timetable")}>
+          {/* Corrected Timetable routing based on real active localStorage session flags */}
+          <li id="time" style={{ cursor: "pointer" }} onClick={() => navigate(studentId ? "/Schedule" : "/timetable")}>
             Timetable
           </li>
 
           <li>
             <div className="menu-dropdown">
-              <a onClick={handleAttendanceClick} id="attendance">
+              <a onClick={handleAttendanceClick} id="attendance" style={{ cursor: "pointer" }}>
                 Attendance
               </a>
               {attendanceMenuVisible && userData?.role === "faculty" && (
@@ -132,14 +111,14 @@ function NavBar() {
                         loading ? (
                           <li>Loading classes...</li>
                         ) : classOptions.length === 0 ? (
-                          <li>No classes today</li>
+                          <li>No classes listed</li>
                         ) : (
                           classOptions.map((option, index) => (
                             <li
                               key={index}
-                              onClick={() => handleClassSelect(option)}
+                              onClick={() => navigate(`/attendance?year=${option.yearId}&department=${option.deptName}&section=${option.sectionName}&subject=${option.subject}&period=${option.periodNumber}`)}
                             >
-                              {`${option.programYear} ${option.department}-${option.section} - ${option.subject}`}
+                              {`${option.yearId} ${option.deptName}-${option.sectionName} - ${option.subject} (P${option.periodNumber})`}
                             </li>
                           ))
                         )
@@ -151,7 +130,7 @@ function NavBar() {
                           <Link id="g" to="/register">
                             <li>Register</li>
                           </Link>
-                          <Link id="g"  to="/activity">
+                          <Link id="g" to="/activity">
                             <li>Activity Diary</li>
                           </Link>
                         </>
@@ -168,9 +147,9 @@ function NavBar() {
           </li>
         </ul>
       </div>
-      
+
       <div className="nav-user-profile">
-        <span>Welcome, {userData?.name || "User"}</span>
+        <span>Welcome, {userData?.name || localStorage.getItem("userName") || "User"}</span>
         <div className="account-menu">
           <button
             className="account-menu-button"
