@@ -32,14 +32,13 @@ const Homepage = () => {
   const [imgFade, setImgFade] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  // Smooth image slider interval
   useEffect(() => {
     const t = setInterval(() => {
       setImgFade(false);
       setTimeout(() => { 
         setCurrentImageIndex(p => (p + 1) % imagesLoader.length); 
         setImgFade(true); 
-      }, 500); // slightly longer fade for smoothness
+      }, 500); 
     }, 5000);
     return () => clearInterval(t);
   }, []);
@@ -63,7 +62,8 @@ const Homepage = () => {
         password: password 
       });
 
-      const { token, role, name, profileImage } = response.data;
+      // NEW: Extracting the exact userId directly from the database response
+      const { token, role, name, profileImage, userId } = response.data;
 
       localStorage.setItem('token', token);
       localStorage.setItem('userName', name);
@@ -73,10 +73,13 @@ const Homepage = () => {
         localStorage.setItem('profileImage', profileImage);
       }
 
+      // NEW: Setting the official backend ID and clearing out old/conflicting IDs
       if (role === 'teacher' || role === 'admin') {
-        localStorage.setItem('facultyId', username);
+        localStorage.setItem('facultyId', userId);
+        localStorage.removeItem('studentId'); // Prevent ghost data
       } else {
-        localStorage.setItem('studentId', username);
+        localStorage.setItem('studentId', userId);
+        localStorage.removeItem('facultyId'); // Prevent ghost data
       }
 
       const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
@@ -123,7 +126,6 @@ const Homepage = () => {
     <div className="saas-root smooth-wrapper">
       <ToastContainer position="top-center" hideProgressBar theme="light" />
 
-      {/* INJECTED STYLES FOR SMOOTHING */}
       <style>
         {`
           .smooth-wrapper {
@@ -138,8 +140,6 @@ const Homepage = () => {
           .saas-hero__img {
             transition: opacity 0.5s ease-in-out;
           }
-          
-          /* Button smoothing */
           .saas-btn {
             transition: all 0.2s ease-in-out;
           }
@@ -149,7 +149,6 @@ const Homepage = () => {
         `}
       </style>
 
-      {/* HEADER */}
       <header className="saas-header">
         <div className="saas-header__inner">
           <div className="saas-header__brand">
@@ -163,7 +162,6 @@ const Homepage = () => {
         </div>
       </header>
 
-      {/* HERO */}
       <section className="saas-hero">
         <div className="saas-hero__content">
           <div className="saas-badge">
@@ -197,7 +195,6 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* STATS */}
       <section className="saas-stats">
         <div className="saas-stats__grid">
           {stats.map((s, i) => (
@@ -210,7 +207,6 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* ABOUT */}
       <section className="saas-about">
         <div className="saas-about__inner">
           <div className="saas-badge saas-badge--white"><FaUniversity className="saas-badge__icon" /> About Us</div>
@@ -223,7 +219,6 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* VISION & MISSION */}
       <section className="saas-vm">
         <div className="saas-vm__grid">
           <div className="saas-vm__card">
@@ -244,7 +239,6 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* LOGIN */}
       <section id="login-section" className="saas-login">
         <div className="saas-login__container">
           <div className="saas-login__text">
@@ -294,7 +288,6 @@ const Homepage = () => {
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer className="saas-footer">
         <div className="saas-footer__inner">
           <div className="saas-footer__brand">
