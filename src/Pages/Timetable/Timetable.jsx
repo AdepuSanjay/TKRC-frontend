@@ -7,17 +7,13 @@ import "./Timetable.css";
 import NavBar from "../../Components/NavBar/NavBar";
 import MobileNav from "../../Components/MobileNav/MobileNav";
 
-// ─── TKRCET official logo & campus image ───────────────────────────────────────
-const COLLEGE_LOGO    = "https://tkrcet.ac.in/wp-content/uploads/2025/06/logo-tkrcet.png";
-const CAMPUS_BG_IMAGE = "https://tkrcet.ac.in/wp-content/uploads/2025/06/Untitled-design-2.jpg";
-
 const Timetable = () => {
-    const [timetable, setTimetable]             = useState([]);
-    const [profileDetails, setProfileDetails]   = useState(null);
+    const [timetable, setTimetable] = useState([]);
+    const [profileDetails, setProfileDetails] = useState(null);
     const [subjectFacultyMap, setSubjectFacultyMap] = useState([]);
-    const [loading, setLoading]                 = useState(true);
+    const [loading, setLoading] = useState(true);
 
-    const role      = localStorage.getItem("userRole");
+    const role = localStorage.getItem("userRole");
     const isStudent = role?.toLowerCase() === "student";
 
     useEffect(() => {
@@ -25,9 +21,9 @@ const Timetable = () => {
             try {
                 const loadingToast = toast.loading("Loading your schedule...", { theme: "colored" });
 
-                const facId   = localStorage.getItem("facultyId");
-                const stuId   = localStorage.getItem("studentId");
-                const token   = localStorage.getItem("token");
+                const facId = localStorage.getItem("facultyId");
+                const stuId = localStorage.getItem("studentId");
+                const token = localStorage.getItem("token");
                 const headers = { Authorization: `Bearer ${token}` };
 
                 if (isStudent && !stuId) {
@@ -37,29 +33,27 @@ const Timetable = () => {
                     return;
                 }
 
-                const standardDays = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+                const standardDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
                 if (!isStudent) {
                     const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/faculty", { headers });
-                    const me = response.data.find(
-                        f => String(f.employeeId).trim().toLowerCase() === String(facId).trim().toLowerCase()
-                    );
+                    const me = response.data.find(f => String(f.employeeId).trim().toLowerCase() === String(facId).trim().toLowerCase());
 
                     if (me) {
                         setProfileDetails({
-                            name:        me.name,
-                            department:  "Faculty",
+                            name: me.name,
+                            department: "Faculty",
                             designation: me.designation,
-                            image:       me.image
+                            image: me.image
                         });
 
                         const groupedTimetable = standardDays.map(dayName => {
                             const daySlots = me.personalTimetable?.filter(s => s.day === dayName) || [];
                             return {
-                                day:     dayName,
+                                day: dayName,
                                 periods: daySlots.map(s => ({
                                     periodNumber: s.periodNumber,
-                                    subject:      `${s.subject} (${s.yearId}, ${s.deptName}-${s.sectionName})`
+                                    subject: `${s.subject} (${s.yearId}, ${s.deptName}-${s.sectionName})` 
                                 }))
                             };
                         });
@@ -67,25 +61,25 @@ const Timetable = () => {
                         setTimetable(groupedTimetable);
                     }
                 } else {
-                    const response = await axios.get(
-                        `https://tkrc-backend-lreo.onrender.com/api/students/${stuId}/dashboard`,
-                        { headers }
-                    );
+                    const response = await axios.get(`https://tkrc-backend-lreo.onrender.com/api/students/${stuId}/dashboard`, { headers });
                     const data = response.data;
 
                     setProfileDetails({
-                        name:        data.student.name || localStorage.getItem("userName"),
-                        department:  `${data.academicYear} - ${data.department} (Section ${data.sectionName})`,
+                        name: data.student.name || localStorage.getItem("userName"),
+                        department: `${data.academicYear} - ${data.department} (Section ${data.sectionName})`,
                         designation: "Student",
-                        image:       data.student.image || localStorage.getItem("profileImage") || "/images/logo.png"
+                        image: data.student.image || localStorage.getItem("profileImage") || "/images/logo.png"
                     });
 
-                    const dbTimetable       = data.timetable || [];
-                    let   facultyMappingObj = {};
+                    const dbTimetable = data.timetable || [];
+                    let facultyMappingObj = {};
 
                     const mappedTimetable = standardDays.map(dayName => {
                         const existingDay = dbTimetable.find(d => d.day === dayName);
-                        return { day: dayName, periods: existingDay ? existingDay.periods : [] };
+                        return {
+                            day: dayName,
+                            periods: existingDay ? existingDay.periods : []
+                        };
                     });
 
                     dbTimetable.forEach(day => {
@@ -115,14 +109,10 @@ const Timetable = () => {
                 toast.dismiss();
                 console.error("Dashboard Fetch Error:", error);
 
-                if (error.response?.status === 404) {
-                    toast.error(`Student ID ${localStorage.getItem("studentId")} not found! Please Re-Login.`, {
-                        theme: "colored", autoClose: 5000
-                    });
+                if (error.response && error.response.status === 404) {
+                    toast.error(`Student ID ${localStorage.getItem("studentId")} not found in database! Please Re-Login.`, { theme: "colored", autoClose: 5000 });
                 } else if (error.message === "Network Error") {
-                    toast.error("Network Blocked! Ensure backend is running and CORS is allowed.", {
-                        theme: "colored", autoClose: 6000
-                    });
+                    toast.error("Network Blocked! Ensure backend is running and CORS is allowed.", { theme: "colored", autoClose: 6000 });
                 } else {
                     toast.error("Server error. Ensure backend is running.", { theme: "colored" });
                 }
@@ -133,9 +123,8 @@ const Timetable = () => {
         fetchDashboardData();
     }, [isStudent]);
 
-    /* ── merge consecutive identical subjects ─────────────────── */
     const processPeriods = (periods) => {
-        const merged = [];
+        const mergedPeriods = [];
         let i = 0;
         while (i < periods.length) {
             let span = 1;
@@ -144,17 +133,19 @@ const Timetable = () => {
                 periods[i] &&
                 periods[i + span] &&
                 periods[i].subject === periods[i + span].subject
-            ) { span++; }
-            merged.push({ period: periods[i], span });
+            ) {
+                span++;
+            }
+            mergedPeriods.push({ period: periods[i], span });
             i += span;
         }
-        return merged;
+        return mergedPeriods;
     };
 
     const currentYear = new Date().getFullYear();
 
     return (
-        <>
+        <div className="app-wrapper">
             <ToastContainer position="top-right" autoClose={2000} />
 
             <div className="nav">
@@ -164,194 +155,155 @@ const Timetable = () => {
                 <MobileNav />
             </div>
 
-            <div className="timetable-container">
+            <main className="timetable-container animate-fade-in">
                 {loading ? (
                     <div className="loading-state">
-                        <div className="loading-spinner" />
-                        <span style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>
-                            Loading your schedule…
-                        </span>
+                        <div className="spinner"></div>
+                        <p>Loading schedule...</p>
                     </div>
                 ) : (
                     <>
-                        {/* ── 1. COLLEGE HERO BANNER ───────────────────── */}
-                        <div className="college-hero-banner">
-                            <img
-                                src={CAMPUS_BG_IMAGE}
-                                alt="TKRCET Campus"
-                                className="hero-img"
-                                onError={e => (e.target.style.display = "none")}
-                            />
-                            <img
-                                src={COLLEGE_LOGO}
-                                alt="TKRCET Logo"
-                                className="hero-logo"
-                                onError={e => (e.target.style.display = "none")}
-                            />
-                            <div className="hero-overlay-text">
-                                <div className="college-name">
-                                    TKR College of Engineering &amp; Technology
+                        {/* 1. PREMIUM PROFILE CARD (Modeled after template) */}
+                        <section className="profile-card">
+                            <div className="profile-badge">PROFILE OVERVIEW</div>
+                            <div className="profile-content">
+                                <div className="profile-info">
+                                    <h1 className="profile-name">{profileDetails?.name || "N/A"}</h1>
+                                    <p className="profile-dept">{profileDetails?.department || "N/A"}</p>
+                                    <div className="profile-designation-badge">
+                                        {profileDetails?.designation || "N/A"}
+                                    </div>
                                 </div>
-                                <div className="college-sub">
-                                    Meerpet, Hyderabad &nbsp;·&nbsp; NAAC Accredited &nbsp;·&nbsp; JNTUH Affiliated
+                                <div className="profile-image-container">
+                                    <img
+                                        src={profileDetails?.image || "/images/logo.png"}
+                                        alt={`${profileDetails?.name || "User"} Profile`}
+                                        className="profile-image"
+                                        onError={(e) => (e.target.src = "/images/logo.png")}
+                                    />
                                 </div>
                             </div>
+                        </section>
+
+                        <div className="section-header">
+                            <h2 className="timetable-heading">Master Schedule</h2>
+                            <span className="semester-badge">ODD Semester ({currentYear}-{currentYear + 1})</span>
                         </div>
 
-                        {/* ── 2. PROFILE SECTION ───────────────────────── */}
-                        <section className="faculty-profile">
-                            <table className="profile-table">
-                                <tbody>
-                                    <tr>
-                                        <td className="label">Name</td>
-                                        <td>{profileDetails?.name || "N/A"}</td>
-                                        <td className="profile-image-cell" rowSpan={3}>
-                                            <img
-                                                src={profileDetails?.image || "/images/logo.png"}
-                                                alt={`${profileDetails?.name || "User"} Profile`}
-                                                className="profile-image"
-                                                onError={e => (e.target.src = "/images/logo.png")}
-                                            />
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="label">Department / Class</td>
-                                        <td>{profileDetails?.department || "N/A"}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="label">Designation</td>
-                                        <td>{profileDetails?.designation || "N/A"}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </section>
-
-                        {/* ── 3. TIMETABLE HEADING ─────────────────────── */}
-                        <h2 className="timetable-heading">
-                            <span className="live-dot" />
-                            Time Table — ODD Semester
-                            <span className="semester-badge">{currentYear}–{currentYear + 1}</span>
-                        </h2>
-
-                        {/* ── 4. MAIN TIMETABLE ────────────────────────── */}
-                        <section className="timetable-content">
+                        {/* 2. MAIN TIMETABLE SECTION */}
+                        <section className="timetable-content fade-up-stagger">
                             {timetable.length === 0 ? (
-                                <p className="no-data">No timetable data available.</p>
+                                <div className="empty-state">No timetable data available.</div>
                             ) : (
-                                <table className="timetable-table">
-                                    <thead>
-                                        <tr>
-                                            <th>DAY</th>
-                                            <th>9:40–10:40</th>
-                                            <th>10:40–11:40</th>
-                                            <th>11:40–12:40</th>
-                                            <th>12:40–1:20</th>
-                                            <th>1:20–2:20</th>
-                                            <th>2:20–3:20</th>
-                                            <th>3:20–4:20</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {timetable.map((dayData, index) => {
-                                            const periods = [...Array(7)].map((_, i) =>
-                                                dayData.periods?.find(p => p.periodNumber === i + 1) || null
-                                            );
-
-                                            const periodsBeforeLunch = processPeriods(periods.slice(0, 3));
-                                            const lunchPeriod        = periods[3];
-                                            const periodsAfterLunch  = processPeriods(periods.slice(4));
-
-                                            return (
-                                                <tr key={index}>
-                                                    <td className="day-cell">{dayData.day || "N/A"}</td>
-
-                                                    {periodsBeforeLunch.map((merged, i) => (
-                                                        <td key={`pre-${i}`} colSpan={merged.span} className="period-cell">
-                                                            {merged.period ? (
-                                                                <>
-                                                                    <span style={{ display: "block" }}>
-                                                                        {merged.period.subject}
-                                                                    </span>
-                                                                    {isStudent && merged.period.facultyName && (
-                                                                        <span className="faculty-tag">
-                                                                            {merged.period.facultyName}
-                                                                        </span>
-                                                                    )}
-                                                                </>
-                                                            ) : "–"}
-                                                        </td>
-                                                    ))}
-
-                                                    <td className="lunch-cell">
-                                                        {isStudent && lunchPeriod?.subject
-                                                            ? lunchPeriod.subject
-                                                            : "LUNCH"}
-                                                    </td>
-
-                                                    {periodsAfterLunch.map((merged, i) => (
-                                                        <td key={`post-${i}`} colSpan={merged.span} className="period-cell">
-                                                            {merged.period ? (
-                                                                <>
-                                                                    <span style={{ display: "block" }}>
-                                                                        {merged.period.subject}
-                                                                    </span>
-                                                                    {isStudent && merged.period.facultyName && (
-                                                                        <span className="faculty-tag">
-                                                                            {merged.period.facultyName}
-                                                                        </span>
-                                                                    )}
-                                                                </>
-                                                            ) : "–"}
-                                                        </td>
-                                                    ))}
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            )}
-                        </section>
-
-                        {/* ── 5. SUBJECT DIRECTORY (students only) ─────── */}
-                        {isStudent && subjectFacultyMap.length > 0 && (
-                            <>
-                                <h2 className="timetable-heading" style={{ marginTop: "2.2rem" }}>
-                                    Subject Directory
-                                </h2>
-                                <section className="timetable-content">
-                                    <table className="timetable-table">
+                                <div className="table-responsive-wrapper">
+                                    <table className="modern-table">
                                         <thead>
                                             <tr>
-                                                <th style={{ textAlign: "left", paddingLeft: "1.2rem" }}>Subject</th>
-                                                <th>Assigned Faculty</th>
-                                                <th>Contact Number</th>
+                                                <th className="sticky-col">Day</th>
+                                                <th>9:40 - 10:40</th>
+                                                <th>10:40 - 11:40</th>
+                                                <th>11:40 - 12:40</th>
+                                                <th>12:40 - 1:20</th>
+                                                <th>1:20 - 2:20</th>
+                                                <th>2:20 - 3:20</th>
+                                                <th>3:20 - 4:20</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {subjectFacultyMap.map((mapping, idx) => (
-                                                <tr key={idx}>
-                                                    <td style={{ textAlign: "left", paddingLeft: "15px", fontWeight: "bold" }}>
-                                                        {mapping.subject}
-                                                    </td>
-                                                    <td>{mapping.facultyName}</td>
-                                                    <td>{mapping.phoneNumber}</td>
-                                                </tr>
-                                            ))}
+                                            {timetable.map((dayData, index) => {
+                                                const periods = [...Array(7)].map((_, i) =>
+                                                    dayData.periods?.find((p) => p.periodNumber === i + 1) || null
+                                                );
+
+                                                const periodsBeforeLunch = processPeriods(periods.slice(0, 3));
+                                                const lunchPeriod = periods[3]; 
+                                                const periodsAfterLunch = processPeriods(periods.slice(4));
+
+                                                return (
+                                                    <tr key={index} style={{ animationDelay: `${index * 0.1}s` }} className="row-animate">
+                                                        <td className="day-cell sticky-col">{dayData.day || "N/A"}</td>
+
+                                                        {periodsBeforeLunch.map((merged, i) => (
+                                                            <td key={`pre-${i}`} colSpan={merged.span} className={merged.period ? "period-cell active-period" : "period-cell empty-period"}>
+                                                                {merged.period ? (
+                                                                    <div className="period-content">
+                                                                        <span className="subject-title">{merged.period.subject}</span>
+                                                                        {isStudent && merged.period.facultyName && (
+                                                                            <span className="faculty-name">
+                                                                                {merged.period.facultyName}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                ) : "-"}
+                                                            </td>
+                                                        ))}
+
+                                                        <td className="lunch-cell">
+                                                            {isStudent && lunchPeriod?.subject
+                                                                ? lunchPeriod.subject
+                                                                : "LUNCH BREAK"}
+                                                        </td>
+
+                                                        {periodsAfterLunch.map((merged, i) => (
+                                                            <td key={`post-${i}`} colSpan={merged.span} className={merged.period ? "period-cell active-period" : "period-cell empty-period"}>
+                                                                {merged.period ? (
+                                                                    <div className="period-content">
+                                                                        <span className="subject-title">{merged.period.subject}</span>
+                                                                        {isStudent && merged.period.facultyName && (
+                                                                            <span className="faculty-name">
+                                                                                {merged.period.facultyName}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                ) : "-"}
+                                                            </td>
+                                                        ))}
+                                                    </tr>
+                                                );
+                                            })}
                                         </tbody>
                                     </table>
-                                </section>
-                            </>
-                        )}
+                                </div>
+                            )}
+                        </section>
 
-                        {/* ── 6. FOOTER ────────────────────────────────── */}
-                        <div className="tkrcet-footer-strip">
-                            <strong>TKRCET</strong> &nbsp;·&nbsp; Meerpet, Hyderabad &nbsp;·&nbsp;
-                            Affiliated to JNTUH &nbsp;·&nbsp; Approved by AICTE &amp; Telangana State Govt.
-                        </div>
+                        {/* 3. STUDENT SUBJECT-FACULTY DIRECTORY */}
+                        {isStudent && subjectFacultyMap.length > 0 && (
+                            <div className="directory-section animate-fade-in" style={{animationDelay: '0.6s'}}>
+                                <div className="section-header">
+                                    <h2 className="timetable-heading">Subject Directory</h2>
+                                    <span className="semester-badge light-badge">Contact Info</span>
+                                </div>
+                                <section className="timetable-content">
+                                    <div className="table-responsive-wrapper">
+                                        <table className="modern-table secondary-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Subject</th>
+                                                    <th>Assigned Faculty</th>
+                                                    <th>Contact Number</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {subjectFacultyMap.map((mapping, idx) => (
+                                                    <tr key={idx} className="row-animate" style={{ animationDelay: `${idx * 0.1}s` }}>
+                                                        <td className="subject-highlight">{mapping.subject}</td>
+                                                        <td className="faculty-highlight">{mapping.facultyName}</td>
+                                                        <td>
+                                                            <span className="contact-pill">{mapping.phoneNumber}</span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </section>
+                            </div>
+                        )}
                     </>
                 )}
-            </div>
-        </>
+            </main>
+        </div>
     );
 };
 
