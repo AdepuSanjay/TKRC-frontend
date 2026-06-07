@@ -40,7 +40,7 @@ const Timetable = () => {
                     // ==========================================
                     // 1. FETCH FACULTY DATA
                     // ==========================================
-                    const response = await axios.get("http://localhost:8080/api/faculty", { headers });
+                    const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/faculty", { headers });
                     const me = response.data.find(f => String(f.employeeId).trim().toLowerCase() === String(facId).trim().toLowerCase());
 
                     if (me) {
@@ -68,7 +68,7 @@ const Timetable = () => {
                     // ==========================================
                     // 2. FETCH STUDENT DATA (CLEAN API)
                     // ==========================================
-                    const response = await axios.get(`http://localhost:8080/api/students/${stuId}/dashboard`, { headers });
+                    const response = await axios.get(`https://tkrc-backend-lreo.onrender.com/api/students/${stuId}/dashboard`, { headers });
                     const data = response.data;
 
                     setProfileDetails({
