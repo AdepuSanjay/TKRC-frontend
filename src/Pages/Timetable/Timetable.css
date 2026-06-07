@@ -1,377 +1,402 @@
-/* =========================================
-   TEMPLATE DESIGN TOKENS (Variables)
-   ========================================= */
+/* ═══════════════════════════════════════════════════════════════
+   Timetable.css — Premium SaaS Dark Theme
+   Theme: Obsidian Black, Vibrant Orange, Frosted Glass, Muted Slate
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 :root {
-  /* Colors inspired by the Lovable template */
-  --bg-color: #fdfcfb;
-  --card-mint: #dcece3;
-  --card-mint-hover: #cbe3d5;
-  --accent-orange: #ff6a3d;
-  --accent-orange-hover: #e55a30;
-  --dark-bg: #151618;
-  --dark-surface: #222428;
+  /* Core Dark Theme Colors matching the Dealflow / Template screenshots */
+  --bg-page:        #09090B;
+  --bg-surface:     #121214;
+  --bg-surface-hover: #18181B;
+  --bg-element:     #27272A;
   
-  --text-main: #11181c;
-  --text-muted: #687076;
-  --text-light: #ffffff;
+  --accent-orange:  #FF5A36;
+  --accent-glow:    rgba(255, 90, 54, 0.15);
   
-  --border-radius-xl: 32px;
-  --border-radius-lg: 20px;
-  --border-radius-md: 12px;
-  --border-radius-sm: 8px;
+  --text-primary:   #FAFAFA;
+  --text-secondary: #A1A1AA;
+  --text-muted:     #71717A;
   
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
-  --shadow-float: 0 12px 32px rgba(255, 106, 61, 0.15);
+  --border-light:   rgba(255, 255, 255, 0.08);
+  --border-focus:   rgba(255, 90, 54, 0.5);
+
+  --font-main:      'Plus Jakarta Sans', sans-serif;
+  --radius-lg:      20px;
+  --radius-md:      12px;
+  --radius-sm:      8px;
   
-  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --transition:     all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* =========================================
-   GLOBAL WRAPPER & TYPOGRAPHY
-   ========================================= */
-.app-wrapper {
-  background-color: var(--bg-color);
+/* ── BASE RE-RESETS ── */
+.timetable-main-wrapper {
+  background-color: var(--bg-page);
   min-height: 100vh;
-  font-family: var(--font-family);
-  color: var(--text-main);
-  padding-bottom: 4rem;
+  padding-bottom: 5rem;
+  font-family: var(--font-main);
+  color: var(--text-primary);
+  /* Optional: subtle background grid to match the "Mohammad Shakeel" image */
+  background-image: 
+    linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
 .timetable-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 3rem 2rem;
 }
 
-/* =========================================
-   ANIMATIONS
-   ========================================= */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ── ANIMATIONS ── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
-}
-
-.row-animate {
+.fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   opacity: 0;
-  animation: slideInRight 0.5s ease-out forwards;
 }
 
-/* =========================================
-   LOADING STATE
-   ========================================= */
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+.delay-4 { animation-delay: 0.4s; }
+
+/* Loading State */
 .loading-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 50vh;
-  color: var(--text-muted);
-  font-weight: 500;
+  height: 40vh;
+  color: var(--text-secondary);
 }
 
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid var(--card-mint);
+  border: 3px solid var(--border-light);
   border-top-color: var(--accent-orange);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
 }
 
-/* =========================================
-   PREMIUM PROFILE CARD (Template matched)
-   ========================================= */
-.profile-card {
-  background-color: var(--card-mint);
-  border-radius: var(--border-radius-xl);
-  padding: 3rem;
-  margin-bottom: 3rem;
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── 1. PREMIUM PROFILE CARD ── */
+.faculty-profile {
+  background: linear-gradient(145deg, #18181b 0%, #09090b 100%);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  margin-bottom: 4rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition);
 }
 
-.profile-card:hover {
-  box-shadow: var(--shadow-md);
-}
-
-.profile-badge {
-  display: inline-block;
-  background-color: var(--bg-color);
-  color: var(--text-main);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 0.5rem 1rem;
-  border-radius: 50px;
-  margin-bottom: 1.5rem;
+/* Subtle glow effect behind card */
+.faculty-profile::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle at top left, var(--accent-glow) 0%, transparent 40%);
+  pointer-events: none;
 }
 
 .profile-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 2rem;
+  position: relative;
+  z-index: 2;
 }
 
-.profile-info {
-  flex: 1;
+.profile-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-light);
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.profile-badge .dot {
+  width: 6px;
+  height: 6px;
+  background: var(--accent-orange);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-orange);
 }
 
 .profile-name {
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: 800;
-  letter-spacing: -1px;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
   margin: 0 0 0.5rem 0;
-  color: var(--text-main);
+  line-height: 1.1;
 }
 
 .profile-dept {
   font-size: 1.1rem;
-  color: var(--text-muted);
-  margin: 0 0 1.5rem 0;
-  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+  font-weight: 400;
 }
 
-.profile-designation-badge {
-  display: inline-flex;
-  align-items: center;
-  background-color: var(--accent-orange);
-  color: var(--text-light);
-  padding: 0.6rem 1.25rem;
-  border-radius: 50px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  box-shadow: var(--shadow-float);
-}
-
-.profile-image-container {
-  width: 140px;
-  height: 140px;
-  border-radius: var(--border-radius-lg);
-  overflow: hidden;
-  border: 4px solid var(--bg-color);
-  box-shadow: var(--shadow-md);
-  background-color: var(--bg-color);
+.profile-image-wrapper {
+  flex-shrink: 0;
 }
 
 .profile-image {
-  width: 100%;
-  height: 100%;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
   object-fit: cover;
+  border: 2px solid var(--bg-element);
+  padding: 4px;
+  background: var(--bg-surface);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  transition: var(--transition);
 }
 
-/* =========================================
-   SECTION HEADERS
-   ========================================= */
-.section-header {
+.profile-image:hover {
+  transform: scale(1.05);
+  border-color: var(--accent-orange);
+}
+
+/* ── 2. SECTION TITLES ── */
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 12px;
 }
 
-.timetable-heading {
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  margin: 0;
-  color: var(--text-main);
+.section-title span {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 1.1rem;
 }
 
-.semester-badge {
-  background-color: var(--dark-bg);
-  color: var(--text-light);
-  padding: 0.4rem 0.8rem;
-  border-radius: var(--border-radius-sm);
-  font-size: 0.85rem;
-  font-weight: 600;
+/* ── 3. TIMETABLE DATA GRID (SaaS Style) ── */
+.timetable-content {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
 }
 
-.semester-badge.light-badge {
-  background-color: var(--card-mint);
-  color: var(--text-main);
-}
-
-/* =========================================
-   MODERN TIMETABLE DESIGN
-   ========================================= */
 .table-responsive-wrapper {
   width: 100%;
-  overflow-x: auto;
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-md);
-  background: var(--white);
-  /* Smooth scrolling for touch */
+  overflow-x: auto; /* Premium horizontal scroll for mobile */
   -webkit-overflow-scrolling: touch;
 }
 
-.modern-table {
+/* Hide scrollbar for a cleaner look, but keep functionality */
+.table-responsive-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+.table-responsive-wrapper::-webkit-scrollbar-track {
+  background: var(--bg-page);
+}
+.table-responsive-wrapper::-webkit-scrollbar-thumb {
+  background: var(--bg-element);
+  border-radius: 10px;
+}
+
+.timetable-table {
   width: 100%;
-  min-width: 900px;
+  min-width: 900px; /* Forces scroll on small devices to protect layout */
   border-collapse: separate;
   border-spacing: 0;
-  background-color: #ffffff;
   text-align: center;
 }
 
-.modern-table th {
-  background-color: var(--dark-bg);
-  color: var(--text-light);
-  padding: 1.25rem 1rem;
-  font-size: 0.9rem;
+.timetable-table th {
+  background: rgba(255,255,255,0.02);
+  color: var(--text-secondary);
   font-weight: 600;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
+  font-size: 0.75rem;
+  padding: 1.25rem 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border-light);
 }
 
-/* Top left and right corner rounding */
-.modern-table th:first-child { border-top-left-radius: var(--border-radius-lg); }
-.modern-table th:last-child { border-top-right-radius: var(--border-radius-lg); }
-
-.modern-table td {
-  padding: 1rem;
-  border-bottom: 1px solid #f1f3f5;
-  border-right: 1px solid #f1f3f5;
+.timetable-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border-light);
+  border-right: 1px solid rgba(255,255,255,0.02);
+  transition: var(--transition);
   vertical-align: middle;
-  font-size: 0.95rem;
 }
 
-.modern-table td:last-child { border-right: none; }
+.timetable-table tr:last-child td {
+  border-bottom: none;
+}
 
-/* Sticky Left Column for Days */
+.timetable-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Sticky First Column for Horizontal Scrolling */
 .sticky-col {
   position: sticky;
   left: 0;
-  background-color: #ffffff;
-  z-index: 2;
-  border-right: 2px solid #eaeaea !important;
+  background: var(--bg-surface);
+  z-index: 10;
+  border-right: 1px solid var(--border-light) !important;
 }
 
-.modern-table th.sticky-col {
-  background-color: var(--dark-bg);
-  border-right: none !important;
-  z-index: 3;
+.timetable-table tr:hover .sticky-col {
+  background: var(--bg-surface-hover);
 }
 
 .day-cell {
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--text-primary);
   text-transform: uppercase;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
 }
 
-/* Period Cells */
-.period-cell {
-  transition: var(--transition);
-}
-
-.period-cell.active-period:hover {
-  background-color: var(--card-mint);
-  cursor: default;
-  transform: scale(1.02);
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-sm);
-  border: none;
-}
-
-.period-content {
+/* Cards inside table cells */
+.period-card {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-element);
+  border: 1px solid transparent;
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  height: 100%;
+  min-height: 60px;
 }
 
-.subject-title {
+.period-cell:hover .period-card {
+  background: rgba(255, 90, 54, 0.05);
+  border-color: var(--border-focus);
+  transform: translateY(-2px);
+}
+
+.subject {
   font-weight: 600;
-  color: var(--text-main);
-  line-height: 1.3;
+  font-size: 0.85rem;
+  color: var(--text-primary);
 }
 
 .faculty-name {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  font-weight: 500;
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.05);
+  padding: 2px 8px;
+  border-radius: 12px;
 }
 
-/* Lunch Break Styling */
+.empty-slot {
+  color: var(--border-light);
+}
+
+/* LUNCH BREAK HIGHLIGHT */
 .lunch-cell {
-  background: linear-gradient(135deg, var(--accent-orange), var(--accent-orange-hover));
-  color: var(--text-light);
+  padding: 0.5rem !important;
+}
+
+.lunch-card {
+  background: var(--accent-glow);
+  color: var(--accent-orange);
+  border: 1px dashed var(--border-focus);
   font-weight: 800;
-  letter-spacing: 2px;
-  writing-mode: vertical-lr;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 60px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
   transform: rotate(180deg);
-  text-align: center;
-  border-radius: var(--border-radius-sm);
+  margin: 0 auto;
 }
 
-/* =========================================
-   SUBJECT DIRECTORY TABLE
-   ========================================= */
-.directory-section {
-  margin-top: 4rem;
+/* ── 4. DIRECTORY TABLE SPECIFICS ── */
+.directory-table {
+  min-width: 600px;
 }
 
-.secondary-table th {
-  background-color: var(--card-mint);
-  color: var(--text-main);
-}
-
-.secondary-table td {
+.directory-table th {
   text-align: left;
+  padding-left: 1.5rem;
 }
 
-.subject-highlight {
-  font-weight: 700;
-  color: var(--dark-bg);
-}
-
-.faculty-highlight {
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.contact-pill {
-  display: inline-block;
-  background-color: #f1f3f5;
-  padding: 0.4rem 0.8rem;
-  border-radius: 50px;
-  font-family: monospace;
+.directory-table td {
+  text-align: left;
+  padding-left: 1.5rem;
   font-size: 0.9rem;
-  color: var(--text-main);
-  font-weight: 600;
 }
 
-/* =========================================
-   RESPONSIVE DESIGN (Mobiles & Tablets)
-   ========================================= */
+.subject-col {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.badge-light {
+  background: var(--bg-element);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
+}
+
+.mono-text {
+  font-family: 'Courier New', Courier, monospace;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════
+   RESPONSIVENESS
+═══════════════════════════ */
+
+@media (max-width: 1024px) {
+  .timetable-container { padding: 2rem 1.5rem; }
+  .profile-name { font-size: 2.5rem; }
+}
+
 @media (max-width: 768px) {
-  .timetable-container {
-    padding: 1rem;
-  }
-  
-  .profile-card {
-    padding: 2rem 1.5rem;
-    border-radius: var(--border-radius-lg);
-  }
+  .timetable-container { padding: 1.5rem 1rem; }
   
   .profile-content {
     flex-direction: column-reverse;
@@ -379,24 +404,17 @@
     gap: 1.5rem;
   }
   
-  .profile-name {
-    font-size: 2rem;
+  .profile-image {
+    width: 80px; height: 80px;
   }
+
+  .profile-name { font-size: 2rem; }
+  .profile-badge { margin: 0 auto 1rem auto; }
   
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .timetable-heading {
-    font-size: 1.6rem;
-  }
-  
-  .lunch-cell {
+  /* Make lunch card horizontal on smaller screens if it wraps */
+  .lunch-card {
     writing-mode: horizontal-tb;
     transform: none;
-    padding: 1rem;
-    letter-spacing: 1px;
+    padding: 0.5rem;
   }
 }
