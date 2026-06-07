@@ -34,17 +34,16 @@ const MobileNav = () => {
   const role = localStorage.getItem("userRole")?.toLowerCase();
   const navigate = useNavigate();      
 
-  // Fetch user data based on role from local server configuration
   const fetchUserData = async () => {      
     try {      
       const headers = { Authorization: `Bearer ${token}` };
 
       if (role === 'teacher' || role === 'admin') {      
-        const response = await axios.get("http://localhost:8080/api/faculty", { headers });      
+        const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/faculty", { headers });      
         const me = response.data.find(f => String(f.employeeId).trim() === String(facultyId).trim());
         if (me) setUserData({ ...me, role: "faculty" });      
       } else if (role === 'student') {      
-        const response = await axios.get(`http://localhost:8080/api/students/${studentId}/dashboard`, { headers });      
+        const response = await axios.get(`https://tkrc-backend-lreo.onrender.com/api/students/${studentId}/dashboard`, { headers });      
         if (response.data && response.data.student) {
           setUserData({ ...response.data.student, role: "student" });      
         }
@@ -54,13 +53,12 @@ const MobileNav = () => {
     }      
   };      
 
-  // Fetch faculty timetable slots dynamically      
   const fetchClassOptions = async () => {      
     if (!userData || userData.role !== "faculty") return;      
 
     setLoading(true);      
     try {      
-      const response = await axios.get("http://localhost:8080/api/faculty", {
+      const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/faculty", {
         headers: { Authorization: `Bearer ${token}` }
       });      
       const me = response.data.find(f => String(f.employeeId).trim() === String(facultyId).trim());
@@ -75,9 +73,8 @@ const MobileNav = () => {
     }      
   };      
 
-  // Secure clearance logout function      
   const handleLogout = () => {      
-    localStorage.clear(); // Wipe everything clean to avoid crossing IDs
+    localStorage.clear(); 
     navigate("/"); 
   };      
 
@@ -133,12 +130,13 @@ const MobileNav = () => {
             <MenuItem label="Home" />      
           </Link>      
 
+          {/* FIXED: Everyone goes to /timetable now! */}
           <li 
             className="menu-item"
             style={{ listStyle: "none", cursor: "pointer" }} 
             onClick={() => {
               toggleMenu();
-              navigate(studentId ? "/Schedule" : "/timetable");
+              navigate("/timetable");
             }}
           >
             Timetable
@@ -146,7 +144,6 @@ const MobileNav = () => {
 
           <MenuItem label="Notifications" />      
 
-          {/* Attendance Menu Section */}      
           <MenuItem      
             label="Attendance"      
             onClick={handleAttendanceClick}      
@@ -192,7 +189,6 @@ const MobileNav = () => {
             </Dropdown>      
           )}      
 
-          {/* Account Menu Section */}      
           <MenuItem      
             label="Account"      
             onClick={() => setAccountMenuOpen(!accountMenuOpen)}      
