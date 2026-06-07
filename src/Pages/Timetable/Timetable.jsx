@@ -7,13 +7,17 @@ import "./Timetable.css";
 import NavBar from "../../Components/NavBar/NavBar";
 import MobileNav from "../../Components/MobileNav/MobileNav";
 
-const Timetable = () => {
-    const [timetable, setTimetable] = useState([]);
-    const [profileDetails, setProfileDetails] = useState(null);
-    const [subjectFacultyMap, setSubjectFacultyMap] = useState([]);
-    const [loading, setLoading] = useState(true);
+// ─── TKRCET official logo & campus image ───────────────────────────────────────
+const COLLEGE_LOGO    = "https://tkrcet.ac.in/wp-content/uploads/2025/06/logo-tkrcet.png";
+const CAMPUS_BG_IMAGE = "https://tkrcet.ac.in/wp-content/uploads/2025/06/Untitled-design-2.jpg";
 
-    const role = localStorage.getItem("userRole");
+const Timetable = () => {
+    const [timetable, setTimetable]             = useState([]);
+    const [profileDetails, setProfileDetails]   = useState(null);
+    const [subjectFacultyMap, setSubjectFacultyMap] = useState([]);
+    const [loading, setLoading]                 = useState(true);
+
+    const role      = localStorage.getItem("userRole");
     const isStudent = role?.toLowerCase() === "student";
 
     useEffect(() => {
@@ -21,12 +25,11 @@ const Timetable = () => {
             try {
                 const loadingToast = toast.loading("Loading your schedule...", { theme: "colored" });
 
-                const facId = localStorage.getItem("facultyId");
-                const stuId = localStorage.getItem("studentId");
-                const token = localStorage.getItem("token");
+                const facId   = localStorage.getItem("facultyId");
+                const stuId   = localStorage.getItem("studentId");
+                const token   = localStorage.getItem("token");
                 const headers = { Authorization: `Bearer ${token}` };
 
-                // Prevent execution if localStorage is empty
                 if (isStudent && !stuId) {
                     toast.dismiss();
                     toast.error("You are not properly logged in. Please log out and log back in.", { theme: "colored" });
@@ -34,30 +37,29 @@ const Timetable = () => {
                     return;
                 }
 
-                const standardDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                const standardDays = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
                 if (!isStudent) {
-                    // ==========================================
-                    // 1. FETCH FACULTY DATA
-                    // ==========================================
                     const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/faculty", { headers });
-                    const me = response.data.find(f => String(f.employeeId).trim().toLowerCase() === String(facId).trim().toLowerCase());
+                    const me = response.data.find(
+                        f => String(f.employeeId).trim().toLowerCase() === String(facId).trim().toLowerCase()
+                    );
 
                     if (me) {
                         setProfileDetails({
-                            name: me.name,
-                            department: "Faculty",
+                            name:        me.name,
+                            department:  "Faculty",
                             designation: me.designation,
-                            image: me.image
+                            image:       me.image
                         });
 
                         const groupedTimetable = standardDays.map(dayName => {
                             const daySlots = me.personalTimetable?.filter(s => s.day === dayName) || [];
                             return {
-                                day: dayName,
+                                day:     dayName,
                                 periods: daySlots.map(s => ({
                                     periodNumber: s.periodNumber,
-                                    subject: `${s.subject} (${s.yearId}, ${s.deptName}-${s.sectionName})` 
+                                    subject:      `${s.subject} (${s.yearId}, ${s.deptName}-${s.sectionName})`
                                 }))
                             };
                         });
@@ -65,28 +67,25 @@ const Timetable = () => {
                         setTimetable(groupedTimetable);
                     }
                 } else {
-                    // ==========================================
-                    // 2. FETCH STUDENT DATA (CLEAN API)
-                    // ==========================================
-                    const response = await axios.get(`https://tkrc-backend-lreo.onrender.com/api/students/${stuId}/dashboard`, { headers });
+                    const response = await axios.get(
+                        `https://tkrc-backend-lreo.onrender.com/api/students/${stuId}/dashboard`,
+                        { headers }
+                    );
                     const data = response.data;
 
                     setProfileDetails({
-                        name: data.student.name || localStorage.getItem("userName"),
-                        department: `${data.academicYear} - ${data.department} (Section ${data.sectionName})`,
+                        name:        data.student.name || localStorage.getItem("userName"),
+                        department:  `${data.academicYear} - ${data.department} (Section ${data.sectionName})`,
                         designation: "Student",
-                        image: data.student.image || localStorage.getItem("profileImage") || "/images/logo.png"
+                        image:       data.student.image || localStorage.getItem("profileImage") || "/images/logo.png"
                     });
 
-                    const dbTimetable = data.timetable || [];
-                    let facultyMappingObj = {};
+                    const dbTimetable       = data.timetable || [];
+                    let   facultyMappingObj = {};
 
                     const mappedTimetable = standardDays.map(dayName => {
                         const existingDay = dbTimetable.find(d => d.day === dayName);
-                        return {
-                            day: dayName,
-                            periods: existingDay ? existingDay.periods : []
-                        };
+                        return { day: dayName, periods: existingDay ? existingDay.periods : [] };
                     });
 
                     dbTimetable.forEach(day => {
@@ -116,11 +115,14 @@ const Timetable = () => {
                 toast.dismiss();
                 console.error("Dashboard Fetch Error:", error);
 
-                // SMART ERROR ALERTS
-                if (error.response && error.response.status === 404) {
-                    toast.error(`Student ID ${localStorage.getItem("studentId")} not found in database! Please Re-Login.`, { theme: "colored", autoClose: 5000 });
+                if (error.response?.status === 404) {
+                    toast.error(`Student ID ${localStorage.getItem("studentId")} not found! Please Re-Login.`, {
+                        theme: "colored", autoClose: 5000
+                    });
                 } else if (error.message === "Network Error") {
-                    toast.error("Network Blocked! Ensure backend is running and CORS is allowed.", { theme: "colored", autoClose: 6000 });
+                    toast.error("Network Blocked! Ensure backend is running and CORS is allowed.", {
+                        theme: "colored", autoClose: 6000
+                    });
                 } else {
                     toast.error("Server error. Ensure backend is running.", { theme: "colored" });
                 }
@@ -131,8 +133,9 @@ const Timetable = () => {
         fetchDashboardData();
     }, [isStudent]);
 
+    /* ── merge consecutive identical subjects ─────────────────── */
     const processPeriods = (periods) => {
-        const mergedPeriods = [];
+        const merged = [];
         let i = 0;
         while (i < periods.length) {
             let span = 1;
@@ -141,13 +144,11 @@ const Timetable = () => {
                 periods[i] &&
                 periods[i + span] &&
                 periods[i].subject === periods[i + span].subject
-            ) {
-                span++;
-            }
-            mergedPeriods.push({ period: periods[i], span });
+            ) { span++; }
+            merged.push({ period: periods[i], span });
             i += span;
         }
-        return mergedPeriods;
+        return merged;
     };
 
     const currentYear = new Date().getFullYear();
@@ -155,7 +156,7 @@ const Timetable = () => {
     return (
         <>
             <ToastContainer position="top-right" autoClose={2000} />
-            
+
             <div className="nav">
                 <NavBar facultyName={profileDetails?.name || "Dashboard"} />
             </div>
@@ -165,10 +166,39 @@ const Timetable = () => {
 
             <div className="timetable-container">
                 {loading ? (
-                    <div style={{ textAlign: "center", padding: "2rem" }}>Loading schedule...</div>
+                    <div className="loading-state">
+                        <div className="loading-spinner" />
+                        <span style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>
+                            Loading your schedule…
+                        </span>
+                    </div>
                 ) : (
                     <>
-                        {/* 1. PROFILE SECTION */}
+                        {/* ── 1. COLLEGE HERO BANNER ───────────────────── */}
+                        <div className="college-hero-banner">
+                            <img
+                                src={CAMPUS_BG_IMAGE}
+                                alt="TKRCET Campus"
+                                className="hero-img"
+                                onError={e => (e.target.style.display = "none")}
+                            />
+                            <img
+                                src={COLLEGE_LOGO}
+                                alt="TKRCET Logo"
+                                className="hero-logo"
+                                onError={e => (e.target.style.display = "none")}
+                            />
+                            <div className="hero-overlay-text">
+                                <div className="college-name">
+                                    TKR College of Engineering &amp; Technology
+                                </div>
+                                <div className="college-sub">
+                                    Meerpet, Hyderabad &nbsp;·&nbsp; NAAC Accredited &nbsp;·&nbsp; JNTUH Affiliated
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ── 2. PROFILE SECTION ───────────────────────── */}
                         <section className="faculty-profile">
                             <table className="profile-table">
                                 <tbody>
@@ -180,7 +210,7 @@ const Timetable = () => {
                                                 src={profileDetails?.image || "/images/logo.png"}
                                                 alt={`${profileDetails?.name || "User"} Profile`}
                                                 className="profile-image"
-                                                onError={(e) => (e.target.src = "/images/logo.png")}
+                                                onError={e => (e.target.src = "/images/logo.png")}
                                             />
                                         </td>
                                     </tr>
@@ -196,9 +226,14 @@ const Timetable = () => {
                             </table>
                         </section>
 
-                        <h2 className="timetable-heading">Time Table - ODD Semester ({currentYear}-{currentYear + 1})</h2>
+                        {/* ── 3. TIMETABLE HEADING ─────────────────────── */}
+                        <h2 className="timetable-heading">
+                            <span className="live-dot" />
+                            Time Table — ODD Semester
+                            <span className="semester-badge">{currentYear}–{currentYear + 1}</span>
+                        </h2>
 
-                        {/* 2. MAIN TIMETABLE SECTION */}
+                        {/* ── 4. MAIN TIMETABLE ────────────────────────── */}
                         <section className="timetable-content">
                             {timetable.length === 0 ? (
                                 <p className="no-data">No timetable data available.</p>
@@ -207,41 +242,43 @@ const Timetable = () => {
                                     <thead>
                                         <tr>
                                             <th>DAY</th>
-                                            <th>9:40-10:40</th>
-                                            <th>10:40-11:40</th>
-                                            <th>11:40-12:40</th>
-                                            <th>12:40-1:20</th>
-                                            <th>1:20-2:20</th>
-                                            <th>2:20-3:20</th>
-                                            <th>3:20-4:20</th>
+                                            <th>9:40–10:40</th>
+                                            <th>10:40–11:40</th>
+                                            <th>11:40–12:40</th>
+                                            <th>12:40–1:20</th>
+                                            <th>1:20–2:20</th>
+                                            <th>2:20–3:20</th>
+                                            <th>3:20–4:20</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {timetable.map((dayData, index) => {
                                             const periods = [...Array(7)].map((_, i) =>
-                                                dayData.periods?.find((p) => p.periodNumber === i + 1) || null
+                                                dayData.periods?.find(p => p.periodNumber === i + 1) || null
                                             );
 
                                             const periodsBeforeLunch = processPeriods(periods.slice(0, 3));
-                                            const lunchPeriod = periods[3]; 
-                                            const periodsAfterLunch = processPeriods(periods.slice(4));
+                                            const lunchPeriod        = periods[3];
+                                            const periodsAfterLunch  = processPeriods(periods.slice(4));
 
                                             return (
                                                 <tr key={index}>
-                                                    <td className="day-cell" style={{fontWeight: 'bold'}}>{dayData.day || "N/A"}</td>
+                                                    <td className="day-cell">{dayData.day || "N/A"}</td>
 
                                                     {periodsBeforeLunch.map((merged, i) => (
                                                         <td key={`pre-${i}`} colSpan={merged.span} className="period-cell">
                                                             {merged.period ? (
                                                                 <>
-                                                                    <span style={{ display: 'block' }}>{merged.period.subject}</span>
+                                                                    <span style={{ display: "block" }}>
+                                                                        {merged.period.subject}
+                                                                    </span>
                                                                     {isStudent && merged.period.facultyName && (
-                                                                        <span style={{ display: 'block', fontSize: '0.85em', color: '#555' }}>
-                                                                            ({merged.period.facultyName})
+                                                                        <span className="faculty-tag">
+                                                                            {merged.period.facultyName}
                                                                         </span>
                                                                     )}
                                                                 </>
-                                                            ) : "-"}
+                                                            ) : "–"}
                                                         </td>
                                                     ))}
 
@@ -255,14 +292,16 @@ const Timetable = () => {
                                                         <td key={`post-${i}`} colSpan={merged.span} className="period-cell">
                                                             {merged.period ? (
                                                                 <>
-                                                                    <span style={{ display: 'block' }}>{merged.period.subject}</span>
+                                                                    <span style={{ display: "block" }}>
+                                                                        {merged.period.subject}
+                                                                    </span>
                                                                     {isStudent && merged.period.facultyName && (
-                                                                        <span style={{ display: 'block', fontSize: '0.85em', color: '#555' }}>
-                                                                            ({merged.period.facultyName})
+                                                                        <span className="faculty-tag">
+                                                                            {merged.period.facultyName}
                                                                         </span>
                                                                     )}
                                                                 </>
-                                                            ) : "-"}
+                                                            ) : "–"}
                                                         </td>
                                                     ))}
                                                 </tr>
@@ -273,15 +312,17 @@ const Timetable = () => {
                             )}
                         </section>
 
-                        {/* 3. STUDENT SUBJECT-FACULTY DIRECTORY */}
+                        {/* ── 5. SUBJECT DIRECTORY (students only) ─────── */}
                         {isStudent && subjectFacultyMap.length > 0 && (
                             <>
-                                <h2 className="timetable-heading" style={{ marginTop: '2rem' }}>Subject Directory</h2>
+                                <h2 className="timetable-heading" style={{ marginTop: "2.2rem" }}>
+                                    Subject Directory
+                                </h2>
                                 <section className="timetable-content">
                                     <table className="timetable-table">
                                         <thead>
                                             <tr>
-                                                <th>Subject</th>
+                                                <th style={{ textAlign: "left", paddingLeft: "1.2rem" }}>Subject</th>
                                                 <th>Assigned Faculty</th>
                                                 <th>Contact Number</th>
                                             </tr>
@@ -301,6 +342,12 @@ const Timetable = () => {
                                 </section>
                             </>
                         )}
+
+                        {/* ── 6. FOOTER ────────────────────────────────── */}
+                        <div className="tkrcet-footer-strip">
+                            <strong>TKRCET</strong> &nbsp;·&nbsp; Meerpet, Hyderabad &nbsp;·&nbsp;
+                            Affiliated to JNTUH &nbsp;·&nbsp; Approved by AICTE &amp; Telangana State Govt.
+                        </div>
                     </>
                 )}
             </div>
