@@ -13,45 +13,41 @@ function NavBar() {
 
   const navRef = useRef(null);
   const navigate = useNavigate();
-  
+
   const studentId = localStorage.getItem("studentId");
   const facultyId = localStorage.getItem("facultyId");
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("userRole")?.toLowerCase();
 
-  // Fetch user details dynamically from the correct local backend server
+  // Fetch user details dynamically from the live Render backend
   const fetchUserData = async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
-      
+
       if (role === 'teacher' || role === 'admin') {
-        const response = await axios.get("http://localhost:8080/api/faculty", { headers });
+        const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/faculty", { headers });
         const me = response.data.find(f => String(f.employeeId).trim() === String(facultyId).trim());
         if (me) setUserData({ ...me, role: "faculty" });
       } else if (role === 'student') {
-        // Hits the clean dashboard API we created for students
-        const response = await axios.get(`http://localhost:8080/api/students/${studentId}/dashboard`, { headers });
+        const response = await axios.get(`https://tkrc-backend-lreo.onrender.com/api/students/${studentId}/dashboard`, { headers });
         if (response.data && response.data.student) {
           setUserData({ ...response.data.student, role: "student" });
         }
       }
     } catch (error) {
-      console.error("Error fetching user data from local server:", error);
+      console.error("Error fetching user data from live server:", error);
     }
   };
 
-  // Fetch today's classes for faculty
   const fetchClassOptions = async () => {
     if (!userData || userData.role !== "faculty") return;
     setLoading(true);
     try {
-      // Adjusted to read from the structured personalTimetable map on localhost
-      const response = await axios.get(`http://localhost:8080/api/faculty`, {
+      const response = await axios.get(`https://tkrc-backend-lreo.onrender.com/api/faculty`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const me = response.data.find(f => String(f.employeeId).trim() === String(facultyId).trim());
-      
-      // Filter out slots that represent actual classes taught today
+
       const classes = me?.personalTimetable || [];
       setClassOptions(classes);
     } catch (error) {
@@ -63,7 +59,7 @@ function NavBar() {
   };
 
   const handleLogout = () => {
-    localStorage.clear(); // Safely clear all tokens and ghost keys at once
+    localStorage.clear(); 
     navigate("/"); 
   };
 
@@ -93,8 +89,8 @@ function NavBar() {
             <li>Home</li>
           </Link>
 
-          {/* Corrected Timetable routing based on real active localStorage session flags */}
-          <li id="time" style={{ cursor: "pointer" }} onClick={() => navigate(studentId ? "/Schedule" : "/timetable")}>
+          {/* FIXED: Everyone goes to /timetable now! */}
+          <li id="time" style={{ cursor: "pointer" }} onClick={() => navigate("/timetable")}>
             Timetable
           </li>
 
