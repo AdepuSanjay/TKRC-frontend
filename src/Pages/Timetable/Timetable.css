@@ -1,48 +1,88 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 /* ═══════════════════════════════════════════════════════════════
-   Timetable.css — SaaS Dashboard Aesthetic
-   Theme: Mint Green, Vibrant Orange, Deep Charcoal, Frosted White
+   Timetable.css — Advanced SaaS Dashboard Aesthetic
+   Theme: Soft Mint, Vibrant Orange, Deep Charcoal, Frosted White
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  --bg-main:       #FAFAFA;
+  /* Color Palette inspired by Lovable/Dealflow & Shakeel Portfolio */
+  --bg-main:       #F7F9F8;
   --bg-white:      #FFFFFF;
-  --bg-mint:       #D9EBE3; 
-  --bg-dark:       #111315;
-  --accent-orange: #F85E3D;
+  --bg-mint:       #E1EFE8; /* Soft Dealflow Mint */
+  --bg-mint-light: #F0F7F4;
+  --bg-dark:       #111827; /* Deep Charcoal */
   
-  --text-dark:     #111827;
-  --text-muted:    #6B7280;
+  --accent-orange: #FF5A36; /* Vibrant SaaS Orange */
+  --accent-glow:   rgba(255, 90, 54, 0.2);
+
+  --text-dark:     #0F172A;
+  --text-muted:    #64748B;
+
+  --border-light:  #E2E8F0;
+
+  --font-main:     'Plus Jakarta Sans', system-ui, sans-serif;
   
-  --border-light:  #E5E7EB;
-  
-  --font-main:     'Plus Jakarta Sans', sans-serif;
+  /* Modern Border Radii & Shadows */
+  --radius-sm:     12px;
   --radius-md:     16px;
   --radius-lg:     24px;
+  
+  --shadow-sm:     0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-md:     0 12px 32px rgba(15, 23, 42, 0.06);
+  --shadow-hover:  0 20px 40px rgba(15, 23, 42, 0.08);
 }
 
 body {
   background: var(--bg-main);
   font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  0% { opacity: 0; transform: translateX(-20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 var(--accent-glow); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 90, 54, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 90, 54, 0); }
 }
 
 .timetable-container {
   max-width: 1200px;
   margin: 2rem auto 5rem;
   padding: 0 2rem;
-  font-family: var(--font-main);
   color: var(--text-dark);
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* ── FACULTY PROFILE CARD ── */
+/* ── FACULTY / STUDENT PROFILE CARD ── */
 .faculty-profile {
   background: var(--bg-white);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  padding: 1.5rem 2.5rem;
+  border-radius: var(--radius-lg);
+  padding: 2rem;
   margin-bottom: 3rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--shadow-sm);
   display: inline-block;
-  min-width: 350px;
+  min-width: 380px;
+  transition: all 0.3s ease;
+  animation: slideInLeft 0.5s ease forwards;
+}
+
+.faculty-profile:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--bg-mint);
 }
 
 .profile-table {
@@ -51,8 +91,9 @@ body {
 }
 
 .profile-table td {
-  padding: 0.5rem 1rem 0.5rem 0;
-  font-size: 0.95rem;
+  padding: 0.6rem 1rem 0.6rem 0;
+  font-size: 1rem;
+  font-weight: 500;
   color: var(--text-dark);
 }
 
@@ -60,35 +101,53 @@ body {
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.8rem;
-  width: 120px;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  width: 140px;
 }
 
 .profile-image-cell {
   text-align: right;
   padding-left: 2rem !important;
-  border-left: 1px solid var(--border-light);
 }
 
 .profile-image {
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--bg-mint);
-  padding: 2px;
+  border: 3px solid var(--bg-mint);
+  padding: 3px;
   background: var(--bg-white);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease;
+}
+
+.faculty-profile:hover .profile-image {
+  transform: scale(1.05) rotate(2deg);
+  border-color: var(--accent-orange);
 }
 
 /* ── TIMETABLE HEADING ── */
 .timetable-heading {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 800;
-  color: var(--text-dark);
-  letter-spacing: -0.02em;
+  color: var(--bg-dark);
+  letter-spacing: -0.03em;
   margin-bottom: 1.5rem;
-  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.timetable-heading::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: var(--accent-orange);
+  border-radius: 50%;
+  animation: pulseGlow 2s infinite;
 }
 
 /* ── TIMETABLE CONTENT & TABLE ── */
@@ -96,34 +155,41 @@ body {
   background: var(--bg-white);
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-light);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-  overflow: hidden; /* Keeps the rounded corners intact */
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.timetable-content:hover {
+  box-shadow: var(--shadow-hover);
 }
 
 .no-data {
-  padding: 3rem;
+  padding: 4rem;
   text-align: center;
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 1.1rem;
 }
 
 .timetable-table {
   width: 100%;
   border-collapse: collapse;
   text-align: center;
+  background: var(--bg-white);
 }
 
-/* Table Headers */
+/* Table Headers - High Contrast Dark */
 .timetable-table th {
-  background: var(--bg-mint);
-  color: var(--text-dark);
+  background: var(--bg-dark);
+  color: var(--bg-white);
   font-weight: 700;
   font-size: 0.85rem;
-  padding: 1.25rem 0.75rem;
+  padding: 1.2rem 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
-  border-bottom: 2px solid var(--border-light);
-  border-right: 1px solid rgba(0,0,0,0.05);
+  letter-spacing: 0.05em;
+  border-bottom: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .timetable-table th:last-child {
@@ -133,134 +199,160 @@ body {
 /* Table Cells */
 .timetable-table td {
   padding: 1.25rem 0.75rem;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   border-bottom: 1px solid var(--border-light);
   border-right: 1px solid var(--border-light);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-dark);
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.timetable-table td:last-child {
-  border-right: none;
-}
+.timetable-table td:last-child { border-right: none; }
+.timetable-table tr:last-child td { border-bottom: none; }
 
-.timetable-table tr:last-child td {
-  border-bottom: none;
+/* Staggered Row Animations */
+.timetable-table tbody tr {
+  opacity: 0;
+  animation: fadeInUp 0.4s ease forwards;
 }
+.timetable-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+.timetable-table tbody tr:nth-child(2) { animation-delay: 0.15s; }
+.timetable-table tbody tr:nth-child(3) { animation-delay: 0.2s; }
+.timetable-table tbody tr:nth-child(4) { animation-delay: 0.25s; }
+.timetable-table tbody tr:nth-child(5) { animation-delay: 0.3s; }
+.timetable-table tbody tr:nth-child(6) { animation-delay: 0.35s; }
 
 .timetable-table tr:hover td {
-  background: rgba(0, 0, 0, 0.01);
+  background: var(--bg-mint-light);
 }
 
 /* Specific Column Styling */
 .day-cell {
-  font-weight: 800 !important;
-  background: rgba(250, 250, 250, 0.5);
-  color: var(--text-dark);
+  background: #F8FAFC;
+  color: var(--bg-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .period-cell {
   line-height: 1.5;
 }
 
-/* LUNCH BREAK HIGHLIGHT */
+.period-cell span:first-child {
+  color: var(--bg-dark);
+}
+
+/* LUNCH BREAK HIGHLIGHT - Pill styled */
 .lunch-cell {
-  background: rgba(248, 94, 61, 0.08) !important;
-  color: var(--accent-orange) !important;
+  background: var(--bg-mint) !important;
+  color: var(--bg-dark) !important;
   font-weight: 800 !important;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   font-size: 0.85rem !important;
   text-transform: uppercase;
+  position: relative;
+}
+
+.lunch-cell::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border: 2px dashed rgba(15, 23, 42, 0.1);
+  margin: 4px;
+  border-radius: 8px;
 }
 
 /* ═══════════════════════════
    TABLET RESPONSIVENESS
 ═══════════════════════════ */
 @media (max-width: 1024px) {
-  .timetable-container {
-    padding: 0 1.5rem;
-  }
+  .timetable-container { padding: 0 1.5rem; }
+  .faculty-profile { min-width: 100%; display: block; }
   .timetable-table th, 
   .timetable-table td {
-    padding: 0.85rem 0.5rem;
-    font-size: 0.8rem;
+    padding: 1rem 0.5rem;
+    font-size: 0.85rem;
   }
 }
 
 /* ═══════════════════════════
    MOBILE RESPONSIVENESS (NO HORIZONTAL SCROLL)
-   Strategy: Table-layout fixed, micro-typography, tight padding
+   Advanced Micro-Typography & Space Optimization
 ═══════════════════════════ */
 @media (max-width: 600px) {
   .timetable-container {
-    padding: 0 0.5rem; /* Maximize screen real estate */
-    margin-top: 1.5rem;
+    padding: 0 0.5rem; 
+    margin-top: 1rem;
   }
 
   .faculty-profile {
-    padding: 1rem;
-    min-width: 100%;
-    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
   }
 
-  .profile-table .label {
-    width: 80px;
-    font-size: 0.7rem;
-  }
-
-  .profile-table td {
-    font-size: 0.85rem;
-    padding: 0.3rem 0;
-  }
-
-  .profile-image-cell {
-    padding-left: 0.5rem !important;
-  }
-
-  .profile-image {
-    width: 48px;
-    height: 48px;
-  }
+  .profile-table .label { width: 90px; font-size: 0.65rem; }
+  .profile-table td { font-size: 0.85rem; padding: 0.2rem 0; }
+  .profile-image { width: 56px; height: 56px; }
 
   .timetable-heading {
     font-size: 1.25rem;
-    text-align: center;
+  }
+
+  .timetable-heading::before {
+    width: 8px; height: 8px;
   }
 
   .timetable-content {
-    border-radius: var(--radius-sm, 8px);
+    border-radius: var(--radius-sm);
   }
 
-  /* FORCES THE TABLE TO FIT THE SCREEN WITHOUT SCROLLING */
+  /* Fixed layout ensures it stays within screen boundaries */
   .timetable-table {
     table-layout: fixed;
     width: 100%;
-    word-wrap: break-word; /* Allows long words to break onto the next line */
+    word-wrap: break-word; 
     hyphens: auto;
   }
 
+  /* Micro Typography for fit */
   .timetable-table th {
-    font-size: 0.5rem; /* Micro typography */
-    padding: 0.4rem 0.1rem;
-    letter-spacing: -0.03em;
+    font-size: 0.45rem; 
+    padding: 0.5rem 0.1rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
   }
 
   .timetable-table td {
-    font-size: 0.55rem; /* Micro typography */
-    padding: 0.3rem 0.1rem;
+    font-size: 0.55rem; 
+    padding: 0.4rem 0.1rem;
     line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .period-cell span[style*="0.85em"] {
+    font-size: 0.45rem !important; /* Forces faculty name to be tiny */
+    font-weight: 500;
+    margin-top: 2px;
+    color: var(--accent-orange) !important;
   }
 
   .day-cell {
     font-size: 0.55rem !important;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    padding: 0 !important;
   }
 
   .lunch-cell {
     font-size: 0.5rem !important;
     letter-spacing: 0;
-    writing-mode: vertical-rl; /* Turns "LUNCH" vertical to save horizontal space */
+    writing-mode: vertical-rl;
     text-orientation: mixed;
     transform: rotate(180deg);
+  }
+  
+  .lunch-cell::after {
+    margin: 2px;
+    border-radius: 4px;
   }
 }
