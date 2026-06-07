@@ -1,11 +1,9 @@
-
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Timetable.css";
-
+import Header from "../../Components/Header/Header";
 import NavBar from "../../Components/NavBar/NavBar";
 import MobileNav from "../../Components/MobileNav/MobileNav";
 
@@ -42,7 +40,7 @@ const Timetable = () => {
                     // ==========================================
                     // 1. FETCH FACULTY DATA
                     // ==========================================
-                    const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/faculty", { headers });
+                    const response = await axios.get("http://localhost:8080/api/faculty", { headers });
                     const me = response.data.find(f => String(f.employeeId).trim().toLowerCase() === String(facId).trim().toLowerCase());
 
                     if (me) {
@@ -70,7 +68,7 @@ const Timetable = () => {
                     // ==========================================
                     // 2. FETCH STUDENT DATA (CLEAN API)
                     // ==========================================
-                    const response = await axios.get(`https://tkrc-backend-lreo.onrender.com/api/students/${stuId}/dashboard`, { headers });
+                    const response = await axios.get(`http://localhost:8080/api/students/${stuId}/dashboard`, { headers });
                     const data = response.data;
 
                     setProfileDetails({
@@ -157,7 +155,7 @@ const Timetable = () => {
     return (
         <>
             <ToastContainer position="top-right" autoClose={2000} />
-
+            <Header />
             <div className="nav">
                 <NavBar facultyName={profileDetails?.name || "Dashboard"} />
             </div>
@@ -311,3 +309,5 @@ const Timetable = () => {
 };
 
 export default Timetable;
+
+
