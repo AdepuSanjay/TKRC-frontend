@@ -1,288 +1,671 @@
-/* ==========================================================================
-   CSS Variables for Theming & Consistency
-   ========================================================================== */
+/* ================================================================
+   TKRCET TIMETABLE — PREMIUM PROFESSIONAL CSS
+   Design: Institutional Deep Navy × Gold | Glassmorphism Accents
+   Fonts: Playfair Display + DM Sans
+   ================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
+
+/* ----------------------------------------------------------------
+   CSS VARIABLES — TKRCET Brand Palette
+   ---------------------------------------------------------------- */
 :root {
-  --primary-color: #4f46e5;      /* Indigo 600 */
-  --primary-hover: #4338ca;      /* Indigo 700 */
-  --secondary-color: #0f172a;    /* Slate 900 */
-  --bg-color: #f8fafc;           /* Slate 50 */
-  --card-bg: #ffffff;
-  --text-main: #334155;          /* Slate 700 */
-  --text-muted: #64748b;         /* Slate 500 */
-  --border-color: #e2e8f0;       /* Slate 200 */
-  --lunch-bg: #fef08a;           /* Yellow 200 */
-  --lunch-text: #a16207;         /* Yellow 800 */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-  --radius-lg: 12px;
-  --radius-md: 8px;
-  --transition: all 0.3s ease;
+  --navy:           #0d1b3e;
+  --navy-mid:       #152550;
+  --navy-light:     #1e3365;
+  --gold:           #c9922a;
+  --gold-light:     #e8b84b;
+  --gold-pale:      #f5e4b5;
+  --cream:          #fdfaf4;
+  --white:          #ffffff;
+  --text-primary:   #0d1b3e;
+  --text-secondary: #4a5568;
+  --text-muted:     #8a94a6;
+  --border:         rgba(201, 146, 42, 0.22);
+  --border-light:   rgba(13, 27, 62, 0.1);
+  --glass-bg:       rgba(255, 255, 255, 0.72);
+  --glass-blur:     blur(14px);
+  --shadow-card:    0 4px 32px rgba(13, 27, 62, 0.10), 0 1px 6px rgba(13, 27, 62, 0.06);
+  --shadow-hover:   0 12px 40px rgba(13, 27, 62, 0.16), 0 2px 12px rgba(201, 146, 42, 0.18);
+  --shadow-table:   0 2px 24px rgba(13, 27, 62, 0.08);
+  --radius-sm:      8px;
+  --radius-md:      14px;
+  --radius-lg:      20px;
+  --radius-xl:      28px;
+  --transition:     0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast:0.18s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ==========================================================================
-   Base Container Styles & Animations
-   ========================================================================== */
-@keyframes slideUpFade {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ----------------------------------------------------------------
+   RESET & BASE
+   ---------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@keyframes pulseBorder {
-  0% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
 }
 
+/* ----------------------------------------------------------------
+   PAGE BACKGROUND — Subtle institutional texture
+   ---------------------------------------------------------------- */
 .timetable-container {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 1.5rem;
-  font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  color: var(--text-main);
-  background-color: var(--bg-color);
-  min-height: 80vh;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 80% 40% at 10% 0%, rgba(21, 37, 80, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 30% at 90% 80%, rgba(201, 146, 42, 0.06) 0%, transparent 60%),
+    var(--cream);
+  padding: 2.4rem 1.6rem 4rem;
+  max-width: 1360px;
+  margin: 0 auto;
+  animation: pageReveal 0.6s ease both;
 }
 
-/* ==========================================================================
-   1. Profile Section Styles
-   ========================================================================== */
+@keyframes pageReveal {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ----------------------------------------------------------------
+   NAV WRAPPERS
+   ---------------------------------------------------------------- */
+.nav  { display: block; }
+.mob-nav { display: none; }
+
+/* ----------------------------------------------------------------
+   LOADING STATE
+   ---------------------------------------------------------------- */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1.2rem;
+}
+
+.loading-spinner {
+  width: 52px;
+  height: 52px;
+  border: 3px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ----------------------------------------------------------------
+   COLLEGE HERO BANNER — Above profile
+   ---------------------------------------------------------------- */
+.college-hero-banner {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.college-hero-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    var(--navy) 0%,
+    var(--navy-mid) 40%,
+    var(--navy-light) 70%,
+    rgba(201,146,42,0.25) 100%
+  );
+  z-index: 1;
+}
+
+.college-hero-banner::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 60%;
+  background: linear-gradient(to top, var(--navy) 0%, transparent 100%);
+  z-index: 2;
+}
+
+.college-hero-banner .hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35;
+}
+
+.hero-overlay-text {
+  position: absolute;
+  bottom: 1.4rem;
+  left: 2rem;
+  z-index: 3;
+  color: var(--white);
+}
+
+.hero-overlay-text .college-name {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.1rem, 2.2vw, 1.55rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.hero-overlay-text .college-sub {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--gold-pale);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 0.22rem;
+}
+
+.hero-logo {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.8rem;
+  z-index: 3;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4)) brightness(1.1);
+}
+
+/* ----------------------------------------------------------------
+   PROFILE SECTION — Premium card
+   ---------------------------------------------------------------- */
 .faculty-profile {
-  background: var(--card-bg);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  padding: 2rem;
-  margin-bottom: 2.5rem;
-  animation: slideUpFade 0.6s ease forwards;
-  border: 1px solid var(--border-color);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  padding: 2rem 2.4rem;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 2.2rem;
+  animation: slideUpFade 0.5s 0.15s ease both;
+  position: relative;
+  overflow: hidden;
+}
+
+.faculty-profile::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .profile-table {
   width: 100%;
   border-collapse: collapse;
+  font-family: 'DM Sans', sans-serif;
 }
 
 .profile-table td {
-  padding: 0.75rem 1rem;
+  padding: 0.55rem 0.8rem;
   vertical-align: middle;
-  font-size: 1.05rem;
+  border: none;
+  font-size: 0.95rem;
+  color: var(--text-primary);
 }
 
-.profile-table .label {
+.profile-table td.label {
   font-weight: 600;
-  color: var(--secondary-color);
-  width: 200px;
+  color: var(--navy-mid);
+  font-size: 0.78rem;
   text-transform: uppercase;
-  font-size: 0.85rem;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  width: 180px;
+  opacity: 0.75;
+}
+
+.profile-table td.label::after {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 1px;
+  background: var(--gold);
+  vertical-align: middle;
+  margin-left: 8px;
 }
 
 .profile-image-cell {
   text-align: right;
+  padding: 0.4rem 0 0.4rem 1.6rem !important;
   width: 120px;
 }
 
 .profile-image {
-  width: 100px;
-  height: 100px;
+  width: 96px;
+  height: 96px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid var(--primary-color);
-  box-shadow: var(--shadow-md);
-  transition: var(--transition);
-  animation: pulseBorder 2s infinite;
+  border: 3px solid var(--gold-light);
+  box-shadow: 0 4px 20px rgba(201, 146, 42, 0.3), 0 0 0 6px rgba(201,146,42,0.08);
+  transition: transform var(--transition), box-shadow var(--transition);
+  display: block;
+  margin-left: auto;
 }
 
 .profile-image:hover {
-  transform: scale(1.05);
+  transform: scale(1.06);
+  box-shadow: 0 8px 30px rgba(201, 146, 42, 0.4), 0 0 0 8px rgba(201,146,42,0.12);
 }
 
-/* ==========================================================================
-   2. Timetable & Subject Directory Headings
-   ========================================================================== */
+/* ----------------------------------------------------------------
+   SECTION HEADINGS
+   ---------------------------------------------------------------- */
 .timetable-heading {
-  font-size: 1.5rem;
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
   font-weight: 700;
-  color: var(--secondary-color);
-  margin-bottom: 1.5rem;
-  text-align: center;
-  position: relative;
-  animation: slideUpFade 0.6s ease forwards 0.2s;
-  opacity: 0;
+  color: var(--navy);
+  margin-bottom: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: slideUpFade 0.5s 0.25s ease both;
+}
+
+.timetable-heading::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 1.4em;
+  background: linear-gradient(to bottom, var(--gold), var(--gold-light));
+  border-radius: 4px;
+  flex-shrink: 0;
 }
 
 .timetable-heading::after {
   content: '';
-  display: block;
-  width: 60px;
-  height: 4px;
-  background: var(--primary-color);
-  margin: 0.5rem auto 0;
-  border-radius: 2px;
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--border), transparent);
 }
 
-/* ==========================================================================
-   3. Tables (Timetable & Directory)
-   ========================================================================== */
+/* ----------------------------------------------------------------
+   TABLE CONTAINER
+   ---------------------------------------------------------------- */
 .timetable-content {
-  background: var(--card-bg);
+  background: var(--white);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  overflow-x: auto; /* Crucial for responsive tables */
-  border: 1px solid var(--border-color);
-  animation: slideUpFade 0.6s ease forwards 0.4s;
-  opacity: 0;
+  box-shadow: var(--shadow-table);
+  overflow: hidden;
+  margin-bottom: 2.2rem;
+  animation: slideUpFade 0.5s 0.3s ease both;
+  transition: box-shadow var(--transition);
 }
 
-.timetable-content::-webkit-scrollbar {
-  height: 8px;
+.timetable-content:hover {
+  box-shadow: var(--shadow-hover);
 }
 
-.timetable-content::-webkit-scrollbar-track {
-  background: var(--bg-color);
-  border-radius: var(--radius-md);
-}
-
-.timetable-content::-webkit-scrollbar-thumb {
-  background-color: var(--text-muted);
-  border-radius: var(--radius-md);
-}
-
+/* ----------------------------------------------------------------
+   MAIN TIMETABLE TABLE
+   ---------------------------------------------------------------- */
 .timetable-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  min-width: 800px; /* Forces scroll on small screens */
+  border-collapse: collapse;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  table-layout: fixed;
+}
+
+/* --- THEAD --- */
+.timetable-table thead {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .timetable-table thead tr {
-  background-color: var(--primary-color);
-  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(13, 27, 62, 0.3);
 }
 
-.timetable-table th {
-  padding: 1rem;
+.timetable-table thead th {
+  padding: 1rem 0.6rem;
+  color: var(--gold-pale);
   font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
   text-align: center;
-  font-size: 0.9rem;
-  letter-spacing: 0.02em;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  white-space: nowrap;
+  position: relative;
 }
 
-.timetable-table th:first-child {
-  border-top-left-radius: var(--radius-lg);
+.timetable-table thead th:first-child {
+  width: 110px;
+  min-width: 90px;
+  text-align: left;
+  padding-left: 1.2rem;
+  border-right: 1px solid rgba(201,146,42,0.3);
 }
 
-.timetable-table th:last-child {
-  border-top-right-radius: var(--radius-lg);
+.timetable-table thead th::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%; right: 50%;
+  height: 2px;
+  background: var(--gold);
+  transition: left var(--transition), right var(--transition);
 }
 
+.timetable-table thead th:hover::after {
+  left: 10%;
+  right: 10%;
+}
+
+/* --- TBODY ROWS --- */
 .timetable-table tbody tr {
-  transition: var(--transition);
+  border-bottom: 1px solid rgba(13,27,62,0.06);
+  transition: background var(--transition-fast);
+  animation: rowReveal 0.4s ease both;
 }
 
-.timetable-table tbody tr:hover {
-  background-color: #f1f5f9;
+.timetable-table tbody tr:nth-child(1) { animation-delay: 0.05s; }
+.timetable-table tbody tr:nth-child(2) { animation-delay: 0.10s; }
+.timetable-table tbody tr:nth-child(3) { animation-delay: 0.15s; }
+.timetable-table tbody tr:nth-child(4) { animation-delay: 0.20s; }
+.timetable-table tbody tr:nth-child(5) { animation-delay: 0.25s; }
+.timetable-table tbody tr:nth-child(6) { animation-delay: 0.30s; }
+
+@keyframes rowReveal {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
-.timetable-table td {
-  padding: 1rem;
-  text-align: center;
-  border-bottom: 1px solid var(--border-color);
-  border-right: 1px solid var(--border-color);
-  font-size: 0.95rem;
+.timetable-table tbody tr:nth-child(even) {
+  background: rgba(13, 27, 62, 0.022);
 }
 
-.timetable-table td:last-child {
-  border-right: none;
-}
-
-.timetable-table tbody tr:last-child td {
+.timetable-table tbody tr:last-child {
   border-bottom: none;
 }
 
-/* Specific Cell Styles */
-.day-cell {
-  background-color: #f8fafc;
-  color: var(--secondary-color);
+.timetable-table tbody tr:hover {
+  background: rgba(201, 146, 42, 0.055);
 }
 
-.lunch-cell {
-  background-color: var(--lunch-bg) !important;
-  color: var(--lunch-text);
+/* --- DAY CELL --- */
+td.day-cell {
+  padding: 1rem 0.8rem 1rem 1.2rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  font-size: 0.82rem;
+  color: var(--navy);
   text-transform: uppercase;
-}
-
-.period-cell {
+  letter-spacing: 0.05em;
+  border-right: 2px solid var(--border);
+  white-space: nowrap;
+  background: rgba(13,27,62,0.025);
   position: relative;
-  transition: var(--transition);
 }
 
-.period-cell:hover {
-  background-color: rgba(79, 70, 229, 0.05);
-  cursor: pointer;
+td.day-cell::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%; bottom: 20%;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--gold), var(--gold-light));
+  border-radius: 0 3px 3px 0;
 }
 
-.period-cell span:first-child {
-  font-weight: 600;
-  color: var(--secondary-color);
-}
-
-/* Loading and Empty States */
-.no-data {
+/* --- PERIOD CELL --- */
+td.period-cell {
+  padding: 0.7rem 0.6rem;
   text-align: center;
-  padding: 3rem;
+  vertical-align: middle;
+  border-right: 1px solid rgba(13,27,62,0.06);
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  line-height: 1.4;
+  transition: background var(--transition-fast);
+  position: relative;
+}
+
+td.period-cell:hover {
+  background: rgba(201, 146, 42, 0.08);
+}
+
+td.period-cell span:first-child {
+  font-weight: 500;
+  color: var(--navy-mid);
+}
+
+td.period-cell span:last-child {
+  font-size: 0.74rem;
   color: var(--text-muted);
   font-style: italic;
+  margin-top: 0.15rem;
 }
 
-/* ==========================================================================
-   Responsive Design / Media Queries
-   ========================================================================== */
-@media (max-width: 768px) {
+td.period-cell[colSpan="2"],
+td.period-cell[colSpan="3"] {
+  background: linear-gradient(135deg, rgba(201,146,42,0.05), rgba(201,146,42,0.02));
+  font-weight: 600;
+  color: var(--navy);
+  border-left: 2px solid rgba(201,146,42,0.25);
+}
+
+/* --- LUNCH CELL --- */
+td.lunch-cell {
+  padding: 0.7rem 0.5rem;
+  text-align: center;
+  vertical-align: middle;
+  background: linear-gradient(135deg, rgba(13,27,62,0.07), rgba(13,27,62,0.04));
+  color: var(--navy-mid);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  border-left: 1px dashed rgba(201,146,42,0.35);
+  border-right: 1px dashed rgba(201,146,42,0.35);
+}
+
+/* Empty cell dash */
+td.period-cell:not([colSpan]) {
+  color: var(--text-muted);
+}
+
+/* ----------------------------------------------------------------
+   NO DATA MESSAGE
+   ---------------------------------------------------------------- */
+.no-data {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+/* ----------------------------------------------------------------
+   SUBJECT DIRECTORY TABLE — alternate styling
+   ---------------------------------------------------------------- */
+.timetable-content:last-child .timetable-table thead {
+  background: linear-gradient(135deg, #1e3365 0%, #0d1b3e 100%);
+}
+
+.timetable-content:last-child .timetable-table tbody td {
+  padding: 0.9rem 1rem;
+}
+
+.timetable-content:last-child .timetable-table tbody td:first-child {
+  font-weight: 600;
+  color: var(--navy);
+  border-left: 3px solid var(--gold);
+  padding-left: 1rem;
+}
+
+.timetable-content:last-child .timetable-table tbody td:last-child {
+  font-family: 'DM Sans', monospace;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+}
+
+/* ----------------------------------------------------------------
+   SCROLL WRAPPER for table on small screens
+   ---------------------------------------------------------------- */
+.timetable-content {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.timetable-content::-webkit-scrollbar {
+  height: 5px;
+}
+
+.timetable-content::-webkit-scrollbar-track {
+  background: var(--cream);
+}
+
+.timetable-content::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 10px;
+}
+
+/* ----------------------------------------------------------------
+   BADGE / CHIP — for semester label
+   ---------------------------------------------------------------- */
+.semester-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  color: var(--gold-pale);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid rgba(201,146,42,0.3);
+  margin-left: 0.6rem;
+  vertical-align: middle;
+}
+
+/* ----------------------------------------------------------------
+   FOOTER STRIP
+   ---------------------------------------------------------------- */
+.tkrcet-footer-strip {
+  text-align: center;
+  padding: 1.5rem 1rem 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.tkrcet-footer-strip strong {
+  color: var(--navy-mid);
+}
+
+/* ----------------------------------------------------------------
+   HOVER TOOLTIP for faculty name (student view)
+   ---------------------------------------------------------------- */
+td.period-cell .faculty-tag {
+  display: inline-block;
+  margin-top: 0.2rem;
+  background: rgba(13,27,62,0.06);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 20px;
+  border: 1px solid rgba(13,27,62,0.1);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+td.period-cell:hover .faculty-tag {
+  background: var(--gold);
+  color: var(--white);
+  border-color: var(--gold);
+}
+
+/* ----------------------------------------------------------------
+   PULSE DOT — "live" indicator
+   ---------------------------------------------------------------- */
+.live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  margin-right: 5px;
+  animation: pulseDot 1.8s ease-in-out infinite;
+  vertical-align: middle;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+  50%       { opacity: 0.75; transform: scale(1.2); box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+}
+
+/* ----------------------------------------------------------------
+   SKELETON LOADING ANIMATION
+   ---------------------------------------------------------------- */
+.skeleton {
+  background: linear-gradient(90deg, #e8e8e8 25%, #f4f4f4 50%, #e8e8e8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ================================================================
+   RESPONSIVE BREAKPOINTS
+   ================================================================ */
+
+/* ---- TABLET: ≤ 1024px ---- */
+@media (max-width: 1024px) {
   .timetable-container {
-    padding: 0 1rem;
-    margin: 1rem auto;
+    padding: 1.8rem 1.2rem 3rem;
   }
 
-  /* Stack profile table on mobile */
-  .profile-table, 
-  .profile-table tbody, 
-  .profile-table tr {
-    display: block;
-    width: 100%;
+  .timetable-table {
+    font-size: 0.8rem;
   }
 
-  .profile-table tr {
-    display: flex;
-    flex-wrap: wrap;
-    position: relative;
-    padding-bottom: 1rem;
+  .timetable-table thead th {
+    padding: 0.85rem 0.45rem;
+    font-size: 0.68rem;
   }
 
-  .profile-table td {
-    display: block;
-    padding: 0.5rem 0;
+  td.day-cell {
+    padding: 0.8rem 0.6rem 0.8rem 1rem;
+    font-size: 0.77rem;
+    width: 90px;
+    min-width: 80px;
   }
 
-  .profile-table .label {
-    width: 100%;
-    padding-bottom: 0;
-    color: var(--text-muted);
-  }
-
-  .profile-image-cell {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 80px;
+  td.period-cell {
+    padding: 0.6rem 0.4rem;
+    font-size: 0.77rem;
   }
 
   .profile-image {
@@ -290,7 +673,147 @@
     height: 80px;
   }
 
-  .timetable-heading {
-    font-size: 1.25rem;
+  .college-hero-banner {
+    height: 160px;
   }
 }
+
+/* ---- MOBILE: ≤ 768px ---- */
+@media (max-width: 768px) {
+  .nav     { display: none; }
+  .mob-nav { display: block; }
+
+  .timetable-container {
+    padding: 1rem 0.75rem 3rem;
+  }
+
+  /* Profile card */
+  .faculty-profile {
+    padding: 1.4rem 1.2rem;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  }
+
+  .profile-table td.label {
+    width: 120px;
+    font-size: 0.72rem;
+  }
+
+  .profile-table td {
+    padding: 0.45rem 0.5rem;
+    font-size: 0.88rem;
+  }
+
+  .profile-image {
+    width: 72px;
+    height: 72px;
+    border-width: 2.5px;
+  }
+
+  .profile-image-cell {
+    width: 88px;
+    padding: 0.4rem 0 0.4rem 0.8rem !important;
+  }
+
+  /* Hero Banner */
+  .college-hero-banner {
+    height: 130px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .hero-overlay-text {
+    bottom: 1rem;
+    left: 1.1rem;
+  }
+
+  .hero-overlay-text .college-name {
+    font-size: 1rem;
+  }
+
+  .hero-logo {
+    width: 46px;
+    height: 46px;
+    top: 0.8rem;
+    right: 1rem;
+  }
+
+  /* Timetable table — horizontal scroll */
+  .timetable-content {
+    border-radius: var(--radius-md);
+    margin-bottom: 1.6rem;
+  }
+
+  .timetable-table {
+    font-size: 0.75rem;
+    min-width: 680px;
+  }
+
+  .timetable-table thead th {
+    padding: 0.75rem 0.4rem;
+    font-size: 0.63rem;
+    letter-spacing: 0.04em;
+  }
+
+  .timetable-table thead th:first-child {
+    width: 82px;
+    min-width: 72px;
+    padding-left: 0.8rem;
+  }
+
+  td.day-cell {
+    padding: 0.75rem 0.5rem 0.75rem 0.85rem;
+    font-size: 0.72rem;
+    min-width: 72px;
+  }
+
+  td.period-cell {
+    padding: 0.55rem 0.35rem;
+    font-size: 0.72rem;
+  }
+
+  td.period-cell span:last-child {
+    font-size: 0.66rem;
+  }
+
+  td.lunch-cell {
+    font-size: 0.63rem;
+    padding: 0.55rem 0.3rem;
+  }
+
+  /* Headings */
+  .timetable-heading {
+    font-size: 1.1rem;
+    margin-bottom: 0.9rem;
+  }
+
+  /* Subject directory mobile */
+  .timetable-content:last-child .timetable-table {
+    min-width: 480px;
+  }
+}
+
+/* ---- SMALL MOBILE: ≤ 420px ---- */
+@media (max-width: 420px) {
+  .timetable-container {
+    padding: 0.8rem 0.55rem 2.5rem;
+  }
+
+  .faculty-profile {
+    padding: 1.1rem 0.9rem;
+  }
+
+  .profile-table td.label {
+    width: 100px;
+    font-size: 0.68rem;
+  }
+
+  .profile-table td {
+    font-size: 0.82rem;
+    padding: 0.38rem 0.4rem;
+  }
+
+  .profile-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .profile-image-cell 
