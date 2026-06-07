@@ -19,7 +19,7 @@ const Timetable = () => {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const loadingToast = toast.loading("Loading your schedule...", { theme: "colored" });
+                const loadingToast = toast.loading("Loading your schedule...", { theme: "dark" });
 
                 const facId = localStorage.getItem("facultyId");
                 const stuId = localStorage.getItem("studentId");
@@ -28,7 +28,7 @@ const Timetable = () => {
 
                 if (isStudent && !stuId) {
                     toast.dismiss();
-                    toast.error("You are not properly logged in. Please log out and log back in.", { theme: "colored" });
+                    toast.error("You are not properly logged in. Please log out and log back in.", { theme: "dark" });
                     setLoading(false);
                     return;
                 }
@@ -110,11 +110,11 @@ const Timetable = () => {
                 console.error("Dashboard Fetch Error:", error);
 
                 if (error.response && error.response.status === 404) {
-                    toast.error(`Student ID ${localStorage.getItem("studentId")} not found in database! Please Re-Login.`, { theme: "colored", autoClose: 5000 });
+                    toast.error(`Student ID ${localStorage.getItem("studentId")} not found!`, { theme: "dark", autoClose: 5000 });
                 } else if (error.message === "Network Error") {
-                    toast.error("Network Blocked! Ensure backend is running and CORS is allowed.", { theme: "colored", autoClose: 6000 });
+                    toast.error("Network Blocked! Ensure backend is running.", { theme: "dark", autoClose: 6000 });
                 } else {
-                    toast.error("Server error. Ensure backend is running.", { theme: "colored" });
+                    toast.error("Server error. Ensure backend is running.", { theme: "dark" });
                 }
                 setLoading(false);
             }
@@ -145,7 +145,7 @@ const Timetable = () => {
     const currentYear = new Date().getFullYear();
 
     return (
-        <div className="app-wrapper">
+        <>
             <ToastContainer position="top-right" autoClose={2000} />
 
             <div className="nav">
@@ -155,155 +155,161 @@ const Timetable = () => {
                 <MobileNav />
             </div>
 
-            <main className="timetable-container animate-fade-in">
-                {loading ? (
-                    <div className="loading-state">
-                        <div className="spinner"></div>
-                        <p>Loading schedule...</p>
-                    </div>
-                ) : (
-                    <>
-                        {/* 1. PREMIUM PROFILE CARD (Modeled after template) */}
-                        <section className="profile-card">
-                            <div className="profile-badge">PROFILE OVERVIEW</div>
-                            <div className="profile-content">
-                                <div className="profile-info">
-                                    <h1 className="profile-name">{profileDetails?.name || "N/A"}</h1>
-                                    <p className="profile-dept">{profileDetails?.department || "N/A"}</p>
-                                    <div className="profile-designation-badge">
-                                        {profileDetails?.designation || "N/A"}
+            <div className="timetable-main-wrapper">
+                <div className="timetable-container">
+                    {loading ? (
+                        <div className="loading-state">
+                            <div className="spinner"></div>
+                            <p>Loading your workspace...</p>
+                        </div>
+                    ) : (
+                        <>
+                            {/* 1. PROFILE SECTION */}
+                            <section className="faculty-profile fade-in-up">
+                                <div className="profile-content">
+                                    <div className="profile-info">
+                                        <div className="profile-badge">
+                                            <span className="dot"></span>
+                                            {profileDetails?.designation || "User"}
+                                        </div>
+                                        <h1 className="profile-name">{profileDetails?.name || "N/A"}</h1>
+                                        <p className="profile-dept">{profileDetails?.department || "N/A"}</p>
+                                    </div>
+                                    <div className="profile-image-wrapper">
+                                        <img
+                                            src={profileDetails?.image || "/images/logo.png"}
+                                            alt={`${profileDetails?.name || "User"} Profile`}
+                                            className="profile-image"
+                                            onError={(e) => (e.target.src = "/images/logo.png")}
+                                        />
                                     </div>
                                 </div>
-                                <div className="profile-image-container">
-                                    <img
-                                        src={profileDetails?.image || "/images/logo.png"}
-                                        alt={`${profileDetails?.name || "User"} Profile`}
-                                        className="profile-image"
-                                        onError={(e) => (e.target.src = "/images/logo.png")}
-                                    />
-                                </div>
-                            </div>
-                        </section>
+                            </section>
 
-                        <div className="section-header">
-                            <h2 className="timetable-heading">Master Schedule</h2>
-                            <span className="semester-badge">ODD Semester ({currentYear}-{currentYear + 1})</span>
-                        </div>
+                            <h2 className="section-title fade-in-up delay-1">
+                                Academic Schedule <span>({currentYear}-{currentYear + 1})</span>
+                            </h2>
 
-                        {/* 2. MAIN TIMETABLE SECTION */}
-                        <section className="timetable-content fade-up-stagger">
-                            {timetable.length === 0 ? (
-                                <div className="empty-state">No timetable data available.</div>
-                            ) : (
-                                <div className="table-responsive-wrapper">
-                                    <table className="modern-table">
-                                        <thead>
-                                            <tr>
-                                                <th className="sticky-col">Day</th>
-                                                <th>9:40 - 10:40</th>
-                                                <th>10:40 - 11:40</th>
-                                                <th>11:40 - 12:40</th>
-                                                <th>12:40 - 1:20</th>
-                                                <th>1:20 - 2:20</th>
-                                                <th>2:20 - 3:20</th>
-                                                <th>3:20 - 4:20</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {timetable.map((dayData, index) => {
-                                                const periods = [...Array(7)].map((_, i) =>
-                                                    dayData.periods?.find((p) => p.periodNumber === i + 1) || null
-                                                );
-
-                                                const periodsBeforeLunch = processPeriods(periods.slice(0, 3));
-                                                const lunchPeriod = periods[3]; 
-                                                const periodsAfterLunch = processPeriods(periods.slice(4));
-
-                                                return (
-                                                    <tr key={index} style={{ animationDelay: `${index * 0.1}s` }} className="row-animate">
-                                                        <td className="day-cell sticky-col">{dayData.day || "N/A"}</td>
-
-                                                        {periodsBeforeLunch.map((merged, i) => (
-                                                            <td key={`pre-${i}`} colSpan={merged.span} className={merged.period ? "period-cell active-period" : "period-cell empty-period"}>
-                                                                {merged.period ? (
-                                                                    <div className="period-content">
-                                                                        <span className="subject-title">{merged.period.subject}</span>
-                                                                        {isStudent && merged.period.facultyName && (
-                                                                            <span className="faculty-name">
-                                                                                {merged.period.facultyName}
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                ) : "-"}
-                                                            </td>
-                                                        ))}
-
-                                                        <td className="lunch-cell">
-                                                            {isStudent && lunchPeriod?.subject
-                                                                ? lunchPeriod.subject
-                                                                : "LUNCH BREAK"}
-                                                        </td>
-
-                                                        {periodsAfterLunch.map((merged, i) => (
-                                                            <td key={`post-${i}`} colSpan={merged.span} className={merged.period ? "period-cell active-period" : "period-cell empty-period"}>
-                                                                {merged.period ? (
-                                                                    <div className="period-content">
-                                                                        <span className="subject-title">{merged.period.subject}</span>
-                                                                        {isStudent && merged.period.facultyName && (
-                                                                            <span className="faculty-name">
-                                                                                {merged.period.facultyName}
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                ) : "-"}
-                                                            </td>
-                                                        ))}
-                                                    </tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            )}
-                        </section>
-
-                        {/* 3. STUDENT SUBJECT-FACULTY DIRECTORY */}
-                        {isStudent && subjectFacultyMap.length > 0 && (
-                            <div className="directory-section animate-fade-in" style={{animationDelay: '0.6s'}}>
-                                <div className="section-header">
-                                    <h2 className="timetable-heading">Subject Directory</h2>
-                                    <span className="semester-badge light-badge">Contact Info</span>
-                                </div>
-                                <section className="timetable-content">
+                            {/* 2. MAIN TIMETABLE SECTION */}
+                            <section className="timetable-content fade-in-up delay-2">
+                                {timetable.length === 0 ? (
+                                    <div className="no-data-card">
+                                        <p>No timetable data configured yet.</p>
+                                    </div>
+                                ) : (
                                     <div className="table-responsive-wrapper">
-                                        <table className="modern-table secondary-table">
+                                        <table className="timetable-table">
                                             <thead>
                                                 <tr>
-                                                    <th>Subject</th>
-                                                    <th>Assigned Faculty</th>
-                                                    <th>Contact Number</th>
+                                                    <th className="sticky-col">DAY</th>
+                                                    <th>9:40 - 10:40</th>
+                                                    <th>10:40 - 11:40</th>
+                                                    <th>11:40 - 12:40</th>
+                                                    <th>12:40 - 1:20</th>
+                                                    <th>1:20 - 2:20</th>
+                                                    <th>2:20 - 3:20</th>
+                                                    <th>3:20 - 4:20</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {subjectFacultyMap.map((mapping, idx) => (
-                                                    <tr key={idx} className="row-animate" style={{ animationDelay: `${idx * 0.1}s` }}>
-                                                        <td className="subject-highlight">{mapping.subject}</td>
-                                                        <td className="faculty-highlight">{mapping.facultyName}</td>
-                                                        <td>
-                                                            <span className="contact-pill">{mapping.phoneNumber}</span>
-                                                        </td>
-                                                    </tr>
-                                                ))}
+                                                {timetable.map((dayData, index) => {
+                                                    const periods = [...Array(7)].map((_, i) =>
+                                                        dayData.periods?.find((p) => p.periodNumber === i + 1) || null
+                                                    );
+
+                                                    const periodsBeforeLunch = processPeriods(periods.slice(0, 3));
+                                                    const lunchPeriod = periods[3]; 
+                                                    const periodsAfterLunch = processPeriods(periods.slice(4));
+
+                                                    return (
+                                                        <tr key={index}>
+                                                            <td className="sticky-col day-cell">
+                                                                {dayData.day || "N/A"}
+                                                            </td>
+
+                                                            {periodsBeforeLunch.map((merged, i) => (
+                                                                <td key={`pre-${i}`} colSpan={merged.span} className="period-cell">
+                                                                    {merged.period ? (
+                                                                        <div className="period-card">
+                                                                            <span className="subject">{merged.period.subject}</span>
+                                                                            {isStudent && merged.period.facultyName && (
+                                                                                <span className="faculty-name">
+                                                                                    {merged.period.facultyName}
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    ) : <span className="empty-slot">-</span>}
+                                                                </td>
+                                                            ))}
+
+                                                            <td className="lunch-cell">
+                                                                <div className="lunch-card">
+                                                                    {isStudent && lunchPeriod?.subject
+                                                                        ? lunchPeriod.subject
+                                                                        : "LUNCH BREAK"}
+                                                                </div>
+                                                            </td>
+
+                                                            {periodsAfterLunch.map((merged, i) => (
+                                                                <td key={`post-${i}`} colSpan={merged.span} className="period-cell">
+                                                                    {merged.period ? (
+                                                                        <div className="period-card">
+                                                                            <span className="subject">{merged.period.subject}</span>
+                                                                            {isStudent && merged.period.facultyName && (
+                                                                                <span className="faculty-name">
+                                                                                    {merged.period.facultyName}
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    ) : <span className="empty-slot">-</span>}
+                                                                </td>
+                                                            ))}
+                                                        </tr>
+                                                    );
+                                                })}
                                             </tbody>
                                         </table>
                                     </div>
-                                </section>
-                            </div>
-                        )}
-                    </>
-                )}
-            </main>
-        </div>
+                                )}
+                            </section>
+
+                            {/* 3. STUDENT SUBJECT-FACULTY DIRECTORY */}
+                            {isStudent && subjectFacultyMap.length > 0 && (
+                                <>
+                                    <h2 className="section-title fade-in-up delay-3" style={{ marginTop: '3rem' }}>
+                                        Subject Directory
+                                    </h2>
+                                    <section className="timetable-content fade-in-up delay-4">
+                                        <div className="table-responsive-wrapper">
+                                            <table className="timetable-table directory-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Subject</th>
+                                                        <th>Assigned Faculty</th>
+                                                        <th>Contact Number</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {subjectFacultyMap.map((mapping, idx) => (
+                                                        <tr key={idx}>
+                                                            <td className="subject-col">{mapping.subject}</td>
+                                                            <td>
+                                                                <span className="badge-light">{mapping.facultyName}</span>
+                                                            </td>
+                                                            <td className="mono-text">{mapping.phoneNumber}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </section>
+                                </>
+                            )}
+                        </>
+                    )}
+                </div>
+            </div>
+        </>
     );
 };
 
