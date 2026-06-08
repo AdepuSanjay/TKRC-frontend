@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./Attendance.css";
 import Header from "../../Components/Header/Header";
 import NavBar from "../../Components/NavBar/NavBar";
@@ -11,7 +13,7 @@ const Attendance = () => {
   const navigate = useNavigate();
 
   const queryParams = new URLSearchParams(location.search);
-  const programYear = queryParams.get("programYear");
+  const programYear = queryParams.get("programYear") || queryParams.get("year");
   const department = queryParams.get("department");
   const section = queryParams.get("section");
   const subject = queryParams.get("subject");
@@ -20,22 +22,24 @@ const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [markedPeriods, setMarkedPeriods] = useState([]);
-  const [editPermissions, setEditPermissions] = useState({});
-  const [facultyId, setFacultyId] = useState("");
+  const [facultyName, setFacultyName] = useState("");
 
   const todayDate = new Date().toISOString().split("T")[0];
-  const facultyMongoId = localStorage.getItem("facultyId"); // MongoDB `_id`
+  const facultyId = localStorage.getItem("facultyId"); 
+  const token = localStorage.getItem("token");
 
+  // Fetch verified faculty details securely
   useEffect(() => {
     const fetchFacultyDetails = async () => {
       try {
-        if (facultyMongoId) {
-          const response = await axios.get(
-            `https://tkrc-backend.vercel.app/faculty/${facultyMongoId}`
-          );
-          console.log("Faculty details fetched:", response.data);
-          setFacultyId(response.data.facultyId); // Extract actual facultyId (e.g., D600)
+        if (facultyId) {
+          const headers = { Authorization: `Bearer ${token}` };
+          const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/faculty", { headers });
+          
+          const me = response.data.find(f => String(f.employeeId).trim() === String(facultyId).trim());
+          if (me) {
+            setFacultyName(me.name);
+          }
         }
       } catch (error) {
         console.error("Error fetching faculty details:", error);
@@ -43,10 +47,12 @@ const Attendance = () => {
     };
 
     fetchFacultyDetails();
-  }, [facultyMongoId]);
+  }, [facultyId, token]);
 
+  // Fetch records whenever the date changes
   useEffect(() => {
     fetchAttendanceRecords();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
 
   const fetchAttendanceRecords = async () => {
@@ -54,172 +60,179 @@ const Attendance = () => {
     setError("");
 
     try {
-      const response = await axios.get(
-        `https://tkrc-backend.vercel.app/Attendance/date?date=${date}`
-      );
+      const headers = { Authorization: `Bearer ${token}` };
+      
+      // Fetch all global records from the new backend
+      const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/attendance", { headers });
 
-      if (response.data && Array.isArray(response.data.data)) {
-        const processedData = response.data.data.map((record) => ({
-          ...record,
-          classDetails: `${record.year} ${record.department}-${record.section}`,
-          absentees: record.attendance
-            .filter((student) => student.status === "absent")
-            .map((student) => student.rollNumber),
-        }));
+      if (response.data && Array.isArray(response.data)) {
+        // Filter records strictly by the selected date
+        let filteredRecords = response.data.filter(record => record.date === date);
 
+        // If the user navigated here from a specific class click, filter down to that class
+        if (programYear && department && section) {
+           filteredRecords = filteredRecords.filter(record => 
+             record.year === programYear && 
+             record.department === department && 
+             record.section === section
+           );
+        }
+
+        if (filteredRecords.length === 0) {
+          setAttendanceData([]);
+          throw new Error(`No attendance records found for ${date}.`);
+        }
+
+        // Process data neatly for the table view
+        const processedData = filteredRecords.map((record) => {
+          const absenteesList = record.attendance
+            ? record.attendance.filter((student) => student.status === "absent").map((student) => student.rollNumber)
+            : [];
+
+          return {
+            ...record,
+            classDetails: `${record.year} ${record.department}-${record.section}`,
+            absentees: absenteesList,
+          };
+        });
+
+        // Sort by period number so the table looks organized
+        processedData.sort((a, b) => a.period - b.period);
         setAttendanceData(processedData);
-        setMarkedPeriods(processedData.map((record) => record.period));
+
       } else {
-        throw new Error(`No attendance records found for ${date}.`);
+        throw new Error("Invalid response format from server.");
       }
     } catch (err) {
       setError(err.message);
+      setAttendanceData([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const checkEditPermission = async (record) => {
-    try {
-      if (!facultyId) return;
-
-      console.log("Checking edit permission for:", record);
-
-      const response = await axios.get(
-        `https://tkrc-backend.vercel.app/Attendance/checkEditPermission?facultyId=${facultyId}&year=${record.year}&department=${record.department}&section=${record.section}&date=${record.date}`
-      );
-      const data = response.data;
-
-      console.log("Edit permission response:", data);
-
-      setEditPermissions((prev) => ({
-        ...prev,
-        [`${record.date}-${record.section}`]: data.canEdit,
-      }));
-    } catch (err) {
-      console.error("Error checking edit permission:", err);
-    }
-  };
-
-  useEffect(() => {
-    if (facultyId && attendanceData.length > 0) {
-      attendanceData.forEach((record) => {
-        if (record.date !== todayDate) {
-          checkEditPermission(record);
-        }
-      });
-    }
-  }, [facultyId, attendanceData]);
-
   const handleGoClick = () => {
     const selectedDate = new Date(date).toISOString().split("T")[0];
     if (selectedDate !== todayDate) {
-      alert("You can only mark attendance for today's date.");
+      toast.error("You can only mark new attendance for today's date.", { theme: "colored" });
       setDate(todayDate);
+    } else if (!programYear || !department || !section) {
+      toast.warning("Please select a specific class from the NavBar to mark attendance.", { theme: "colored" });
     } else {
       navigate(
-        `/mark?programYear=${programYear}&department=${department}&section=${section}&subject=${subject}&date=${date}`
+        `/mark?year=${programYear}&department=${department}&section=${section}&subject=${subject}&date=${date}`
       );
     }
   };
 
   const handleEdit = (record) => {
-    const canEdit =
-      record.date === todayDate || editPermissions[`${record.date}-${record.section}`] === true;
+    // Basic frontend safety: only allow editing if it is today
+    const canEdit = record.date === todayDate;
 
     if (canEdit) {
       navigate(
-        `/mark?programYear=${record.year}&department=${record.department}&section=${record.section}&subject=${record.subject}&date=${record.date}&editPeriod=${record.period}`
+        `/mark?year=${record.year}&department=${record.department}&section=${record.section}&subject=${record.subject}&date=${record.date}&editPeriod=${record.period}`
       );
+    } else {
+      toast.error("Past attendance records are locked and cannot be edited.", { theme: "colored" });
     }
   };
 
   return (
+    <>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <Header />
+      <div className="nav">
+        <NavBar facultyName={facultyName || "Dashboard"} />
+      </div>
+      <div className="mob-nav">
+        <MobileNav />
+      </div>
 
-  <>
+      <div className="attendance-container">
+        <div className="attendance-header">
+          <div className="date-selector-container">
+            <label htmlFor="date" className="date-label">Select Date: </label>
+            <input 
+              type="date" 
+              id="date" 
+              className="date-input"
+              value={date} 
+              max={todayDate} // Prevents selecting future dates visually
+              onChange={(e) => setDate(e.target.value)} 
+            />
+            <button onClick={handleGoClick} className="go-button">Go Mark</button>
+          </div>
+        </div>
 
-     <Header />
-  <div className="nav">
-    <NavBar />
-  </div>
-  <div className="mob-nav">
-    <MobileNav />
-  </div>
-    <div className="attendance-container">
- 
-  
-  <div className="attendance-header">
-    <div className="date-selector-container">
-      <label htmlFor="date" className="date-label">Select Date: </label>
-      <input 
-        type="date" 
-        id="date" 
-        className="date-input"
-        value={date} 
-        onChange={(e) => setDate(e.target.value)} 
-      />
-      <button onClick={handleGoClick} className="go-button">Go</button>
-    </div>
-  </div>
+        {loading ? (
+          <p style={{ textAlign: "center", padding: "2rem" }}>Loading attendance records...</p>
+        ) : error ? (
+          <p className="error-message" style={{ textAlign: "center", color: "#d9534f", fontWeight: "bold" }}>
+            {error}
+          </p>
+        ) : (
+          <div className="attendance-table-wrapper">
+            {attendanceData.length > 0 ? (
+              <table className="attendance-table">
+                <thead>
+                  <tr>
+                    <th>Class</th>
+                    <th>Subject</th>
+                    <th>Date</th>
+                    <th>Period</th>
+                    <th>Topic</th>
+                    <th>Faculty</th>
+                    <th>Absentees</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {attendanceData.map((record, index) => {
+                    const canEdit = record.date === todayDate;
 
-  {loading ? (
-    <p>Loading attendance records...</p>
-  ) : error ? (
-    <p className="error-message">No Attendance record found</p>
-  ) : (
-    <div className="attendance-table-wrapper">
-      {attendanceData.length > 0 ? (
-        <table className="attendance-table">
-          <thead>
-            <tr>
-              <th>Class</th>
-              <th>Subject</th>
-              <th>Date</th>
-              <th>Period</th>
-              <th>Topic</th>
-              <th>Remarks</th>
-              <th>Absentees</th>
-              <th>Edit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {attendanceData.map((record, index) => {
-              const canEdit =
-                record.date === todayDate || editPermissions[`${record.date}-${record.section}`] === true;
-
-              return (
-                <tr key={index}>
-                  <td>{record.classDetails}</td>
-                  <td>{record.subject}</td>
-                  <td>{record.date}</td>
-                  <td>{record.period}</td>
-                  <td>{record.topic}</td>
-                  <td>{record.remarks}</td>
-                  <td>
-                    {record.absentees.length > 0 ? record.absentees.join(", ") : "None"}
-                  </td>
-                  <td>
-                    <button 
-                      onClick={() => handleEdit(record)} 
-                      disabled={!canEdit} 
-                      className="edit-button"
-                      title={!canEdit ? "Editing is restricted for this record." : ""}
-                    >
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      ) : (
-        <p>No attendance records available for the selected date.</p>
-      )}
-    </div>
-  )}
-</div>
-</>
+                    return (
+                      <tr key={index}>
+                        <td style={{ fontWeight: "bold" }}>{record.classDetails}</td>
+                        <td>{record.subject}</td>
+                        <td>{record.date}</td>
+                        <td>{record.period}</td>
+                        <td>{record.topic || "N/A"}</td>
+                        <td>{record.facultyName || "N/A"}</td>
+                        <td style={{ color: record.absentees.length > 0 ? "#d9534f" : "inherit" }}>
+                          {record.absentees.length > 0 ? record.absentees.join(", ") : "All Present"}
+                        </td>
+                        <td>
+                          <button 
+                            onClick={() => handleEdit(record)} 
+                            disabled={!canEdit} 
+                            className="edit-button"
+                            style={{ 
+                              opacity: canEdit ? 1 : 0.5, 
+                              cursor: canEdit ? "pointer" : "not-allowed",
+                              backgroundColor: canEdit ? "#0275d8" : "#6c757d",
+                              color: "white",
+                              border: "none",
+                              padding: "5px 10px",
+                              borderRadius: "4px"
+                            }}
+                            title={!canEdit ? "Past records are locked." : "Edit this period"}
+                          >
+                            Edit
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            ) : (
+              <p style={{ textAlign: "center" }}>No attendance records available for the selected date.</p>
+            )}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
