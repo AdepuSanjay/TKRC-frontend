@@ -104,7 +104,7 @@ const StudentDashboard = () => {
 
   return (
     <div className="dashboard-root">
-      <Header />
+      
       <div className="nav">
         <NavBar />
       </div>
@@ -290,6 +290,7 @@ const StudentDashboard = () => {
                 )
               )}
             </div>
+
           </>
         )}
       </div>
@@ -544,6 +545,7 @@ const StudentDashboard = () => {
           }
         `}      
       </style>   
+<Header />
     </div>
   );
 };
