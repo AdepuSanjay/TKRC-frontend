@@ -131,7 +131,7 @@ const StudentDashboard = () => {
 
   return (
     <div className="dashboard-wrapper">
-      <Header />
+      
       <div className="nav">
         <NavBar />
       </div>
@@ -611,7 +611,8 @@ const StudentDashboard = () => {
             .image-cell { width: 80px; }
           }        
         `}      
-      </style>      
+      </style>   
+<Header />   
     </div>
   );
 };
