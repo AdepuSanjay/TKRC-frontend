@@ -247,7 +247,7 @@ const StudentDashboard = () => {
                   <tbody>
                     {Object.entries(attendance.dailySummary).map(([date, data], index) => (
                       <tr key={index}>
-                        <td style={{ fontWeight: "600", color: "#111827" }}>{date}</td>
+                        <td className="date-cell">{date}</td>
                         {[1, 2, 3, 4, 5, 6].map((period) => {
                           const periodData = data.periods[period];
                           const statusClass = periodData?.status.toLowerCase() === "present"
@@ -258,15 +258,21 @@ const StudentDashboard = () => {
                           return (
                             <td key={period} className={statusClass}>
                               {periodData ? (
-                                <span className={`status-tag ${periodData.status.toLowerCase()}`}>
+                                <span 
+                                  className={`status-tag ${periodData.status.toLowerCase()}`}
+                                  title={periodData.subject}
+                                >
                                   {periodData.subject || "-"}
                                 </span>
-                              ) : "-"}
+                              ) : (
+                                <span className="empty-cell">-</span>
+                              )}
                             </td>
                           );
                         })}
-                        <font className="font-medium"><td>{data.total}</td></font>
-                        <font className="font-medium"><td>{data.attended}</td></font>
+                        {/* Fixed Font wrapper layout issue */}
+                        <td className="font-medium numeric-cell">{data.total}</td>
+                        <td className="font-medium numeric-cell">{data.attended}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -322,6 +328,7 @@ const StudentDashboard = () => {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
           }
              
           table {        
@@ -336,6 +343,7 @@ const StudentDashboard = () => {
             text-align: center;        
             border-bottom: 1px solid #f1f5f9;        
             font-size: 0.925rem;
+            white-space: nowrap;
           }        
       
           th {        
@@ -345,6 +353,36 @@ const StudentDashboard = () => {
             text-transform: uppercase;
             font-size: 0.75rem;
             letter-spacing: 0.05em;
+          }
+
+          /* Fixed explicit column structures for Daily Attendance grid */
+          .data-table.t2 {
+            min-width: 800px; /* Enforces horizontal scroll layout protection on mobile screens */
+          }
+
+          .data-table.t2 th, .data-table.t2 td {
+            width: 9%;
+            min-width: 75px;
+          }
+
+          .data-table.t2 th:first-child, .data-table.t2 td:first-child {
+            width: 16%;
+            min-width: 110px;
+          }
+
+          .date-cell {
+            font-weight: 600; 
+            color: #111827;
+            text-align: left !important;
+          }
+
+          .numeric-cell {
+            font-weight: 600;
+            color: #0f172a;
+          }
+
+          .empty-cell {
+            color: #94a3b8;
           }
 
           .info-table th {
@@ -383,13 +421,18 @@ const StudentDashboard = () => {
             color: #0f172a;
           }
 
-          /* Status Modern Badges */
+          /* Status Modern Badges with clipping handlers */
           .status-tag {
             display: inline-block;
-            padding: 4px 8px;
+            padding: 6px 10px;
             border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-size: 0.78rem;
+            font-weight: 600;
+            max-width: 110px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: middle;
           }
 
           .present-cell .status-tag {
@@ -430,7 +473,7 @@ const StudentDashboard = () => {
           }
 
           .total-badge {
-            background-color: #ff6b35; /* Premium contrast coral/orange accent */
+            background-color: #ff6b35; 
             color: white;
             padding: 6px 12px;
             border-radius: 30px;
@@ -563,9 +606,7 @@ const StudentDashboard = () => {
           }
 
           @media (max-width: 480px) {        
-            th, td { padding: 8px 4px; font-size: 0.75rem; }        
-            .status-tag { padding: 2px 4px; font-size: 0.7rem; }
-            .total-badge { padding: 4px 8px; font-size: 0.75rem; }
+            th, td { padding: 8px 6px; font-size: 0.78rem; }        
             img.student-image { width: 70px !important; height: 70px !important; }        
             .image-cell { width: 80px; }
           }        
