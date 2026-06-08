@@ -10,7 +10,7 @@ const StudentDashboard = () => {
   const [loadingStudent, setLoadingStudent] = useState(true);
   const [loadingAttendance, setLoadingAttendance] = useState(true);
   const [error, setError] = useState("");
-  
+
   const studentId = localStorage.getItem("studentId");
   const token = localStorage.getItem("token");
 
@@ -24,7 +24,7 @@ const StudentDashboard = () => {
 
     const headers = { Authorization: `Bearer ${token}` };
 
-    // 1. Fetch Student Details
+    // 1. Fetch Student Details from the new Dashboard API
     axios.get(`https://tkrc-backend-lreo.onrender.com/api/students/${studentId}/dashboard`, { headers })
       .then((res) => {
         if (res.data && res.data.student) {
@@ -39,7 +39,7 @@ const StudentDashboard = () => {
       })
       .finally(() => setLoadingStudent(false));
 
-    // 2. Fetch Attendance Details and process into summaries
+    // 2. Fetch Attendance Details and process the flat array into summaries
     axios.get(`https://tkrc-backend-lreo.onrender.com/api/attendance/student/${studentId}`, { headers })
       .then((res) => {
         const data = res.data;
@@ -100,11 +100,38 @@ const StudentDashboard = () => {
       .finally(() => setLoadingAttendance(false));
   }, [studentId, token]);
 
-  const isLoading = loadingStudent || loadingAttendance;
+  // Render Skeleton UI Loader
+  const renderSkeleton = () => (
+    <div className="dashboard-container skeleton-container">
+      {/* Student Details Skeleton */}
+      <div className="card-panel skeleton-card">
+        <div className="skeleton-line skeleton-title"></div>
+        <div className="skeleton-profile-wrapper">
+          <div className="skeleton-info-rows">
+            <div className="skeleton-line skeleton-row"></div>
+            <div className="skeleton-line skeleton-row"></div>
+            <div className="skeleton-line skeleton-row"></div>
+          </div>
+          <div className="skeleton-avatar"></div>
+        </div>
+      </div>
+      
+      {/* Attendance Summary Skeleton */}
+      <div className="card-panel skeleton-card">
+        <div className="skeleton-line skeleton-title"></div>
+        <div className="skeleton-table">
+          <div className="skeleton-table-header"></div>
+          <div className="skeleton-table-row"></div>
+          <div className="skeleton-table-row"></div>
+          <div className="skeleton-table-row"></div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="dashboard-root">
-      
+    <div className="dashboard-wrapper">
+      <Header />
       <div className="nav">
         <NavBar />
       </div>
@@ -112,440 +139,438 @@ const StudentDashboard = () => {
         <MobileNav />
       </div>
 
-      <div className="dashboard-container">
-        {error ? (
-          <div className="error-card">
-            <h2>System Alert</h2>
-            <p>{error}</p>
-          </div>
-        ) : (
-          <>
-            {/* ==========================================
-                1. STUDENT PROFILE SECTION
-               ========================================== */}
-            <div className="dashboard-card profile-card">
-              <h3>Student Profile</h3>
-              {isLoading ? (
-                <div className="profile-skeleton">
-                  <div className="skeleton-info">
-                    <div className="skeleton-line short"></div>
-                    <div className="skeleton-line medium"></div>
-                    <div className="skeleton-line long"></div>
-                    <div className="skeleton-line medium"></div>
-                  </div>
-                  <div className="skeleton-avatar"></div>
-                </div>
-              ) : (
-                student && (
-                  <div className="profile-data-layout">
-                    <div className="profile-details-table-wrapper">
-                      <table className="clean-details-table">
-                        <tbody>
-                          <tr>
-                            <th>Roll Number</th>
-                            <td>{student.rollNumber}</td>
-                          </tr>
-                          <tr>
-                            <th>Full Name</th>
-                            <td>{student.name}</td>
-                          </tr>
-                          <tr>
-                            <th>Father's Name</th>
-                            <td>{student.fatherName}</td>
-                          </tr>
-                          <tr>
-                            <th>Class & Section</th>
-                            <td>{`${student.year} - ${student.department} (Sec ${student.section})`}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    <div className="profile-avatar-wrapper">
-                      <img
-                        src={student.image || "/images/logo.png"}
-                        alt="Student Profile"
-                        className="student-profile-img"
-                        onError={(e) => (e.target.src = "/images/logo.png")}
-                      />
-                    </div>
-                  </div>
-                )
-              )}
+      {loadingStudent || loadingAttendance ? (
+        renderSkeleton()
+      ) : error ? (
+        <div className="error-container">
+          <h2 className="error-text">{error}</h2>
+        </div>
+      ) : (
+        <div className="dashboard-container">
+          {/* Student Details Card */}
+          {student && (
+            <div className="student-details card-panel">
+              <h2 className="section-title">Student Details</h2>
+              <div className="table-responsive">
+                <table className="info-table">
+                  <tbody>
+                    <tr>
+                      <th>Roll No.</th>
+                      <td>{student.rollNumber}</td>
+                      <td rowSpan="4" className="image-cell">
+                        <img
+                          src={student.image || "/images/logo.png"}
+                          alt="Student"
+                          className="student-image"
+                          onError={(e) => (e.target.src = "/images/logo.png")}
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Student Name</th>
+                      <td>{student.name}</td>
+                    </tr>
+                    <tr>
+                      <th>Father's Name</th>
+                      <td>{student.fatherName}</td>
+                    </tr>
+                    <tr>
+                      <th>Department</th>
+                      <td>{`${student.year} ${student.department} Section ${student.section}`}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
+          )}
 
-            {/* ==========================================
-                2. ATTENDANCE METRICS SUMMARY
-               ========================================== */}
-            <div className="dashboard-card Summary-card">
-              <h3>Subject Analysis</h3>
-              {isLoading ? (
-                <div className="table-skeleton">
-                  <div className="skeleton-header-row"></div>
-                  <div className="skeleton-row"></div>
-                  <div className="skeleton-row"></div>
-                  <div className="skeleton-row"></div>
-                </div>
-              ) : (
-                attendance && attendance.subjectSummary && (
-                  <div className="table-responsive-wrapper">
-                    <table className="dashboard-data-table">
-                      <thead>
-                        <tr>
-                          <th>Subject Name</th>
-                          <th>Conducted</th>
-                          <th>Attended</th>
-                          <th>Percentage</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {attendance.subjectSummary.map((subject, index) => (
-                          <tr key={index}>
-                            <td className="text-left font-semibold">{subject.subject}</td>
-                            <td>{subject.classesConducted}</td>
-                            <td>{subject.classesAttended}</td>
-                            <td>
-                              <span className={`status-pill ${parseFloat(subject.percentage) >= 75 ? "good" : "warning"}`}>
-                                {subject.percentage}%
-                              </span>
+          {/* Attendance Summary Card */}
+          {attendance && attendance.subjectSummary && (
+            <div className="attendance-summary card-panel">
+              <h2 className="section-title">Attendance Summary</h2>
+              <div className="table-responsive">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Subject</th>
+                      <th>Classes Conducted</th>
+                      <th>Classes Attended</th>
+                      <th>Percentage</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attendance.subjectSummary.map((subject, index) => (
+                      <tr key={index}>
+                        <td className="text-left font-medium">{subject.subject}</td>
+                        <td>{subject.classesConducted}</td>
+                        <td>{subject.classesAttended}</td>
+                        <td>
+                          <span className={`percentage-badge ${parseFloat(subject.percentage) >= 75 ? 'good' : 'low'}`}>
+                            {subject.percentage}%
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                    <tr className="total-row">
+                      <td className="text-left"><b>Total</b></td>
+                      <td><b>{attendance.overall.totalClasses}</b></td>
+                      <td><b>{attendance.overall.presentCount}</b></td>
+                      <td id="total">
+                        <span className="total-badge">{attendance.overall.percentage}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Daily Attendance Summary Card */}
+          {attendance && attendance.dailySummary && Object.keys(attendance.dailySummary).length > 0 ? (
+            <div className="daily-attendance card-panel">
+              <h2 className="section-title">Daily Attendance</h2>
+              <div className="table-responsive">
+                <table className="data-table t2">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>1</th>
+                      <th>2</th>
+                      <th>3</th>
+                      <th>4</th>
+                      <th>5</th>
+                      <th>6</th>
+                      <th>Total</th>
+                      <th>Attended</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(attendance.dailySummary).map(([date, data], index) => (
+                      <tr key={index}>
+                        <td style={{ fontWeight: "600", color: "#111827" }}>{date}</td>
+                        {[1, 2, 3, 4, 5, 6].map((period) => {
+                          const periodData = data.periods[period];
+                          const statusClass = periodData?.status.toLowerCase() === "present"
+                            ? "present-cell"
+                            : periodData?.status.toLowerCase() === "absent"
+                            ? "absent-cell"
+                            : "";
+                          return (
+                            <td key={period} className={statusClass}>
+                              {periodData ? (
+                                <span className={`status-tag ${periodData.status.toLowerCase()}`}>
+                                  {periodData.subject || "-"}
+                                </span>
+                              ) : "-"}
                             </td>
-                          </tr>
-                        ))}
-                        <tr className="total-aggregation-row">
-                          <td className="text-left">Grand Total</td>
-                          <td>{attendance.overall.totalClasses}</td>
-                          <td>{attendance.overall.presentCount}</td>
-                          <td className="aggregate-percentage">
-                            {attendance.overall.percentage}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                )
-              )}
+                          );
+                        })}
+                        <font className="font-medium"><td>{data.total}</td></font>
+                        <font className="font-medium"><td>{data.attended}</td></font>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
+          ) : (
+             <div className="no-records card-panel">
+               <h3 style={{ textAlign: "center", color: "#6b7280" }}>No daily attendance records found yet.</h3>
+             </div>
+          )}
+        </div>
+      )}
 
-            {/* ==========================================
-                3. DAILY TRACKING BREAKDOWN
-               ========================================== */}
-            <div className="dashboard-card history-card">
-              <h3>Daily Matrix Logs</h3>
-              {isLoading ? (
-                <div className="table-skeleton">
-                  <div className="skeleton-header-row"></div>
-                  <div className="skeleton-row"></div>
-                  <div className="skeleton-row"></div>
-                </div>
-              ) : (
-                attendance && attendance.dailySummary && Object.keys(attendance.dailySummary).length > 0 ? (
-                  <div className="table-responsive-wrapper">
-                    <table className="dashboard-data-table grid-table">
-                      <thead>
-                        <tr>
-                          <th>Date</th>
-                          <th>P1</th>
-                          <th>P2</th>
-                          <th>P3</th>
-                          <th>P4</th>
-                          <th>P5</th>
-                          <th>P6</th>
-                          <th>Total</th>
-                          <th>Present</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Object.entries(attendance.dailySummary).map(([date, data], index) => (
-                          <tr key={index}>
-                            <td className="date-cell font-semibold">{date}</td>
-                            {[1, 2, 3, 4, 5, 6].map((period) => {
-                              const periodData = data.periods[period];
-                              const statusClass = periodData?.status.toLowerCase() === "present" 
-                                ? "present-indicator" 
-                                : periodData?.status.toLowerCase() === "absent" 
-                                ? "absent-indicator" 
-                                : "empty-indicator";
-                              
-                              return (
-                                <td key={period} className={`${statusClass} period-cell-data`}>
-                                  {periodData ? (
-                                    <>
-                                      <span className="block-subject">{periodData.subject}</span>
-                                      <span className="block-status-tag">{periodData.status}</span>
-                                    </>
-                                  ) : "-"}
-                                </td>
-                              );
-                            })}
-                            <td className="font-semibold bg-gray-light">{data.total}</td>
-                            <td className="font-semibold text-present bg-gray-light">{data.attended}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <div className="no-records-placeholder">
-                    <p>No day-by-day sequence attendance parameters logged yet.</p>
-                  </div>
-                )
-              )}
-            </div>
-
-          </>
-        )}
-      </div>
-
-      {/* Modern High-Fidelity CSS Variables & Rules Layout */}
+      {/* Internal CSS Upgraded to Modern Template Aesthetic */}      
       <style>      
         {`      
-          .dashboard-root {
-            background-color: #f4f6f9;
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+          .dashboard-wrapper {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: #f8fafc;
             min-height: 100vh;
-            color: #1f2937;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1e293b;
           }
 
           .dashboard-container {
             max-width: 1140px;
             margin: 0 auto;
-            padding: 2rem 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
+            padding: 24px 16px;
           }
 
-          .dashboard-card {
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-            padding: 1.75rem;
-            border: 1px solid #e5e7eb;
-          }
-
-          .dashboard-card h3 {
+          .card-panel {        
+            margin-bottom: 24px;        
+            padding: 32px;        
+            background-color: #ffffff;        
+            border-radius: 16px;        
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+          }        
+      
+          .section-title {        
+            text-align: left;        
+            color: #0f172a;        
+            font-size: 1.25rem;
+            font-weight: 700;
             margin-top: 0;
-            margin-bottom: 1.25rem;
-            font-size: 1.15rem;
-            color: #374151;
-            font-weight: 700;
-            border-left: 4px solid #6495ED;
-            padding-left: 10px;
-          }
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+          }        
 
-          /* Profile View Layouts */
-          .profile-data-layout {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 2rem;
-          }
-
-          .profile-details-table-wrapper {
-            flex: 1;
-          }
-
-          .clean-details-table {
+          .table-responsive {
             width: 100%;
-            border-collapse: collapse;
-          }
-
-          .clean-details-table th, .clean-details-table td {
-            padding: 0.75rem 0;
-            text-align: left;
-            border-bottom: 1px solid #f3f4f6;
-            font-size: 0.95rem;
-          }
-
-          .clean-details-table th {
-            color: #6b7280;
-            font-weight: 500;
-            width: 30%;
-          }
-
-          .clean-details-table td {
-            color: #111827;
-            font-weight: 600;
-          }
-
-          .student-profile-img {
-            width: 110px;
-            height: 110px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 4px solid #f3f4f6;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-          }
-
-          /* Global Structural Grid Tables styling overrides */
-          .table-responsive-wrapper {
             overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
+            -webkit-overflow-scrolling: touch;
           }
-
-          .dashboard-data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-            background: #ffffff;
-          }
-
-          .dashboard-data-table th {
-            background-color: #f8fafc;
-            color: #475569;
+             
+          table {        
+            width: 100%;        
+            border-collapse: separate;        
+            border-spacing: 0;
+            margin: 8px 0;
+          }        
+      
+          th, td {        
+            padding: 14px 16px;        
+            text-align: center;        
+            border-bottom: 1px solid #f1f5f9;        
+            font-size: 0.925rem;
+          }        
+      
+          th {        
+            background-color: #f8fafc;      
+            color: #475569;        
             font-weight: 600;
-            padding: 0.85rem 1rem;
-            text-align: center;
-            border-bottom: 2px solid #e2e8f0;
-          }
-
-          .dashboard-data-table td {
-            padding: 0.85rem 1rem;
-            text-align: center;
-            border-bottom: 1px solid #edf2f7;
-            color: #334155;
-          }
-
-          .text-left { text-align: left !important; }
-          .font-semibold { font-weight: 600; }
-          .bg-gray-light { background-color: #f8fafc; }
-
-          .status-pill {
-            display: inline-block;
-            padding: 0.25rem 0.6rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-          }
-          .status-pill.good { background-color: #ecfdf5; color: #10b981; }
-          .status-pill.warning { background-color: #fef2f2; color: #ef4444; }
-
-          .total-aggregation-row {
-            background-color: #f8fafc;
-            font-weight: 700;
-          }
-          .total-aggregation-row td {
-            color: #0f172a;
-            border-top: 2px solid #e2e8f0;
-          }
-          .aggregate-percentage {
-            color: #ef4444 !important;
-          }
-
-          /* Period Grid Formatting */
-          .period-cell-data {
-            padding: 0.5rem !important;
-            min-width: 95px;
-          }
-          .block-subject {
-            display: block;
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: #1e293b;
-          }
-          .block-status-tag {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: 700;
             text-transform: uppercase;
-            margin-top: 2px;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
           }
 
-          .present-indicator .block-status-tag { color: #10b981; }
-          .absent-indicator .block-status-tag { color: #ef4444; }
-          .empty-indicator { color: #94a3b8; }
-
-          .text-present { color: #10b981 !important; }
-          .no-records-placeholder {
-            text-align: center;
-            padding: 2rem;
-            color: #64748b;
+          .info-table th {
+            text-align: left;
+            background-color: transparent;
+            color: #475569;
+            width: 25%;
+            text-transform: none;
+            font-size: 0.9rem;
+            letter-spacing: normal;
+            border-bottom: 1px solid #f1f5f9; 
           }
 
+          .info-table td {
+            text-align: left;
+            color: #0f172a;
+            font-weight: 500;
+          }
+
+          .data-table th:first-child, .data-table td:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+          }
+
+          .data-table th:last-child, .data-table td:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+          }
+
+          .text-left {
+            text-align: left !important;
+          }
+
+          .font-medium {
+            font-weight: 500;
+            color: #0f172a;
+          }
+
+          /* Status Modern Badges */
+          .status-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+          }
+
+          .present-cell .status-tag {
+            background-color: #ecfdf5;
+            color: #059669;
+          }
+
+          .absent-cell .status-tag {
+            background-color: #fef2f2;
+            color: #dc2626;
+          }
+
+          .percentage-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+          }
+
+          .percentage-badge.good {
+            background-color: #e0f2fe;
+            color: #0284c7;
+          }
+
+          .percentage-badge.low {
+            background-color: #fff7ed;
+            color: #ea580c;
+          }
+
+          .total-row {
+            background-color: #f8fafc;
+          }
+
+          .total-row td {
+            border-bottom: none;
+            color: #0f172a;
+          }
+
+          .total-badge {
+            background-color: #ff6b35; /* Premium contrast coral/orange accent */
+            color: white;
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-weight: 700;
+          }
+
+          /* Profile Image Adjustments */
+          .image-cell {
+            width: 160px;
+            text-align: right;
+            vertical-align: middle;
+            border-bottom: none !important;
+          }
+
+          img.student-image {        
+            width: 120px !important;        
+            height: 120px !important;        
+            object-fit: cover;        
+            border-radius: 12px;        
+            border: 3px solid #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+          }        
+
+          /* Error Component styling */
+          .error-container {
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+          }
+          
+          .error-text {
+            background-color: #fef2f2;
+            color: #ef4444;
+            padding: 16px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid #fee2e2;
+          }
+      
           /* ==========================================
-              SKELETON SHIMMER ANIMATION EFFECT CONFIGS
+             SKELETON SHIMMER ANIMATION 
              ========================================== */
-          .skeleton-pulse {
-            background: linear-gradient(-90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
-            background-size: 400% 400%;
-            animation: shimmerPulse 1.6s ease infinite;
+          .skeleton-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
           }
 
-          @keyframes shimmerPulse {
-            0% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+          .skeleton-line {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 6px;
           }
 
-          .profile-skeleton {
+          .skeleton-title {
+            width: 200px;
+            height: 24px;
+            margin-bottom: 24px;
+          }
+
+          .skeleton-profile-wrapper {
             display: flex;
             justify-content: space-between;
             align-items: center;
           }
-          .skeleton-info { flex: 1; display: flex; flex-direction: column; gap: 0.75rem; }
-          
-          .skeleton-line {
-            height: 16px;
-            border-radius: 4px;
-            background: linear-gradient(-90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
-            background-size: 400% 400%;
-            animation: shimmerPulse 1.6s ease infinite;
+
+          .skeleton-info-rows {
+            width: 70%;
           }
-          .skeleton-line.short { width: 25%; }
-          .skeleton-line.medium { width: 55%; }
-          .skeleton-line.long { width: 85%; }
+
+          .skeleton-row {
+            height: 18px;
+            margin-bottom: 16px;
+            width: 100%;
+          }
+          .skeleton-info-rows .skeleton-row:nth-child(2) { width: 85%; }
+          .skeleton-info-rows .skeleton-row:nth-child(3) { width: 60%; }
 
           .skeleton-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(-90deg, #f3f4f6 0%, #e5e7eb 50%, #f3f4f6 100%);
-            background-size: 400% 400%;
-            animation: shimmerPulse 1.6s ease infinite;
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
           }
 
-          .table-skeleton {
-            display: flex;
-            flex-direction: column;
-            gap: 0.85rem;
+          .skeleton-table {
+            width: 100%;
           }
-          .skeleton-header-row {
+
+          .skeleton-table-header {
+            height: 40px;
+            background: #f8fafc;
+            border-radius: 6px;
+            margin-bottom: 12px;
+          }
+
+          .skeleton-table-row {
             height: 35px;
-            border-radius: 6px;
-            background-color: #e2e8f0;
-          }
-          .skeleton-row {
-            height: 45px;
-            border-radius: 6px;
-            background: linear-gradient(-90deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%);
-            background-size: 400% 400%;
-            animation: shimmerPulse 1.6s ease infinite;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 4px;
           }
 
-          .error-card {
-            background-color: #fef2f2;
-            border: 1px solid #fee2e2;
-            border-radius: 8px;
-            padding: 1.5rem;
-            text-align: center;
+          @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
           }
-          .error-card h2 { color: #dc2626; margin-top: 0; }
-          .error-card p { color: #991b1b; font-weight: 500; margin-bottom: 0; }
 
-          /* Responsive Breakpoint Normalizations */
-          @media (max-width: 768px) {
-            .dashboard-container { padding: 1rem 0.5rem; gap: 1.25rem; }
-            .dashboard-card { padding: 1.25rem; }
-            .profile-data-layout { flex-direction: column-reverse; text-align: center; gap: 1rem; }
-            .clean-details-table th { width: 40%; }
-            .clean-details-table th, .clean-details-table td { font-size: 0.85rem; }
-            .student-profile-img { width: 90px; height: 90px; }
-            .dashboard-data-table th, .dashboard-data-table td { padding: 0.6rem 0.5rem; font-size: 0.8rem; }
-            .period-cell-data { min-width: 80px; }
-            .block-subject { font-size: 0.7rem; }
+          /* Responsive Breakpoints */        
+          @media (max-width: 1024px) {        
+            .card-panel { padding: 24px; }
+            th, td { padding: 12px; font-size: 0.875rem; }        
+          }        
+      
+          @media (max-width: 768px) {        
+            .skeleton-profile-wrapper { flex-direction: column-reverse; align-items: flex-start; }
+            .skeleton-info-rows { width: 100%; margin-top: 16px; }
+            .skeleton-avatar { margin-bottom: 16px; width: 90px; height: 90px; }
+
+            .card-panel { padding: 20px; }
+            .info-table th { width: 35%; }
+            th, td { padding: 10px 8px; font-size: 0.8rem; }        
+            img.student-image { width: 90px !important; height: 90px !important; }        
+            .image-cell { width: 100px; }
           }
+
+          @media (max-width: 480px) {        
+            th, td { padding: 8px 4px; font-size: 0.75rem; }        
+            .status-tag { padding: 2px 4px; font-size: 0.7rem; }
+            .total-badge { padding: 4px 8px; font-size: 0.75rem; }
+            img.student-image { width: 70px !important; height: 70px !important; }        
+            .image-cell { width: 80px; }
+          }        
         `}      
-      </style>   
-<Header />
+      </style>      
     </div>
   );
 };
