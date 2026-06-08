@@ -88,26 +88,25 @@ const Attendance = () => {
     }
   };
 
-  // Helper function to check if a date is within a 2-day window
   const isWithinTwoDays = (recordDateStr) => {
     const recordDate = new Date(recordDateStr);
     const today = new Date();
-    // Normalize both dates to midnight to avoid time-of-day edge cases
     recordDate.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
 
     const timeDiff = today.getTime() - recordDate.getTime();
     const daysDiff = timeDiff / (1000 * 3600 * 24);
-    
-    return daysDiff >= 0 && daysDiff <= 1; // 0 = today, 1 = yesterday
+
+    return daysDiff >= 0 && daysDiff <= 1; 
   };
 
   const handleEdit = (record) => {
     const canEdit = isWithinTwoDays(record.date);
 
     if (canEdit) {
+      // FIXED: Now passing recordId securely in the URL so Marking.js knows exactly what to update
       navigate(
-        `/mark?year=${record.year}&department=${record.department}&section=${record.section}&subject=${record.subject}&date=${record.date}&editPeriod=${record.period}`
+        `/mark?year=${record.year}&department=${record.department}&section=${record.section}&subject=${record.subject}&date=${record.date}&editPeriod=${record.period}&recordId=${record.id}`
       );
     } else {
       toast.warning("Editing past records (older than 2 days) is restricted.", { theme: "colored" });
