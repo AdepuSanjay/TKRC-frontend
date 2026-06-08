@@ -18,6 +18,7 @@ const Marking = () => {
   const section = query.get("section");
   const subject = query.get("subject");
   const editPeriod = query.get("editPeriod");
+  const recordId = query.get("recordId"); // Extract the MongoDB ID
 
   const [studentsData, setStudentsData] = useState([]);
   const [facultyName, setFacultyName] = useState(localStorage.getItem("userName") || "Faculty");
@@ -62,7 +63,6 @@ const Marking = () => {
   const fetchStudents = async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
-      // Passing all 3 mandatory parameters to the new API!
       const response = await axios.get(
         `https://tkrc-backend-lreo.onrender.com/api/attendance/students-list?year=${programYear}&department=${department}&section=${section}`,
         { headers }
@@ -73,7 +73,7 @@ const Marking = () => {
         setStudentsData(students);
         setAttendance(
           students.reduce((acc, student) => {
-            acc[student.rollNumber] = "present"; // Default to "present"
+            acc[student.rollNumber] = "present"; 
             return acc;
           }, {})
         );
@@ -93,7 +93,6 @@ const Marking = () => {
       const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/attendance", { headers });
       
       if (response.data && Array.isArray(response.data)) {
-        // Filter the giant list to find what has already been marked for this exact class today
         const todaysMarks = response.data.filter(
           record => 
             record.date === date && 
@@ -150,9 +149,9 @@ const Marking = () => {
     const headers = { Authorization: `Bearer ${token}` };
 
     try {
-      // Loop through all selected checkboxes and send an individual sheet for each period
-      const submissionPromises = periods.map(period => {
-        const attendanceData = {
+      // IF EDIT MODE: Send a PUT request to update the exact existing document
+      if (editPeriod && recordId) {
+        const updateData = {
           date,
           year: programYear,
           department,
@@ -160,7 +159,7 @@ const Marking = () => {
           subject,
           topic,
           remarks,
-          period: period, // Single integer as required by backend
+          period: parseInt(editPeriod),
           facultyName,
           phoneNumber,
           attendance: studentsData.map((student) => ({
@@ -170,17 +169,37 @@ const Marking = () => {
           })),
         };
 
-        return axios.post(
-          "https://tkrc-backend-lreo.onrender.com/api/attendance",
-          attendanceData,
-          { headers }
-        );
-      });
+        await axios.put(`https://tkrc-backend-lreo.onrender.com/api/attendance/${recordId}`, updateData, { headers });
+        toast.success("Attendance updated successfully!");
 
-      // Wait for all periods to submit
-      await Promise.all(submissionPromises);
+      } else {
+        // IF NEW SUBMISSION: Send POST request(s) for the selected periods
+        const submissionPromises = periods.map(period => {
+          const attendanceData = {
+            date,
+            year: programYear,
+            department,
+            section,
+            subject,
+            topic,
+            remarks,
+            period: period, 
+            facultyName,
+            phoneNumber,
+            attendance: studentsData.map((student) => ({
+              rollNumber: student.rollNumber,
+              name: student.name,
+              status: attendance[student.rollNumber],
+            })),
+          };
 
-      toast.success("Attendance submitted successfully!");
+          return axios.post("https://tkrc-backend-lreo.onrender.com/api/attendance", attendanceData, { headers });
+        });
+
+        await Promise.all(submissionPromises);
+        toast.success("Attendance submitted successfully!");
+      }
+
       setTimeout(() => navigate("/attendance"), 2000);
 
     } catch (error) {
@@ -201,18 +220,14 @@ const Marking = () => {
       <ToastContainer position="top-right" autoClose={3000} />
       <style>{`
         .attendanceMain {
-          padding: 20px;
-          background-color: #fff;
-          margin: 20px;
-          border-radius: 8px;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+          padding: 20px; background-color: #fff; margin: 20px;
+          border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         .compulsoryText { color: red; font-weight: bold; }
         .attendanceHeading {
           font-size: 19px; font-weight: bold; padding-top:5px;
           margin-top:4px; margin-bottom: 15px; text-align: center;
         }
-        .attendanceDetails { margin-bottom: 20px; }
         .periodSelection { margin-bottom: 15px; }
         .periodSelection label { font-size: 14px; margin-right: 10px; }
         .periodSelection input[type="checkbox"] {
@@ -300,7 +315,7 @@ const Marking = () => {
                   }
                 />
                 {period}
-                {isMarkedByMe && (
+                {isMarkedByMe && !editPeriod && (
                   <span style={{ color: "red", marginLeft: "5px", fontSize: "0.8em" }}>
                     ({markedSubject})
                   </span>
@@ -348,9 +363,7 @@ const Marking = () => {
                     <input
                       type="radio"
                       checked={attendance[student.rollNumber] === "present"}
-                      onChange={() =>
-                        handleAttendanceChange(student.rollNumber, "present")
-                      }
+                      onChange={() => handleAttendanceChange(student.rollNumber, "present")}
                     />
                   </td>
                   <td>
@@ -358,9 +371,7 @@ const Marking = () => {
                       type="radio"
                       className="absentStatus"
                       checked={attendance[student.rollNumber] === "absent"}
-                      onChange={() =>
-                        handleAttendanceChange(student.rollNumber, "absent")
-                      }
+                      onChange={() => handleAttendanceChange(student.rollNumber, "absent")}
                     />
                   </td>
                 </tr>
@@ -370,7 +381,7 @@ const Marking = () => {
         )}
         
         <button id="btn-submit" onClick={handleSubmit} disabled={isSubmitting || studentsData.length === 0}>
-          {isSubmitting ? "Submitting..." : "Submit Attendance"}
+          {isSubmitting ? "Submitting..." : (editPeriod ? "Save Changes" : "Submit Attendance")}
         </button>
       </div>
     </>
