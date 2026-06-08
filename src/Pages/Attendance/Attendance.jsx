@@ -11,7 +11,6 @@ const Attendance = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Extract class details from the URL parameters (passed from NavBar)
   const queryParams = new URLSearchParams(location.search);
   const programYear = queryParams.get("year") || queryParams.get("programYear"); 
   const department = queryParams.get("department");
@@ -27,7 +26,6 @@ const Attendance = () => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    // Only fetch if we have the class details
     if (programYear && department && section) {
       fetchAttendanceRecords();
     } else {
@@ -41,13 +39,9 @@ const Attendance = () => {
 
     try {
       const headers = { Authorization: `Bearer ${token}` };
-      
-      // Fetch all attendance from the new secure backend
       const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/attendance", { headers });
 
       if (response.data && Array.isArray(response.data)) {
-        
-        // Filter records strictly for the selected Date AND specific Class
         const matchingRecords = response.data.filter(
           (record) => 
             record.date === date && 
@@ -60,7 +54,6 @@ const Attendance = () => {
           throw new Error(`No attendance records found for this class on ${date}.`);
         }
 
-        // Process absentees cleanly from your nested MongoDB document array
         const processedData = matchingRecords.map((record) => ({
           ...record,
           classDetails: `${record.year} ${record.department}-${record.section}`,
@@ -89,30 +82,42 @@ const Attendance = () => {
       toast.error("You can only mark new attendance for today's date.", { theme: "colored" });
       setDate(todayDate);
     } else {
-      // Redirect to the marking sheet component with clean URL params
       navigate(
         `/mark?year=${programYear}&department=${department}&section=${section}&subject=${subject}&date=${date}`
       );
     }
   };
 
+  // Helper function to check if a date is within a 2-day window
+  const isWithinTwoDays = (recordDateStr) => {
+    const recordDate = new Date(recordDateStr);
+    const today = new Date();
+    // Normalize both dates to midnight to avoid time-of-day edge cases
+    recordDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    const timeDiff = today.getTime() - recordDate.getTime();
+    const daysDiff = timeDiff / (1000 * 3600 * 24);
+    
+    return daysDiff >= 0 && daysDiff <= 1; // 0 = today, 1 = yesterday
+  };
+
   const handleEdit = (record) => {
-    // Basic validation: Allow editing only if the record is from today
-    const canEdit = record.date === todayDate;
+    const canEdit = isWithinTwoDays(record.date);
 
     if (canEdit) {
       navigate(
         `/mark?year=${record.year}&department=${record.department}&section=${record.section}&subject=${record.subject}&date=${record.date}&editPeriod=${record.period}`
       );
     } else {
-      toast.warning("Editing past records is restricted.", { theme: "colored" });
+      toast.warning("Editing past records (older than 2 days) is restricted.", { theme: "colored" });
     }
   };
 
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
-      
+
       <div className="nav">
         <NavBar />
       </div>
@@ -129,7 +134,7 @@ const Attendance = () => {
               id="date" 
               className="date-input"
               value={date} 
-              max={todayDate} // Prevent selecting future dates
+              max={todayDate} 
               onChange={(e) => setDate(e.target.value)} 
             />
             <button onClick={handleGoClick} className="go-button">Mark New Attendance</button>
@@ -160,7 +165,7 @@ const Attendance = () => {
                 </thead>
                 <tbody>
                   {attendanceData.map((record, index) => {
-                    const canEdit = record.date === todayDate;
+                    const canEdit = isWithinTwoDays(record.date);
 
                     return (
                       <tr key={index}>
@@ -178,7 +183,7 @@ const Attendance = () => {
                             onClick={() => handleEdit(record)} 
                             disabled={!canEdit} 
                             className={`edit-button ${!canEdit ? "disabled-btn" : ""}`}
-                            title={!canEdit ? "Editing past records is locked." : "Edit today's attendance"}
+                            title={!canEdit ? "Editing past records is locked." : "Edit attendance"}
                             style={{ opacity: canEdit ? 1 : 0.5, cursor: canEdit ? "pointer" : "not-allowed" }}
                           >
                             Edit
