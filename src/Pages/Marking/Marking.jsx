@@ -3,6 +3,9 @@ import Header from "../../Components/Header/Header";
 import NavBar from "../../Components/NavBar/NavBar";
 import MobileNav from "../../Components/MobileNav/MobileNav";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Marking = () => {
   const navigate = useNavigate();
@@ -10,19 +13,18 @@ const Marking = () => {
   const query = new URLSearchParams(location.search);
 
   const date = query.get("date") || new Date().toISOString().split("T")[0];
-  const programYear = query.get("programYear");
+  const programYear = query.get("year") || query.get("programYear");
   const department = query.get("department");
   const section = query.get("section");
   const subject = query.get("subject");
   const editPeriod = query.get("editPeriod");
 
   const [studentsData, setStudentsData] = useState([]);
-
-const [facultyName, setFacultyName] = useState("User");
-
-const [phoneNumber, setPhoneNumber] = useState('Not available');
-
-const facultyId = localStorage.getItem("facultyId"); // If stored in local storage
+  const [facultyName, setFacultyName] = useState(localStorage.getItem("userName") || "Faculty");
+  const [phoneNumber, setPhoneNumber] = useState("Not available");
+  
+  const facultyId = localStorage.getItem("facultyId");
+  const token = localStorage.getItem("token");
 
   const [topic, setTopic] = useState("");
   const [remarks, setRemarks] = useState("");
@@ -33,6 +35,7 @@ const facultyId = localStorage.getItem("facultyId"); // If stored in local stora
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    fetchFacultyDetails();
     fetchStudents();
     fetchMarkedSubjects();
     if (editPeriod) {
@@ -40,16 +43,36 @@ const facultyId = localStorage.getItem("facultyId"); // If stored in local stora
     }
   }, []);
 
+  const fetchFacultyDetails = async () => {
+    if (!facultyId || !token) return;
+    try {
+      const headers = { Authorization: `Bearer ${token}` };
+      const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/faculty", { headers });
+      const me = response.data.find(f => String(f.employeeId).trim() === String(facultyId).trim());
+      
+      if (me) {
+        setFacultyName(me.name);
+        setPhoneNumber(me.mobileNumber || "Not available");
+      }
+    } catch (error) {
+      console.error("Error fetching faculty details:", error.message);
+    }
+  };
+
   const fetchStudents = async () => {
     try {
-      const response = await fetch(
-        `https://tkrc-backend.vercel.app/Section/${programYear}/${department}/${section}/students`
+      const headers = { Authorization: `Bearer ${token}` };
+      // Passing all 3 mandatory parameters to the new API!
+      const response = await axios.get(
+        `https://tkrc-backend-lreo.onrender.com/api/attendance/students-list?year=${programYear}&department=${department}&section=${section}`,
+        { headers }
       );
-      const result = await response.json();
-      if (result.students && Array.isArray(result.students)) {
-        setStudentsData(result.students);
+      
+      const students = response.data;
+      if (students && Array.isArray(students)) {
+        setStudentsData(students);
         setAttendance(
-          result.students.reduce((acc, student) => {
+          students.reduce((acc, student) => {
             acc[student.rollNumber] = "present"; // Default to "present"
             return acc;
           }, {})
@@ -58,62 +81,43 @@ const facultyId = localStorage.getItem("facultyId"); // If stored in local stora
         throw new Error("Failed to fetch students.");
       }
     } catch (error) {
-      alert(`Error: ${error.message}`);
+      toast.error(`Error fetching students: ${error.response?.data?.message || error.message}`);
     } finally {
       setIsLoading(false);
     }
   };
 
-
-
-useEffect(() => {
-  const  fetchFacultyDetails = async () => {
-    if (!facultyId) return;
-
-    try {
-      const response = await fetch(
-        `https://tkrc-backend.vercel.app/faculty/${facultyId}`
-      );
-      const data = await response.json();
-
-      if (data) {
-        if (data.name) setFacultyName(data.name);
-        if (data.phoneNumber) setPhoneNumber(data.phoneNumber);
-      }
-    } catch (error) {
-      console.error("Error fetching faculty details:", error.message);
-    }
-  };
-
-  fetchFacultyDetails();
-}, [facultyId]);
-
-
-
   const fetchMarkedSubjects = async () => {
     try {
-      const response = await fetch(
-        `https://tkrc-backend.vercel.app/Attendance/marked-subjects?date=${date}&year=${programYear}&department=${department}&section=${section}`
-      );
-      const result = await response.json();
-      if (result.data && Array.isArray(result.data)) {
-        setMarkedSubjects(result.data);
-      } else {
-        throw new Error("Failed to fetch marked subjects.");
+      const headers = { Authorization: `Bearer ${token}` };
+      const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/attendance", { headers });
+      
+      if (response.data && Array.isArray(response.data)) {
+        // Filter the giant list to find what has already been marked for this exact class today
+        const todaysMarks = response.data.filter(
+          record => 
+            record.date === date && 
+            record.year === programYear && 
+            record.department === department && 
+            record.section === section
+        );
+        setMarkedSubjects(todaysMarks);
       }
     } catch (error) {
-      console.error(error.message);
+      console.error("Failed to fetch marked subjects:", error.message);
     }
   };
 
   const fetchAttendanceRecord = async () => {
     try {
-      const response = await fetch(
-        `https://tkrc-backend.vercel.app/Attendance/check?date=${date}&year=${programYear}&department=${department}&section=${section}&period=${editPeriod}`
+      const headers = { Authorization: `Bearer ${token}` };
+      const response = await axios.get(
+        `https://tkrc-backend-lreo.onrender.com/api/attendance/search?date=${date}&year=${programYear}&department=${department}&section=${section}&period=${editPeriod}`,
+        { headers }
       );
-      const result = await response.json();
-      if (result && result.records && result.records.length > 0) {
-        const record = result.records[0];
+      
+      const record = response.data;
+      if (record) {
         setTopic(record.topic || "");
         setRemarks(record.remarks || "");
         setAttendance(
@@ -123,11 +127,9 @@ useEffect(() => {
           }, {})
         );
         setPeriods([parseInt(editPeriod)]);
-      } else {
-        throw new Error("No attendance record found for the selected period.");
       }
     } catch (error) {
-      alert(`Error: ${error.message}`);
+      toast.error("No existing attendance record found for this period.");
     }
   };
 
@@ -139,52 +141,51 @@ useEffect(() => {
   };
 
   const handleSubmit = async () => {
-    if (!subject.trim() || !topic.trim() || periods.length === 0) {
-      alert("Please fill in all mandatory fields (Periods, Subject, Topic).");
+    if (!subject || !subject.trim() || periods.length === 0) {
+      toast.warning("Please fill in all mandatory fields (Periods, Subject).");
       return;
     }
 
-    const attendanceData = {
-      date,
-      year: programYear,
-      department,
-      section,
-      subject,
-      topic,
-      remarks,
-      periods,
-      facultyName,
-      phoneNumber,
-      attendance: studentsData.map((student) => ({
-        rollNumber: student.rollNumber,
-        name: student.name,
-        status: attendance[student.rollNumber],
-      })),
-      editing: !!editPeriod, // Add editing flag
-    };
-
     setIsSubmitting(true);
+    const headers = { Authorization: `Bearer ${token}` };
 
     try {
-      const response = await fetch(
-        "https://tkrc-backend.vercel.app/Attendance/mark-attendance",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(attendanceData),
-        }
-      );
+      // Loop through all selected checkboxes and send an individual sheet for each period
+      const submissionPromises = periods.map(period => {
+        const attendanceData = {
+          date,
+          year: programYear,
+          department,
+          section,
+          subject,
+          topic,
+          remarks,
+          period: period, // Single integer as required by backend
+          facultyName,
+          phoneNumber,
+          attendance: studentsData.map((student) => ({
+            rollNumber: student.rollNumber,
+            name: student.name,
+            status: attendance[student.rollNumber],
+          })),
+        };
 
-      const result = await response.json();
+        return axios.post(
+          "https://tkrc-backend-lreo.onrender.com/api/attendance",
+          attendanceData,
+          { headers }
+        );
+      });
 
-      if (response.ok) {
-        alert(result.message || "Attendance submitted successfully!");
-        navigate("/attendance");
-      } else {
-        throw new Error(result.message || "Failed to submit attendance.");
-      }
+      // Wait for all periods to submit
+      await Promise.all(submissionPromises);
+
+      toast.success("Attendance submitted successfully!");
+      setTimeout(() => navigate("/attendance"), 2000);
+
     } catch (error) {
-      alert(`Error: ${error.message}`);
+      const errorMsg = error.response?.data?.message || error.message;
+      toast.error(`Submission Failed: ${errorMsg}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -197,203 +198,66 @@ useEffect(() => {
 
   return (
     <>
-
-     <style>{`
-    .attendanceMain {
-    padding: 20px;
-    background-color: #fff;
-    margin: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-
-  .compulsoryText {
-    color: red;
-    font-weight: bold;
-  }
-
-  .attendanceHeading {
-    font-size: 19px;
-    font-weight: bold;
-    padding-top:5px;
-    margin-top:4px;
-    margin-bottom: 15px;
-    text-align: center;
-  }
-
-  .attendanceDetails {
-    margin-bottom: 20px;
-  }
-
-  .periodSelection {
-    margin-bottom: 15px;
-  }
-
-  .periodSelection label {
-    font-size: 14px;
-    margin-right: 10px;
-  }
-
-  .periodSelection input[type="checkbox"] {
-    margin-right: 6px;
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    display: inline-block;
-  }
-
-  .subjectTopicEntry label {
-    font-size: 14px;
-    margin-top: 8px;
-    display: block;
-  }
-
-  .subjectTopicEntry input,
-  .subjectTopicEntry textarea {
-    font-size: 14px;
-    padding: 8px;
-    margin-top: 6px;
-    margin-bottom: 12px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    width: 100%;
-  }
-
-  .subjectTopicEntry textarea {
-    height: 80px;
-    resize: vertical;
-  }
-
-  #btn-submit {
-    background-color: #FF5733;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    position: relative;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-  }
-
-  #btn-submit:hover {
-    background-color: #ff704d;
-  }
-
-  button:disabled {
-    background-color: #dcdcdc;
-    cursor: not-allowed;
-  }
-
-  .attendanceList {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-
-  .attendanceList th,
-  .attendanceList td {
-    text-align: center;
-    padding: 10px;
-    border: 1.5px solid #ddd;
-  }
-
-  .attendanceList th {
-    background-color: #f7f7f7;
-    font-weight: bold;
-  }
-
-  .attendanceList td {
-    background-color: #fff;
-  }
-
-.attendanceList input[type="radio"] {
-  appearance: none;
-  -webkit-appearance: none; /* Safari */
-  width: 20px;
-  height: 20px;
-  border: 2px solid #aaa;
-  border-radius: 50%;
-  cursor: pointer;
-  background-color: white;
-}
-
-.attendanceList input[type="radio"]:checked {
-  background-color: #2ecc71; /* Green for Present */
-  border-color: #2ecc71;
-}
-
-.attendanceList input[type="radio"].absentStatus:checked {
-  background-color: #e74c3c; /* Red for Absent */
-  border-color: #e74c3c;
-}
-
-  @media (max-width: 768px) {
-    .attendanceMain {
-      margin: 15px;
-      padding: 20px;
-    }
-        .periodSelection label{
-        margin-right:4px;
-
-    .periodSelection input[type="checkbox"] {
-      margin-right: 0px !important;
-    }
-
-    .attendanceList th,
-    .attendanceList td {
-      font-size: 12px;
-      padding: 8px;
-    }
-
-    .subjectTopicEntry textarea {
-      height: 70px;
-    }
-
-    .subjectTopicEntry input,
-    .subjectTopicEntry textarea {
-      font-size: 12px;
-    }
-
-    #btn-submit {
-      font-size: 14px;
-      position:relative;
-      padding-top:5px !important;
-    }
+      <ToastContainer position="top-right" autoClose={3000} />
+      <style>{`
+        .attendanceMain {
+          padding: 20px;
+          background-color: #fff;
+          margin: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .compulsoryText { color: red; font-weight: bold; }
+        .attendanceHeading {
+          font-size: 19px; font-weight: bold; padding-top:5px;
+          margin-top:4px; margin-bottom: 15px; text-align: center;
+        }
+        .attendanceDetails { margin-bottom: 20px; }
+        .periodSelection { margin-bottom: 15px; }
+        .periodSelection label { font-size: 14px; margin-right: 10px; }
+        .periodSelection input[type="checkbox"] {
+          margin-right: 6px; width: 18px; height: 18px; cursor: pointer; display: inline-block;
+        }
+        .subjectTopicEntry label { font-size: 14px; margin-top: 8px; display: block; }
+        .subjectTopicEntry input, .subjectTopicEntry textarea {
+          font-size: 14px; padding: 8px; margin-top: 6px; margin-bottom: 12px;
+          border-radius: 4px; border: 1px solid #ccc; width: 100%;
+        }
+        .subjectTopicEntry textarea { height: 80px; resize: vertical; }
+        #btn-submit {
+          background-color: #FF5733; color: white; padding: 10px 20px; border: none;
+          border-radius: 5px; cursor: pointer; font-size: 16px; position: relative;
+          top: 10px; left: 50%; transform: translateX(-50%); text-align: center;
+        }
+        #btn-submit:hover { background-color: #ff704d; }
+        button:disabled { background-color: #dcdcdc; cursor: not-allowed; }
+        .attendanceList { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .attendanceList th, .attendanceList td { text-align: center; padding: 10px; border: 1.5px solid #ddd; }
+        .attendanceList th { background-color: #f7f7f7; font-weight: bold; }
+        .attendanceList td { background-color: #fff; }
         .attendanceList input[type="radio"] {
-      width: 25px !important;
-      height: 25px !important;
-    }
-  }
+          appearance: none; -webkit-appearance: none; width: 20px; height: 20px;
+          border: 2px solid #aaa; border-radius: 50%; cursor: pointer; background-color: white;
+        }
+        .attendanceList input[type="radio"]:checked { background-color: #2ecc71; border-color: #2ecc71; }
+        .attendanceList input[type="radio"].absentStatus:checked { background-color: #e74c3c; border-color: #e74c3c; }
 
-  @media (max-width: 480px) {
-    .attendanceList th,
-    .attendanceList td {
-      font-size: 11px;
-      padding: 6px;
-    }
-
-    .attendanceList input[type="radio"] {
-      width: 20px;
-      height: 20px;
-    }
-
-    .subjectTopicEntry textarea {
-      height: 60px;
-    }
-
-    #btn-submit {
-      font-size: 14px;
-      padding: 8px;
-      width: 100%;
-      left: 0;
-      transform: none;
-      top: 0;
-    }
-  }
+        @media (max-width: 768px) {
+          .attendanceMain { margin: 15px; padding: 20px; }
+          .periodSelection label{ margin-right:4px; }
+          .periodSelection input[type="checkbox"] { margin-right: 0px !important; }
+          .attendanceList th, .attendanceList td { font-size: 12px; padding: 8px; }
+          .subjectTopicEntry textarea { height: 70px; }
+          .subjectTopicEntry input, .subjectTopicEntry textarea { font-size: 12px; }
+          #btn-submit { font-size: 14px; position:relative; padding-top:5px !important; }
+          .attendanceList input[type="radio"] { width: 25px !important; height: 25px !important; }
+        }
+        @media (max-width: 480px) {
+          .attendanceList th, .attendanceList td { font-size: 11px; padding: 6px; }
+          .attendanceList input[type="radio"] { width: 20px; height: 20px; }
+          .subjectTopicEntry textarea { height: 60px; }
+          #btn-submit { font-size: 14px; padding: 8px; width: 100%; left: 0; transform: none; top: 0; }
+        }
       `}</style>
       <Header />
       <div className="nav">
@@ -405,60 +269,71 @@ useEffect(() => {
       <div className="attendanceMain">
         <h2>{editPeriod ? `Editing Attendance for Period ${editPeriod}` : "Mark Attendance"}</h2>
         <p>
-          Year: {programYear} | Department: {department} | Section: {section} |
-          Subject: {subject}
+          <b>Date:</b> {date} <br/>
+          <b>Class:</b> {programYear} {department}-{section} <br/>
+          <b>Subject:</b> {subject}
         </p>
+        
         <div className="periodSelection">
           <label>Periods:</label>
-          {[1, 2, 3, 4, 5, 6].map((period) => (
-            <label key={period} style={{ marginRight: "10px" }}>
-              <input
-                type="checkbox"
-                value={period}
-                checked={periods.includes(period)}
-                disabled={
-                  editPeriod
-                    ? period !== parseInt(editPeriod)
-                    : !!getMarkedSubject(period)
-                }
-                onChange={() =>
-                  setPeriods((prev) =>
-                    prev.includes(period)
-                      ? prev.filter((p) => p !== period)
-                      : [...prev, period]
-                  )
-                }
-              />
-              {period}
-              {getMarkedSubject(period) && (
-                <span style={{ color: "red", marginLeft: "5px" }}>
-                  ({getMarkedSubject(period)})
-                </span>
-              )}
-            </label>
-          ))}
+          {[1, 2, 3, 4, 5, 6].map((period) => {
+            const markedSubject = getMarkedSubject(period);
+            const isMarkedByMe = markedSubject !== null;
+            
+            return (
+              <label key={period} style={{ marginRight: "10px" }}>
+                <input
+                  type="checkbox"
+                  value={period}
+                  checked={periods.includes(period)}
+                  disabled={
+                    editPeriod
+                      ? period !== parseInt(editPeriod)
+                      : isMarkedByMe
+                  }
+                  onChange={() =>
+                    setPeriods((prev) =>
+                      prev.includes(period)
+                        ? prev.filter((p) => p !== period)
+                        : [...prev, period]
+                    )
+                  }
+                />
+                {period}
+                {isMarkedByMe && (
+                  <span style={{ color: "red", marginLeft: "5px", fontSize: "0.8em" }}>
+                    ({markedSubject})
+                  </span>
+                )}
+              </label>
+            );
+          })}
         </div>
+
         <div className="subjectTopicEntry">
-          <label>Topic:</label>
+          <label>Topic (Optional):</label>
           <textarea
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            placeholder="Enter topic"
+            placeholder="Enter topics covered"
           />
-          <label>Remarks:</label>
+          <label>Remarks (Optional):</label>
           <textarea
             value={remarks}
             onChange={(e) => setRemarks(e.target.value)}
-            placeholder="Enter remarks"
+            placeholder="Enter any remarks"
           />
         </div>
+
         {isLoading ? (
-          <p>Loading students...</p>
+          <p style={{textAlign: "center", marginTop: "20px"}}>Loading students for {department}-{section}...</p>
+        ) : studentsData.length === 0 ? (
+          <p style={{textAlign: "center", color: "red", marginTop: "20px"}}>No students found in this section.</p>
         ) : (
           <table className="attendanceList">
             <thead>
               <tr>
-                <th>Roll Number</th>
+                <th>Roll No</th>
                 <th>Name</th>
                 <th>Present</th>
                 <th>Absent</th>
@@ -493,8 +368,9 @@ useEffect(() => {
             </tbody>
           </table>
         )}
-        <button id="btn-submit" onClick={handleSubmit} disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Submit"}
+        
+        <button id="btn-submit" onClick={handleSubmit} disabled={isSubmitting || studentsData.length === 0}>
+          {isSubmitting ? "Submitting..." : "Submit Attendance"}
         </button>
       </div>
     </>
