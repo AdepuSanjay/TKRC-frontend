@@ -4,7 +4,6 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Attendance.css";
-import Header from "../../Components/Header/Header";
 import NavBar from "../../Components/NavBar/NavBar";
 import MobileNav from "../../Components/MobileNav/MobileNav";
 
@@ -113,7 +112,7 @@ const Attendance = () => {
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
-      <Header />
+      
       <div className="nav">
         <NavBar />
       </div>
