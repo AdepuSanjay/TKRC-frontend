@@ -37,7 +37,7 @@ body {
     margin: 0 auto;
     padding: 24px;
     box-sizing: border-box;
-    overflow-x: hidden; 
+    overflow-x: hidden; /* Strict no horizontal scroll */
 }
 
 /* --- PROFILE CARD SECTION --- */
@@ -52,7 +52,7 @@ body {
 
 .profile-table {
     width: 100%;
-    table-layout: fixed; /* Fixes overlap: Prevents long text from pushing the image out */
+    table-layout: fixed; /* Prevents long text from pushing the image out */
     border-collapse: collapse;
 }
 
@@ -60,12 +60,7 @@ body {
     padding: 12px 0;
     font-size: 1.05rem;
     vertical-align: middle;
-}
-
-/* Ensure the middle column text wraps nicely */
-.profile-table td:nth-child(2) {
-    word-wrap: break-word;
-    padding-right: 10px;
+    word-wrap: break-word; /* Wrap long department names */
 }
 
 .profile-table .label {
@@ -75,24 +70,22 @@ body {
 }
 
 .profile-image-cell {
-    position: relative !important; 
+    text-align: right;
+    width: 100px; /* Limit cell width */
     vertical-align: middle !important;
-    width: 100px; 
-    padding: 10px;
-    text-align: center;
 }
 
 .profile-image {
-    position: static !important; 
     width: 100%;
-    max-width: 85px; 
+    max-width: 85px;
     height: auto;
     aspect-ratio: 1 / 1;
-    border-radius: 16px; 
+    border-radius: 16px; /* Squircle shape to match UI */
     object-fit: cover;
     border: 3px solid var(--bg-card);
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     background-color: var(--accent-mint);
+    position: static !important; /* Prevents floating over text */
 }
 
 /* --- TYPOGRAPHY --- */
@@ -113,17 +106,13 @@ body {
     border: 1px solid var(--border-color);
     width: 100%;
     box-sizing: border-box;
-    
-    /* Enables horizontal scroll if the table gets wider than the container */
-    overflow-x: auto; 
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden; /* Ensures contents don't bleed out and cause scrolling */
 }
 
 /* --- THE TABLE ITSELF --- */
 .timetable-table {
     width: 100%;
-    min-width: 700px; /* Forces standard width so horizontal text isn't squished */
-    table-layout: fixed; 
+    table-layout: fixed; /* CRITICAL: Forces columns to obey screen width and prevents scrolling */
     border-collapse: collapse;
     border-radius: var(--border-radius-md);
     overflow: hidden;
@@ -136,6 +125,7 @@ body {
     text-align: center;
     word-wrap: break-word; 
     overflow-wrap: break-word;
+    word-break: break-word; /* Forces long unbroken words to wrap */
 }
 
 /* Header Styling */
@@ -146,10 +136,10 @@ body {
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    writing-mode: horizontal-tb !important; /* Forces normal left-to-right text */
+    writing-mode: horizontal-tb !important; /* Force Left-To-Right text */
     text-orientation: mixed !important;
-    white-space: normal !important; 
-    vertical-align: middle !important;
+    transform: none !important;
+    vertical-align: middle;
 }
 
 /* Day Column */
@@ -173,7 +163,9 @@ body {
     background-color: var(--accent-mint);
 }
 
-/* Lunch Column (Vertical Text) */
+/* Lunch Column (Vertical Text) 
+   We keep lunch vertical because it saves space for the other columns 
+   and "LUNCH" is easily readable vertically. */
 .lunch-cell {
     background-color: var(--accent-coral);
     color: #ffffff;
@@ -185,6 +177,7 @@ body {
     padding: 10px 4px !important;
     font-size: 1rem;
     border: none;
+    width: 30px; /* Restrict lunch column width */
 }
 
 /* Alternate row shading for the Subject Directory */
@@ -193,7 +186,7 @@ body {
 }
 
 /* =========================================
-   MOBILE RESPONSIVENESS
+   MOBILE RESPONSIVENESS (NO HORIZONTAL SCROLL)
    ========================================= */
 @media (max-width: 768px) {
     .timetable-container {
@@ -210,16 +203,15 @@ body {
     }
 
     .profile-table .label {
-        width: 45%;
+        width: 35%;
     }
 
     .profile-image-cell {
-        width: 80px; 
-        padding: 5px;
+        width: 65px;
     }
 
     .profile-image {
-        max-width: 70px; 
+        max-width: 60px;
         border-radius: 12px;
     }
 
@@ -229,37 +221,43 @@ body {
         margin-top: 10px;
     }
 
-    /* Keep Horizontal Scrolling functional for mobile */
+    /* Table Adjustments for Mobile - Forcing 8 columns to fit horizontally */
     .timetable-table {
-        min-width: 600px; /* Minimum acceptable width before scrolling triggers */
+        table-layout: fixed; 
+        width: 100%;
     }
 
     .timetable-table th, 
     .timetable-table td {
-        padding: 10px 4px; /* Increased padding slightly for readability */
-        font-size: 11px; /* Increased font size for readability */
-        line-height: 1.3;
+        padding: 6px 2px; /* Minimum padding to squeeze elements */
+        font-size: 8px; /* Extremely small text to fit all columns horizontally */
+        line-height: 1.2;
+        word-break: break-all; /* Forces timestamps like 10:40-11:40 to break to next line */
     }
 
-    /* Header constraints removed to keep text horizontal */
+    /* Override any previous vertical headers on mobile */
     .timetable-table th {
+        writing-mode: horizontal-tb !important;
         transform: none !important;
         height: auto;
-        font-size: 11px;
+        font-size: 8px;
         letter-spacing: 0;
     }
 
     .day-cell {
-        font-size: 11px;
+        font-size: 8px;
+        word-break: break-word; /* Allows Monday, Tuesday, etc. to fit nicely */
     }
 
     /* Override inline styles from React components for mobile */
     .period-cell span {
-        font-size: 10px !important; 
+        font-size: 8px !important; 
     }
 
     .lunch-cell {
-        font-size: 11px;
+        font-size: 9px;
         letter-spacing: 1px;
+        padding: 4px 2px !important;
+        width: 15px; /* Extremely narrow lunch column */
     }
 }
