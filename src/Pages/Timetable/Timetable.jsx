@@ -155,7 +155,7 @@ const Timetable = () => {
     return (
         <>
             <ToastContainer position="top-right" autoClose={2000} />
-            <Header />
+            
             <div className="nav">
                 <NavBar facultyName={profileDetails?.name || "Dashboard"} />
             </div>
