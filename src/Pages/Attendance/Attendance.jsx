@@ -12,8 +12,9 @@ const Attendance = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Extract class details from the URL parameters (passed from NavBar)
   const queryParams = new URLSearchParams(location.search);
-  const programYear = queryParams.get("programYear") || queryParams.get("year");
+  const programYear = queryParams.get("year") || queryParams.get("programYear"); 
   const department = queryParams.get("department");
   const section = queryParams.get("section");
   const subject = queryParams.get("subject");
@@ -22,38 +23,18 @@ const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [facultyName, setFacultyName] = useState("");
 
   const todayDate = new Date().toISOString().split("T")[0];
-  const facultyId = localStorage.getItem("facultyId"); 
   const token = localStorage.getItem("token");
 
-  // Fetch verified faculty details securely
   useEffect(() => {
-    const fetchFacultyDetails = async () => {
-      try {
-        if (facultyId) {
-          const headers = { Authorization: `Bearer ${token}` };
-          const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/faculty", { headers });
-          
-          const me = response.data.find(f => String(f.employeeId).trim() === String(facultyId).trim());
-          if (me) {
-            setFacultyName(me.name);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching faculty details:", error);
-      }
-    };
-
-    fetchFacultyDetails();
-  }, [facultyId, token]);
-
-  // Fetch records whenever the date changes
-  useEffect(() => {
-    fetchAttendanceRecords();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [date]);
+    // Only fetch if we have the class details
+    if (programYear && department && section) {
+      fetchAttendanceRecords();
+    } else {
+      setError("Class details missing. Please select a class from the menu.");
+    }
+  }, [date, programYear, department, section]);
 
   const fetchAttendanceRecords = async () => {
     setLoading(true);
@@ -62,50 +43,42 @@ const Attendance = () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       
-      // Fetch all global records from the new backend
+      // Fetch all attendance from the new secure backend
       const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/attendance", { headers });
 
       if (response.data && Array.isArray(response.data)) {
-        // Filter records strictly by the selected date
-        let filteredRecords = response.data.filter(record => record.date === date);
+        
+        // Filter records strictly for the selected Date AND specific Class
+        const matchingRecords = response.data.filter(
+          (record) => 
+            record.date === date && 
+            record.year === programYear && 
+            record.department === department && 
+            record.section === section
+        );
 
-        // If the user navigated here from a specific class click, filter down to that class
-        if (programYear && department && section) {
-           filteredRecords = filteredRecords.filter(record => 
-             record.year === programYear && 
-             record.department === department && 
-             record.section === section
-           );
+        if (matchingRecords.length === 0) {
+          throw new Error(`No attendance records found for this class on ${date}.`);
         }
 
-        if (filteredRecords.length === 0) {
-          setAttendanceData([]);
-          throw new Error(`No attendance records found for ${date}.`);
-        }
+        // Process absentees cleanly from your nested MongoDB document array
+        const processedData = matchingRecords.map((record) => ({
+          ...record,
+          classDetails: `${record.year} ${record.department}-${record.section}`,
+          absentees: record.attendance
+            ? record.attendance
+                .filter((student) => student.status.toLowerCase() === "absent")
+                .map((student) => student.rollNumber)
+            : [],
+        }));
 
-        // Process data neatly for the table view
-        const processedData = filteredRecords.map((record) => {
-          const absenteesList = record.attendance
-            ? record.attendance.filter((student) => student.status === "absent").map((student) => student.rollNumber)
-            : [];
-
-          return {
-            ...record,
-            classDetails: `${record.year} ${record.department}-${record.section}`,
-            absentees: absenteesList,
-          };
-        });
-
-        // Sort by period number so the table looks organized
-        processedData.sort((a, b) => a.period - b.period);
         setAttendanceData(processedData);
-
       } else {
-        throw new Error("Invalid response format from server.");
+        throw new Error("Invalid data format received from server.");
       }
     } catch (err) {
-      setError(err.message);
       setAttendanceData([]);
+      setError(err.message || "Failed to fetch attendance.");
     } finally {
       setLoading(false);
     }
@@ -116,9 +89,8 @@ const Attendance = () => {
     if (selectedDate !== todayDate) {
       toast.error("You can only mark new attendance for today's date.", { theme: "colored" });
       setDate(todayDate);
-    } else if (!programYear || !department || !section) {
-      toast.warning("Please select a specific class from the NavBar to mark attendance.", { theme: "colored" });
     } else {
+      // Redirect to the marking sheet component with clean URL params
       navigate(
         `/mark?year=${programYear}&department=${department}&section=${section}&subject=${subject}&date=${date}`
       );
@@ -126,7 +98,7 @@ const Attendance = () => {
   };
 
   const handleEdit = (record) => {
-    // Basic frontend safety: only allow editing if it is today
+    // Basic validation: Allow editing only if the record is from today
     const canEdit = record.date === todayDate;
 
     if (canEdit) {
@@ -134,7 +106,7 @@ const Attendance = () => {
         `/mark?year=${record.year}&department=${record.department}&section=${record.section}&subject=${record.subject}&date=${record.date}&editPeriod=${record.period}`
       );
     } else {
-      toast.error("Past attendance records are locked and cannot be edited.", { theme: "colored" });
+      toast.warning("Editing past records is restricted.", { theme: "colored" });
     }
   };
 
@@ -143,7 +115,7 @@ const Attendance = () => {
       <ToastContainer position="top-right" autoClose={3000} />
       <Header />
       <div className="nav">
-        <NavBar facultyName={facultyName || "Dashboard"} />
+        <NavBar />
       </div>
       <div className="mob-nav">
         <MobileNav />
@@ -158,17 +130,17 @@ const Attendance = () => {
               id="date" 
               className="date-input"
               value={date} 
-              max={todayDate} // Prevents selecting future dates visually
+              max={todayDate} // Prevent selecting future dates
               onChange={(e) => setDate(e.target.value)} 
             />
-            <button onClick={handleGoClick} className="go-button">Go Mark</button>
+            <button onClick={handleGoClick} className="go-button">Mark New Attendance</button>
           </div>
         </div>
 
         {loading ? (
           <p style={{ textAlign: "center", padding: "2rem" }}>Loading attendance records...</p>
         ) : error ? (
-          <p className="error-message" style={{ textAlign: "center", color: "#d9534f", fontWeight: "bold" }}>
+          <p className="error-message" style={{ textAlign: "center", color: "red", padding: "2rem" }}>
             {error}
           </p>
         ) : (
@@ -182,9 +154,9 @@ const Attendance = () => {
                     <th>Date</th>
                     <th>Period</th>
                     <th>Topic</th>
-                    <th>Faculty</th>
+                    <th>Remarks</th>
                     <th>Absentees</th>
-                    <th>Action</th>
+                    <th>Edit</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -193,30 +165,22 @@ const Attendance = () => {
 
                     return (
                       <tr key={index}>
-                        <td style={{ fontWeight: "bold" }}>{record.classDetails}</td>
+                        <td>{record.classDetails}</td>
                         <td>{record.subject}</td>
                         <td>{record.date}</td>
                         <td>{record.period}</td>
                         <td>{record.topic || "N/A"}</td>
-                        <td>{record.facultyName || "N/A"}</td>
-                        <td style={{ color: record.absentees.length > 0 ? "#d9534f" : "inherit" }}>
-                          {record.absentees.length > 0 ? record.absentees.join(", ") : "All Present"}
+                        <td>{record.remarks || "N/A"}</td>
+                        <td>
+                          {record.absentees.length > 0 ? record.absentees.join(", ") : "None"}
                         </td>
                         <td>
                           <button 
                             onClick={() => handleEdit(record)} 
                             disabled={!canEdit} 
-                            className="edit-button"
-                            style={{ 
-                              opacity: canEdit ? 1 : 0.5, 
-                              cursor: canEdit ? "pointer" : "not-allowed",
-                              backgroundColor: canEdit ? "#0275d8" : "#6c757d",
-                              color: "white",
-                              border: "none",
-                              padding: "5px 10px",
-                              borderRadius: "4px"
-                            }}
-                            title={!canEdit ? "Past records are locked." : "Edit this period"}
+                            className={`edit-button ${!canEdit ? "disabled-btn" : ""}`}
+                            title={!canEdit ? "Editing past records is locked." : "Edit today's attendance"}
+                            style={{ opacity: canEdit ? 1 : 0.5, cursor: canEdit ? "pointer" : "not-allowed" }}
                           >
                             Edit
                           </button>
@@ -226,9 +190,7 @@ const Attendance = () => {
                   })}
                 </tbody>
               </table>
-            ) : (
-              <p style={{ textAlign: "center" }}>No attendance records available for the selected date.</p>
-            )}
+            ) : null}
           </div>
         )}
       </div>
