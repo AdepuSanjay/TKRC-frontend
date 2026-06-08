@@ -1,195 +1,225 @@
-    
+/* =========================================
+   MobileNav.css
+   Premium Styling inspired by "Lovable / Dealflow"
+========================================= */
 
-
-
-/* ═══════════════════════════════════════════════════════════════
-   MobileNav.css — SaaS Mobile Navigation
-   Theme: Consistent with Homepage (Off-White, Mint, Orange, Charcoal)
-   ═══════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --nav-bg: rgba(255, 255, 255, 0.95);
-  --nav-blur: blur(12px);
-  --nav-text: #111827;
-  --nav-muted: #6B7280;
-  --nav-border: #E5E7EB;
-  --nav-mint: #D9EBE3;
-  --nav-orange: #F85E3D;
-  --nav-font: 'Plus Jakarta Sans', sans-serif;
+  /* Core Dealflow/Lovable Palette */
+  --nav-bg: #ffffff;
+  --nav-bg-secondary: #f9fafb;
+  --nav-text-primary: #111413;
+  --nav-text-secondary: #6b7280;
+  --nav-accent-orange: #fc6036; /* Vibrant Primary */
+  --nav-accent-mint: #e2f2eb;   /* Subtle Secondary */
+  --nav-border: #e5e7eb;
+  
+  /* Shapes & Shadows */
+  --nav-radius-lg: 24px;
+  --nav-radius-md: 12px;
+  --nav-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.05);
+  
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* ── CONTAINER & HEADER ── */
+/* --- Container & Layout --- */
 .mobile-nav-container {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  font-family: var(--font-family);
+  position: relative;
   width: 100%;
-  font-family: var(--nav-font);
+  z-index: 1000;
+  -webkit-tap-highlight-color: transparent;
 }
 
+/* --- Header Area --- */
 .header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
-  background: var(--nav-bg);
-  backdrop-filter: var(--nav-blur);
-  -webkit-backdrop-filter: var(--nav-blur);
+  align-items: center;
+  padding: 16px 24px;
+  background-color: var(--nav-bg);
   border-bottom: 1px solid var(--nav-border);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
 }
 
 .logo {
-  font-size: 1.25rem;
   font-weight: 800;
-  color: var(--nav-text);
-  letter-spacing: -0.02em;
+  font-size: 1.35rem;
+  color: var(--nav-text-primary);
+  letter-spacing: -0.04em; /* Tight letter spacing typical of modern SaaS */
 }
 
+/* --- Toggle Button --- */
 .menu-toggle {
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  color: var(--nav-text);
-  cursor: pointer;
+  background-color: var(--nav-bg);
+  border: 1px solid var(--nav-border);
+  color: var(--nav-text-primary);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%; /* Perfect circle */
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  transition: background 0.2s ease;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 0;
+  outline: none;
 }
 
-.menu-toggle:hover, 
+.menu-toggle:hover,
+.menu-toggle:focus-visible {
+  background-color: var(--nav-bg-secondary);
+  border-color: var(--nav-text-secondary);
+  transform: scale(1.05);
+}
+
 .menu-toggle:active {
-  background: rgba(0, 0, 0, 0.05);
+  transform: scale(0.95);
 }
 
-/* ── MAIN MENU DROPDOWN ── */
+/* --- Menu Overlay Card --- */
 .menu {
   position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background: #FFFFFF;
-  border-bottom: 1px solid var(--nav-border);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  padding: 1rem 1.5rem 2rem;
+  top: calc(100% + 12px); /* Floats just below the header */
+  left: 16px;
+  right: 16px;
+  background-color: var(--nav-bg);
+  border-radius: var(--nav-radius-lg);
+  box-shadow: var(--nav-shadow);
+  border: 1px solid var(--nav-border);
+  padding: 24px 16px;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  animation: slideDown 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-  max-height: calc(100vh - 70px);
+  gap: 6px;
   overflow-y: auto;
+  max-height: 80vh;
+  transform-origin: top center;
+  animation: slideDownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes slideDownFade {
+  from { 
+    opacity: 0; 
+    transform: translateY(-12px) scale(0.98); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
 }
 
-/* ── USER WELCOME ── */
+/* --- User Welcome Text --- */
 .user-welcome {
-  display: block;
   font-size: 0.75rem;
   font-weight: 700;
+  color: var(--nav-text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--nav-muted);
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
+  letter-spacing: 0.1em;
+  padding: 0 16px 16px 16px;
+  margin-bottom: 8px;
   border-bottom: 1px solid var(--nav-border);
 }
 
-/* ── MENU ITEMS ── */
-.menu a {
+/* --- Menu Items --- */
+.mobile-nav-container a#h {
   text-decoration: none;
   color: inherit;
   display: block;
 }
 
 .menu-item {
-  padding: 0.85rem 1rem;
-  font-size: 1rem;
+  padding: 14px 16px;
+  border-radius: var(--nav-radius-md);
   font-weight: 600;
-  color: var(--nav-text);
-  border-radius: 8px;
+  font-size: 1.05rem;
+  color: var(--nav-text-primary);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border: 1px solid transparent; /* Prevents layout shift on active */
 }
 
+/* Hover State */
 .menu-item:hover {
-  background: var(--nav-mint);
-  color: var(--nav-text);
+  background-color: var(--nav-bg-secondary);
 }
 
-.menu-item.active {
-  background: rgba(248, 94, 61, 0.08); /* Faint orange */
-  color: var(--nav-orange);
+/* Active/Pressed State (The Mint Accent) */
+.menu-item.active,
+.menu-item[aria-pressed="true"] {
+  background-color: var(--nav-accent-mint);
+  color: #0c5332; /* Deep green to contrast with mint */
+  border-color: #c0e6d4;
 }
 
-/* ── NESTED DROPDOWNS (Hierarchy) ── */
+/* --- Dropdown / Nested Menus --- */
 .dropdown {
   display: none;
   flex-direction: column;
-  gap: 0.2rem;
-  margin-left: 1rem;
-  margin-top: 0.25rem;
-  padding-left: 1rem;
+  gap: 4px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  margin-left: 20px; /* Indent nested items */
+  padding-left: 16px;
   border-left: 2px solid var(--nav-border);
-  animation: fadeIn 0.3s ease;
 }
 
 .dropdown.open {
   display: flex;
+  animation: fadeIn 0.25s ease forwards;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateX(-5px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-/* Sub-menu item styling */
+/* Nested Menu Item Styling */
 .dropdown .menu-item {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  padding: 10px 16px;
   font-weight: 500;
-  padding: 0.75rem 1rem;
-  color: var(--nav-muted);
+  color: var(--nav-text-secondary);
 }
 
 .dropdown .menu-item:hover {
-  background: rgba(0, 0, 0, 0.03);
-  color: var(--nav-text);
+  color: var(--nav-text-primary);
+  background-color: var(--nav-bg-secondary);
 }
 
 .dropdown .menu-item.active {
-  color: var(--nav-orange);
+  color: var(--nav-text-primary);
+  background-color: var(--nav-bg-secondary);
+  border-color: var(--nav-border);
+  font-weight: 600;
+}
+
+/* --- Specific Target Highlights --- */
+/* Target "Logout" logic dynamically if it contains the word logout */
+.menu-item:last-child:hover {
+  /* Subtle warning styling for the last item assuming it's usually logout */
+  color: #dc2626;
+  background-color: #fef2f2;
+}
+
+/* --- Scrollbar Customization for the Menu Card --- */
+.menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.menu::-webkit-scrollbar-track {
   background: transparent;
-  font-weight: 700;
 }
 
-/* Third-level deep nesting (e.g., Dynamic Classes list) */
-.dropdown .dropdown {
-  border-left-color: var(--nav-mint);
-  margin-top: 0;
+.menu::-webkit-scrollbar-thumb {
+  background-color: var(--nav-border);
+  border-radius: 10px;
 }
 
-.dropdown .dropdown .menu-item {
-  font-size: 0.85rem;
-  padding: 0.6rem 1rem;
+.menu::-webkit-scrollbar-thumb:hover {
+  background-color: var(--nav-text-secondary);
 }
-
-/* ── LOGOUT SPECIFIC OVERRIDE ── */
-.menu-item:last-child[label="Logout"] {
-  color: #DC2626; /* Red for logout */
-}
-.menu-item:last-child[label="Logout"]:hover {
-  background: rgba(220, 38, 38, 0.08);
-  color: #DC2626;
-}
-
-
