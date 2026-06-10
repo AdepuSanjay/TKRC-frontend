@@ -24,7 +24,7 @@ const StudentDashboard = () => {
 
     const headers = { Authorization: `Bearer ${token}` };
 
-    // 1. Fetch Student Details
+    // 1. Fetch Student Details from the new Dashboard API
     axios.get(`https://tkrc-backend-lreo.onrender.com/api/students/${studentId}/dashboard`, { headers })
       .then((res) => {
         if (res.data && res.data.student) {
@@ -39,7 +39,7 @@ const StudentDashboard = () => {
       })
       .finally(() => setLoadingStudent(false));
 
-    // 2. Fetch Attendance Details
+    // 2. Fetch Attendance Details and process the flat array into summaries
     axios.get(`https://tkrc-backend-lreo.onrender.com/api/attendance/student/${studentId}`, { headers })
       .then((res) => {
         const data = res.data;
@@ -103,6 +103,7 @@ const StudentDashboard = () => {
   // Render Skeleton UI Loader
   const renderSkeleton = () => (
     <div className="dashboard-container skeleton-container">
+      {/* Student Details Skeleton */}
       <div className="card-panel skeleton-card">
         <div className="skeleton-line skeleton-title"></div>
         <div className="skeleton-profile-wrapper">
@@ -115,6 +116,7 @@ const StudentDashboard = () => {
         </div>
       </div>
       
+      {/* Attendance Summary Skeleton */}
       <div className="card-panel skeleton-card">
         <div className="skeleton-line skeleton-title"></div>
         <div className="skeleton-table">
@@ -149,35 +151,33 @@ const StudentDashboard = () => {
           {student && (
             <div className="student-details card-panel">
               <h2 className="section-title">Student Details</h2>
-              <div className="table-responsive">
-                <table className="info-table">
-                  <tbody>
-                    <tr>
-                      <th>Roll No.</th>
-                      <td>{student.rollNumber}</td>
-                      <td rowSpan="4" className="image-cell">
-                        <img
-                          src={student.image || "/images/logo.png"}
-                          alt="Student"
-                          className="student-image"
-                          onError={(e) => (e.target.src = "/images/logo.png")}
-                        />
-                      </td>
-                    </tr>
-                    <tr>
-                      <th>Student Name</th>
-                      <td>{student.name}</td>
-                    </tr>
-                    <tr>
-                      <th>Father's Name</th>
-                      <td>{student.fatherName}</td>
-                    </tr>
-                    <tr>
-                      <th>Department</th>
-                      <td>{`${student.year} ${student.department} Section ${student.section}`}</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="student-profile-card">
+                <div className="student-info-content">
+                  <div className="info-item">
+                    <span className="info-label">Roll No.</span>
+                    <span className="info-value">{student.rollNumber}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Student Name</span>
+                    <span className="info-value">{student.name}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Father's Name</span>
+                    <span className="info-value">{student.fatherName}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Department</span>
+                    <span className="info-value">{`${student.year} ${student.department} Section ${student.section}`}</span>
+                  </div>
+                </div>
+                <div className="student-image-container">
+                  <img
+                    src={student.image || "/images/logo.png"}
+                    alt="Student"
+                    className="student-image"
+                    onError={(e) => (e.target.src = "/images/logo.png")}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -199,10 +199,10 @@ const StudentDashboard = () => {
                   <tbody>
                     {attendance.subjectSummary.map((subject, index) => (
                       <tr key={index}>
-                        <td data-label="Subject" className="text-left font-medium">{subject.subject}</td>
-                        <td data-label="Classes Conducted">{subject.classesConducted}</td>
-                        <td data-label="Classes Attended">{subject.classesAttended}</td>
-                        <td data-label="Percentage">
+                        <td className="text-left font-medium">{subject.subject}</td>
+                        <td>{subject.classesConducted}</td>
+                        <td>{subject.classesAttended}</td>
+                        <td>
                           <span className={`percentage-badge ${parseFloat(subject.percentage) >= 75 ? 'good' : 'low'}`}>
                             {subject.percentage}%
                           </span>
@@ -210,10 +210,10 @@ const StudentDashboard = () => {
                       </tr>
                     ))}
                     <tr className="total-row">
-                      <td data-label="" className="text-left"><b>Total</b></td>
-                      <td data-label="Total Conducted"><b>{attendance.overall.totalClasses}</b></td>
-                      <td data-label="Total Attended"><b>{attendance.overall.presentCount}</b></td>
-                      <td data-label="Overall Percentage" id="total">
+                      <td className="text-left"><b>Total</b></td>
+                      <td><b>{attendance.overall.totalClasses}</b></td>
+                      <td><b>{attendance.overall.presentCount}</b></td>
+                      <td id="total">
                         <span className="total-badge">{attendance.overall.percentage}</span>
                       </td>
                     </tr>
@@ -245,7 +245,7 @@ const StudentDashboard = () => {
                   <tbody>
                     {Object.entries(attendance.dailySummary).map(([date, data], index) => (
                       <tr key={index}>
-                        <td data-label="Date" className="date-cell">{date}</td>
+                        <td className="date-cell" data-label="Date">{date}</td>
                         {[1, 2, 3, 4, 5, 6].map((period) => {
                           const periodData = data.periods[period];
                           const statusClass = periodData?.status.toLowerCase() === "present"
@@ -254,7 +254,7 @@ const StudentDashboard = () => {
                             ? "absent-cell"
                             : "";
                           return (
-                            <td data-label={`Period ${period}`} key={period} className={statusClass}>
+                            <td key={period} className={statusClass} data-label={`Period ${period}`}>
                               {periodData ? (
                                 <span 
                                   className={`status-tag ${periodData.status.toLowerCase()}`}
@@ -268,8 +268,8 @@ const StudentDashboard = () => {
                             </td>
                           );
                         })}
-                        <td data-label="Total Periods" className="font-medium numeric-cell">{data.total}</td>
-                        <td data-label="Attended Periods" className="font-medium numeric-cell">{data.attended}</td>
+                        <td className="font-medium numeric-cell" data-label="Total">{data.total}</td>
+                        <td className="font-medium numeric-cell" data-label="Attended">{data.attended}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -284,7 +284,7 @@ const StudentDashboard = () => {
         </div>
       )}
 
-      {/* Internal CSS Upgraded for True Responsive Mobile Layout */}      
+      {/* Internal CSS Upgraded to Modern Template Aesthetic */}      
       <style>      
         {`      
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -294,6 +294,7 @@ const StudentDashboard = () => {
             background-color: #f8fafc;
             min-height: 100vh;
             color: #1e293b;
+            overflow-x: hidden; /* Hard safety constraint */
           }
 
           .dashboard-container {
@@ -350,13 +351,62 @@ const StudentDashboard = () => {
             letter-spacing: 0.05em;
           }
 
-          /* Removed the strict 800px min-width that forced scrolling */
-          .data-table.t2 th, .data-table.t2 td {
-            width: 9%;
+          /* Explicit structures for Desktop View */
+          @media (min-width: 769px) {
+            .data-table.t2 {
+              min-width: 800px; 
+            }
+            .data-table.t2 th, .data-table.t2 td {
+              width: 9%;
+              min-width: 75px;
+            }
+            .data-table.t2 th:first-child, .data-table.t2 td:first-child {
+              width: 16%;
+              min-width: 110px;
+            }
           }
 
-          .data-table.t2 th:first-child, .data-table.t2 td:first-child {
-            width: 16%;
+          /* Modernized Student profile block grid replacement */
+          .student-profile-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 24px;
+          }
+
+          .student-info-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+          }
+
+          .info-item {
+            display: flex;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 10px;
+          }
+
+          .info-item:last-child {
+            border-bottom: none;
+          }
+
+          .info-label {
+            width: 25%;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.9rem;
+          }
+
+          .info-value {
+            width: 75%;
+            color: #0f172a;
+            font-weight: 500;
+            font-size: 0.925rem;
+          }
+
+          .student-image-container {
+            flex-shrink: 0;
           }
 
           .date-cell {
@@ -372,23 +422,6 @@ const StudentDashboard = () => {
 
           .empty-cell {
             color: #94a3b8;
-          }
-
-          .info-table th {
-            text-align: left;
-            background-color: transparent;
-            color: #475569;
-            width: 25%;
-            text-transform: none;
-            font-size: 0.9rem;
-            letter-spacing: normal;
-            border-bottom: 1px solid #f1f5f9; 
-          }
-
-          .info-table td {
-            text-align: left;
-            color: #0f172a;
-            font-weight: 500;
           }
 
           .data-table th:first-child, .data-table td:first-child {
@@ -410,6 +443,7 @@ const StudentDashboard = () => {
             color: #0f172a;
           }
 
+          /* Status Badges */
           .status-tag {
             display: inline-block;
             padding: 6px 10px;
@@ -468,13 +502,7 @@ const StudentDashboard = () => {
             font-weight: 700;
           }
 
-          .image-cell {
-            width: 160px;
-            text-align: right;
-            vertical-align: middle;
-            border-bottom: none !important;
-          }
-
+          /* Profile Image Specs */
           img.student-image {        
             width: 120px !important;        
             height: 120px !important;        
@@ -484,6 +512,7 @@ const StudentDashboard = () => {
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
           }        
 
+          /* Error Layout */
           .error-container {
             display: flex;
             justify-content: center;
@@ -500,7 +529,9 @@ const StudentDashboard = () => {
             border: 1px solid #fee2e2;
           }
       
-          /* Skeleton Shimmer Animation */
+          /* ==========================================
+             SKELETON SHIMMER ANIMATION 
+             ========================================== */
           .skeleton-card {
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
@@ -513,113 +544,148 @@ const StudentDashboard = () => {
             border-radius: 6px;
           }
 
-          .skeleton-title { width: 200px; height: 24px; margin-bottom: 24px; }
-          .skeleton-profile-wrapper { display: flex; justify-content: space-between; align-items: center; }
-          .skeleton-info-rows { width: 70%; }
-          .skeleton-row { height: 18px; margin-bottom: 16px; width: 100%; }
+          .skeleton-title {
+            width: 200px;
+            height: 24px;
+            margin-bottom: 24px;
+          }
+
+          .skeleton-profile-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+
+          .skeleton-info-rows {
+            width: 70%;
+          }
+
+          .skeleton-row {
+            height: 18px;
+            margin-bottom: 16px;
+            width: 100%;
+          }
           .skeleton-info-rows .skeleton-row:nth-child(2) { width: 85%; }
           .skeleton-info-rows .skeleton-row:nth-child(3) { width: 60%; }
-          .skeleton-avatar { width: 120px; height: 120px; border-radius: 12px; background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; }
-          .skeleton-table { width: 100%; }
-          .skeleton-table-header { height: 40px; background: #f8fafc; border-radius: 6px; margin-bottom: 12px; }
-          .skeleton-table-row { height: 35px; margin-bottom: 8px; background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite linear; border-radius: 4px; }
+
+          .skeleton-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+          }
+
+          .skeleton-table {
+            width: 100%;
+          }
+
+          .skeleton-table-header {
+            height: 40px;
+            background: #f8fafc;
+            border-radius: 6px;
+            margin-bottom: 12px;
+          }
+
+          .skeleton-table-row {
+            height: 35px;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 4px;
+          }
 
           @keyframes shimmer {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
           }
 
-          /* Tablet Responsive */        
+          /* Responsive Breakpoints & Multi-Column Remappings */        
           @media (max-width: 1024px) {        
             .card-panel { padding: 24px; }
             th, td { padding: 12px; font-size: 0.875rem; }        
           }        
       
-          /* MOBILE NO-SCROLL LAYOUT (Stacked Cards) */
           @media (max-width: 768px) {        
-            .card-panel { padding: 16px; }
-            
-            /* Profile Skeleton Mobile Fix */
             .skeleton-profile-wrapper { flex-direction: column-reverse; align-items: flex-start; }
             .skeleton-info-rows { width: 100%; margin-top: 16px; }
             .skeleton-avatar { margin-bottom: 16px; width: 90px; height: 90px; }
 
-            /* Student Info Table Mobile Flex Layout */
-            .info-table, .info-table tbody, .info-table tr, .info-table th, .info-table td {
-              display: block;
-              width: 100%;
-            }
-            .info-table tr {
-              display: flex;
-              flex-direction: column;
-              margin-bottom: 8px;
-            }
-            .info-table th {
-              background: #f8fafc;
-              padding: 8px 12px;
-              border-bottom: none;
-              font-weight: 600;
-            }
-            .info-table td {
-              padding: 4px 12px 12px 12px;
-              border-bottom: 1px solid #e2e8f0;
-            }
-            .image-cell {
-              order: -1; /* Pushes the profile image to the top on mobile */
-              text-align: center;
-              padding: 16px !important;
-              border-bottom: none !important;
-              width: 100%;
-            }
-            img.student-image { 
-              margin: 0 auto;
-              width: 100px !important; 
-              height: 100px !important; 
-            }
+            .card-panel { padding: 20px; }
+            th, td { padding: 10px 8px; font-size: 0.8rem; white-space: normal !important; }        
+            img.student-image { width: 90px !important; height: 90px !important; }        
 
-            /* Data Tables -> Stacked Mobile Cards */
-            .data-table thead {
-              display: none; /* Hide traditional headers */
+            /* Transform Student Details layout dynamically */
+            .student-profile-card {
+              flex-direction: column-reverse;
+              align-items: center;
+              gap: 16px;
             }
-            .data-table, .data-table tbody, .data-table tr, .data-table td {
+            .student-info-content { width: 100%; }
+            .info-label { width: 35%; }
+            .info-value { width: 65%; }
+
+            /* Modern Mobile Remap Strategy for Daily Attendance Grid to completely prevent scroll */
+            .data-table.t2, 
+            .data-table.t2 thead, 
+            .data-table.t2 tbody, 
+            .data-table.t2 th, 
+            .data-table.t2 td, 
+            .data-table.t2 tr {
               display: block;
-              width: 100%;
+              width: 100% !important;
             }
-            .data-table tr {
-              margin-bottom: 16px;
+            .data-table.t2 thead {
+              display: none; /* Hide wide column headers on phone screen */
+            }
+            .data-table.t2 tr {
+              background: #ffffff;
               border: 1px solid #e2e8f0;
-              border-radius: 8px;
-              box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-              overflow: hidden;
+              border-radius: 12px;
+              margin-bottom: 16px;
+              padding: 12px;
+              box-shadow: 0 1px 3px rgba(0,0,0,0.01);
             }
-            .data-table td {
+            .data-table.t2 td {
               display: flex;
               justify-content: space-between;
               align-items: center;
-              text-align: right !important;
+              padding: 8px 6px;
               border-bottom: 1px solid #f1f5f9;
-              padding: 10px 16px;
-              white-space: normal;
+              text-align: right !important;
+              box-sizing: border-box;
             }
-            .data-table td:last-child {
+            .data-table.t2 td:last-child {
               border-bottom: none;
             }
-            
-            /* Magic trick: Insert the data-label as the row title */
-            .data-table td::before {
+            /* Inject inline labels using data attributes dynamically */
+            .data-table.t2 td::before {
               content: attr(data-label);
               font-weight: 600;
-              color: #475569;
+              color: #64748b;
+              font-size: 0.8rem;
+              text-transform: uppercase;
+              letter-spacing: 0.02em;
               text-align: left;
-              margin-right: 15px;
-              flex-shrink: 0;
             }
-
-            .total-row {
-              background-color: #fff;
-              border: 2px solid #0f172a !important;
+            .date-cell {
+              color: #4f46e5 !important;
+              font-size: 0.9rem !important;
+              border-bottom: 2px solid #e2e8f0 !important;
+              padding-bottom: 10px !important;
+              margin-bottom: 6px;
             }
           }
+
+          @media (max-width: 480px) {        
+            .card-panel { padding: 16px; }
+            th, td { padding: 8px 4px; font-size: 0.75rem; }        
+            img.student-image { width: 80px !important; height: 80px !important; }
+            .info-label { width: 40%; }
+            .info-value { width: 60%; }        
+          }        
         `}      
       </style>   
       <Header />   
