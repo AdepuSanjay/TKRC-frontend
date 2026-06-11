@@ -11,11 +11,12 @@ const ActivityDiary = () => {
   const [attendanceRecords, setAttendanceRecords] = useState([]); 
   const [selectedCombination, setSelectedCombination] = useState(""); 
   const [loading, setLoading] = useState(false);
+  const [facultyName, setFacultyName] = useState(""); // Store the logged-in faculty's name
 
   const facultyId = localStorage.getItem("facultyId"); 
   const token = localStorage.getItem("token");
 
-  // 1. Fetch Faculty Timetable and Extract Unique Subjects for the Dropdown
+  // 1. Fetch Faculty Timetable, set Faculty Name, and Extract Unique Subjects
   useEffect(() => {
     const fetchUniqueCombinations = async () => {
       if (!facultyId || !token) return;
@@ -25,39 +26,41 @@ const ActivityDiary = () => {
         const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/faculty", { headers });
         const me = response.data.find(f => String(f.employeeId).trim() === String(facultyId).trim());
 
-        if (me && me.personalTimetable) {
-          // Extract unique combinations of Year + Dept + Section + Subject
-          const uniqueCombos = [];
-          const seen = new Set();
+        if (me) {
+          setFacultyName(me.name); // Store the official DB name
 
-          me.personalTimetable.forEach((slot) => {
-            if (slot.subject) {
-              const identifier = `${slot.yearId}-${slot.deptName}-${slot.sectionName}-${slot.subject}`;
-              if (!seen.has(identifier)) {
-                seen.add(identifier);
-                uniqueCombos.push({
-                  year: slot.yearId,
-                  department: slot.deptName,
-                  section: slot.sectionName,
-                  subject: slot.subject
-                });
+          if (me.personalTimetable) {
+            const uniqueCombos = [];
+            const seen = new Set();
+
+            me.personalTimetable.forEach((slot) => {
+              if (slot.subject) {
+                const identifier = `${slot.yearId}-${slot.deptName}-${slot.sectionName}-${slot.subject}`;
+                if (!seen.has(identifier)) {
+                  seen.add(identifier);
+                  uniqueCombos.push({
+                    year: slot.yearId,
+                    department: slot.deptName,
+                    section: slot.sectionName,
+                    subject: slot.subject
+                  });
+                }
               }
-            }
-          });
-
-          setCombinations(uniqueCombos);
+            });
+            setCombinations(uniqueCombos);
+          }
         }
       } catch (error) {
-        console.error("Error fetching faculty timetable for dropdown:", error);
+        console.error("Error fetching faculty timetable:", error);
       }
     };
 
     fetchUniqueCombinations();
   }, [facultyId, token]);
 
-  // 2. Fetch Activity Diary Records when a combination is selected
+  // 2. Fetch Activity Diary Records tied exclusively to this faculty member
   useEffect(() => {
-    if (!selectedCombination) {
+    if (!selectedCombination || !facultyName) {
       setAttendanceRecords([]);
       return;
     }
@@ -65,16 +68,15 @@ const ActivityDiary = () => {
     const fetchAttendanceRecords = async () => {
       setLoading(true);
       try {
-        // Parse the selected string back into variables
         const [year, department, section, subject] = selectedCombination.split("|");
         const headers = { Authorization: `Bearer ${token}` };
 
+        // Safely pass the facultyName to only grab THEIR logs
         const response = await axios.get(
-          `https://tkrc-backend-lreo.onrender.com/api/attendance/class-history?year=${year}&department=${department}&section=${section}&subject=${subject}`,
+          `https://tkrc-backend-lreo.onrender.com/api/attendance/class-history?year=${year}&department=${department}&section=${section}&subject=${subject}&facultyName=${facultyName}`,
           { headers }
         );
 
-        // Sort records by date (newest first)
         const sortedData = (response.data || []).sort((a, b) => new Date(b.date) - new Date(a.date));
         setAttendanceRecords(sortedData);
       } catch (error) {
@@ -86,7 +88,7 @@ const ActivityDiary = () => {
     };
 
     fetchAttendanceRecords();
-  }, [selectedCombination, token]);
+  }, [selectedCombination, facultyName, token]);
 
   const handleSelectionChange = (event) => {
     setSelectedCombination(event.target.value); 
@@ -113,7 +115,6 @@ const ActivityDiary = () => {
               <select className="class-selector" value={selectedCombination} onChange={handleSelectionChange}>
                 <option value="">-- Select Class & Subject --</option>
                 {combinations.map((combo, index) => {
-                  // We use a pipe "|" delimiter to safely split it later (hyphens might be in subject names)
                   const valueString = `${combo.year}|${combo.department}|${combo.section}|${combo.subject}`;
                   return (
                     <option key={index} value={valueString}>
@@ -127,7 +128,13 @@ const ActivityDiary = () => {
 
           <div className="activity-content">
             {loading ? (
-              <p style={{ textAlign: "center", padding: "2rem" }}>Loading history...</p>
+              // Consistent Skeleton Animation matches Student Dashboard
+              <div className="table-skeleton">
+                <div className="skeleton-header-row"></div>
+                <div className="skeleton-row"></div>
+                <div className="skeleton-row"></div>
+                <div className="skeleton-row"></div>
+              </div>
             ) : (
               <div className="table-responsive">
                 <table className="diary-table">
@@ -279,6 +286,33 @@ const ActivityDiary = () => {
           color: #94a3b8 !important;
           padding: 3rem !important;
           font-style: italic;
+        }
+
+        /* Consistent Skeleton Shimmer Styles */
+        .table-skeleton {
+          display: flex;
+          flex-direction: column;
+          gap: 0.85rem;
+          padding: 1rem;
+        }
+
+        .skeleton-header-row {
+          height: 35px;
+          border-radius: 6px;
+          background-color: #e2e8f0;
+        }
+
+        .skeleton-row {
+          height: 45px;
+          border-radius: 6px;
+          background: linear-gradient(-90deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%);
+          background-size: 400% 400%;
+          animation: shimmerPulse 1.6s ease infinite;
+        }
+
+        @keyframes shimmerPulse {
+          0% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
         }
 
         @media (max-width: 768px) {
