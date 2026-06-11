@@ -2,80 +2,99 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../../Components/Header/Header";
 import NavBar from "../../Components/NavBar/NavBar";
-import MobileNav from "../../Components/MobileNav/MobileNav.jsx";
-import "./Activitydiary.css";
+import MobileNav from "../../Components/MobileNav/MobileNav";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ActivityDiary = () => {
-  const [combinations, setCombinations] = useState([]); // Dropdown options
-  const [attendanceRecords, setAttendanceRecords] = useState([]); // Attendance records for the table
-  const [selectedCombination, setSelectedCombination] = useState(""); // Selected dropdown value
-  const [providedFacultyId, setProvidedFacultyId] = useState(null); // Faculty object
-  const mongoDbFacultyId = localStorage.getItem("facultyId"); // Retrieve MongoDB _id from local storage
+  const [combinations, setCombinations] = useState([]); 
+  const [attendanceRecords, setAttendanceRecords] = useState([]); 
+  const [selectedCombination, setSelectedCombination] = useState(""); 
+  const [loading, setLoading] = useState(false);
 
+  const facultyId = localStorage.getItem("facultyId"); 
+  const token = localStorage.getItem("token");
+
+  // 1. Fetch Faculty Timetable and Extract Unique Subjects for the Dropdown
   useEffect(() => {
-    // Fetch faculty-provided ID using MongoDB _id
-    const fetchProvidedFacultyId = async () => {
-      try {
-        const response = await axios.get(
-          `https://tkrc-backend.vercel.app/faculty/${mongoDbFacultyId}`
-        );
-        setProvidedFacultyId(response.data); // Store the faculty object
-      } catch (error) {
-        console.error("Error fetching faculty-provided ID:", error);
-      }
-    };
-
-    if (mongoDbFacultyId) {
-      fetchProvidedFacultyId();
-    }
-  }, [mongoDbFacultyId]);
-
-  useEffect(() => {
-    // Fetch unique combinations using facultyId
     const fetchUniqueCombinations = async () => {
-      if (!providedFacultyId) return;
+      if (!facultyId || !token) return;
 
       try {
-        const response = await axios.get(
-          `https://tkrc-backend.vercel.app/faculty/${providedFacultyId.facultyId}/unique`
-        );
-        setCombinations(response.data.uniqueCombinations || []);
+        const headers = { Authorization: `Bearer ${token}` };
+        const response = await axios.get("https://tkrc-backend-lreo.onrender.com/api/faculty", { headers });
+        const me = response.data.find(f => String(f.employeeId).trim() === String(facultyId).trim());
+
+        if (me && me.personalTimetable) {
+          // Extract unique combinations of Year + Dept + Section + Subject
+          const uniqueCombos = [];
+          const seen = new Set();
+
+          me.personalTimetable.forEach((slot) => {
+            if (slot.subject) {
+              const identifier = `${slot.yearId}-${slot.deptName}-${slot.sectionName}-${slot.subject}`;
+              if (!seen.has(identifier)) {
+                seen.add(identifier);
+                uniqueCombos.push({
+                  year: slot.yearId,
+                  department: slot.deptName,
+                  section: slot.sectionName,
+                  subject: slot.subject
+                });
+              }
+            }
+          });
+
+          setCombinations(uniqueCombos);
+        }
       } catch (error) {
-        console.error("Error fetching unique combinations:", error);
+        console.error("Error fetching faculty timetable for dropdown:", error);
       }
     };
 
-    if (providedFacultyId) {
-      fetchUniqueCombinations();
-    }
-  }, [providedFacultyId]);
+    fetchUniqueCombinations();
+  }, [facultyId, token]);
 
-  // Fetch attendance records based on selected combination
+  // 2. Fetch Activity Diary Records when a combination is selected
   useEffect(() => {
-    if (!selectedCombination) return;
+    if (!selectedCombination) {
+      setAttendanceRecords([]);
+      return;
+    }
 
     const fetchAttendanceRecords = async () => {
+      setLoading(true);
       try {
-        const [year, department, section, subject] = selectedCombination.split("-");
+        // Parse the selected string back into variables
+        const [year, department, section, subject] = selectedCombination.split("|");
+        const headers = { Authorization: `Bearer ${token}` };
+
         const response = await axios.get(
-          `https://tkrc-backend.vercel.app/Attendance/filters?year=B.Tech ${year}&department=${department}&section=${section}&subject=${subject}`
+          `https://tkrc-backend-lreo.onrender.com/api/attendance/class-history?year=${year}&department=${department}&section=${section}&subject=${subject}`,
+          { headers }
         );
-        setAttendanceRecords(response.data.data || []);
+
+        // Sort records by date (newest first)
+        const sortedData = (response.data || []).sort((a, b) => new Date(b.date) - new Date(a.date));
+        setAttendanceRecords(sortedData);
       } catch (error) {
-        console.error("Error fetching attendance records:", error);
-        setAttendanceRecords([]); // Reset table if fetch fails
+        toast.error("Failed to fetch activity logs.");
+        setAttendanceRecords([]); 
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchAttendanceRecords();
-  }, [selectedCombination]);
+  }, [selectedCombination, token]);
 
   const handleSelectionChange = (event) => {
-    setSelectedCombination(event.target.value); // Update selected combination
+    setSelectedCombination(event.target.value); 
   };
 
   return (
-    <div>
+    <>
+      <ToastContainer position="top-right" autoClose={2000} />
       <Header />
       <div className="nav">
         <NavBar />
@@ -83,68 +102,199 @@ const ActivityDiary = () => {
       <div className="mob-nav">
         <MobileNav />
       </div>
-      <div className="activity-container">
-        {/* Sidebar */}
-        <div className="activity-sidebar">
-          <select id="section-dropdown" onChange={handleSelectionChange}>
-            <option value="">Select Section</option>
-            {combinations.map((combo, index) => (
-              <option
-                key={index}
-                value={ `${combo.year}-${combo.department}-${combo.section}-${combo.subject}`}
-              >
-                {combo.year} {combo.department}-{combo.section} ({combo.subject})
-              </option>
-            ))}
-          </select>
-          <a href="#" id="lab-link-btn">
-            
-          </a>
-        </div>
 
-        {/* Main Content */}
-        <div className="activity-content">
-          <h2 id="activity-title">
-            Activity Diary Section: {selectedCombination || "None"}
-          </h2>
-          <table id="activity-table">
-            <thead>
-              <tr>
-                <th>S.No</th>
-                <th>Date</th>
-                <th>Period</th>
-                <th>Topic</th>
-                <th>Remark</th>
-                <th>Absentees</th>
-              </tr>
-            </thead>
-            <tbody>
-              {attendanceRecords.length === 0 ? (
-                <tr>
-                  <td colSpan="6">No attendance records found</td>
-                </tr>
-              ) : (
-                attendanceRecords.map((record, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{record.date}</td>
-                    <td>{record.period}</td>
-                    <td>{record.topic || "N/A"}</td>
-                    <td>{record.remarks || "N/A"}</td>
-                    <td>
-                      {record.attendance
-                        .filter((entry) => entry.status === "absent")
-                        .map((entry) => entry.rollNumber)
-                        .join(", ") || "None"}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      <div className="activity-main-container">
+        <div className="activity-card">
+          <div className="activity-header">
+            <h2>Activity Diary Log</h2>
+            <p>Select a class and subject below to view your teaching history.</p>
+            
+            <div className="dropdown-wrapper">
+              <select className="class-selector" value={selectedCombination} onChange={handleSelectionChange}>
+                <option value="">-- Select Class & Subject --</option>
+                {combinations.map((combo, index) => {
+                  // We use a pipe "|" delimiter to safely split it later (hyphens might be in subject names)
+                  const valueString = `${combo.year}|${combo.department}|${combo.section}|${combo.subject}`;
+                  return (
+                    <option key={index} value={valueString}>
+                      {combo.year} {combo.department}-{combo.section} ({combo.subject})
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+          </div>
+
+          <div className="activity-content">
+            {loading ? (
+              <p style={{ textAlign: "center", padding: "2rem" }}>Loading history...</p>
+            ) : (
+              <div className="table-responsive">
+                <table className="diary-table">
+                  <thead>
+                    <tr>
+                      <th>S.No</th>
+                      <th>Date</th>
+                      <th>Period</th>
+                      <th>Topic Covered</th>
+                      <th>Remarks</th>
+                      <th>Absentees</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {!selectedCombination ? (
+                      <tr>
+                        <td colSpan="6" className="empty-message">Please select a class to view history.</td>
+                      </tr>
+                    ) : attendanceRecords.length === 0 ? (
+                      <tr>
+                        <td colSpan="6" className="empty-message">No attendance records found for this subject.</td>
+                      </tr>
+                    ) : (
+                      attendanceRecords.map((record, index) => (
+                        <tr key={record.id || index}>
+                          <td>{index + 1}</td>
+                          <td style={{ fontWeight: "bold" }}>{record.date}</td>
+                          <td>P{record.period}</td>
+                          <td>{record.topic || "-"}</td>
+                          <td>{record.remarks || "-"}</td>
+                          <td className="absentee-list">
+                            {record.attendance
+                              ? record.attendance
+                                  .filter((entry) => entry.status.toLowerCase() === "absent")
+                                  .map((entry) => entry.rollNumber)
+                                  .join(", ") || "None"
+                              : "None"}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      <style>{`
+        .activity-main-container {
+          max-width: 1100px;
+          margin: 2rem auto;
+          padding: 0 1rem;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .activity-card {
+          background: #ffffff;
+          border-radius: 12px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+          overflow: hidden;
+          border: 1px solid #eaeaea;
+        }
+
+        .activity-header {
+          background-color: #f8fafc;
+          padding: 1.5rem 2rem;
+          border-bottom: 1px solid #eaeaea;
+        }
+
+        .activity-header h2 {
+          margin: 0 0 0.5rem 0;
+          color: #1e293b;
+          font-size: 1.4rem;
+        }
+
+        .activity-header p {
+          color: #64748b;
+          margin: 0 0 1rem 0;
+          font-size: 0.95rem;
+        }
+
+        .dropdown-wrapper {
+          display: flex;
+          align-items: center;
+        }
+
+        .class-selector {
+          width: 100%;
+          max-width: 400px;
+          padding: 0.75rem 1rem;
+          font-size: 1rem;
+          border: 1px solid #cbd5e1;
+          border-radius: 8px;
+          background-color: #ffffff;
+          color: #334155;
+          cursor: pointer;
+          outline: none;
+          transition: border-color 0.2s;
+        }
+
+        .class-selector:focus {
+          border-color: #6495ED;
+          box-shadow: 0 0 0 3px rgba(100, 149, 237, 0.1);
+        }
+
+        .table-responsive {
+          overflow-x: auto;
+          padding: 0 1rem 1rem 1rem;
+        }
+
+        .diary-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 1rem;
+          font-size: 0.95rem;
+        }
+
+        .diary-table th {
+          background-color: #f1f5f9;
+          color: #475569;
+          font-weight: 600;
+          text-align: left;
+          padding: 1rem;
+          border-bottom: 2px solid #e2e8f0;
+        }
+
+        .diary-table td {
+          padding: 1rem;
+          border-bottom: 1px solid #f1f5f9;
+          color: #334155;
+          vertical-align: top;
+        }
+
+        .diary-table tr:hover td {
+          background-color: #f8fafc;
+        }
+
+        .absentee-list {
+          color: #ef4444 !important;
+          font-weight: 500;
+          max-width: 200px;
+          line-height: 1.4;
+        }
+
+        .empty-message {
+          text-align: center !important;
+          color: #94a3b8 !important;
+          padding: 3rem !important;
+          font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+          .activity-header {
+            padding: 1rem;
+          }
+          .diary-table th, .diary-table td {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.85rem;
+          }
+          .class-selector {
+            max-width: 100%;
+          }
+        }
+      `}</style>
+    </>
   );
 };
 
