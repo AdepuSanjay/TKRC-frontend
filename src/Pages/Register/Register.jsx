@@ -151,7 +151,7 @@ const Register = () => {
   return (
     <>
       <ToastContainer position="top-right" autoClose={2000} />
-      
+
       <div className="nav">
         <NavBar />
       </div>
@@ -195,7 +195,10 @@ const Register = () => {
 
           <div className="saas-table-wrapper" style={{ overflowX: "auto" }}>
             {loading ? (
-              <p style={{ textAlign: "center", padding: "20px" }}>Generating Matrix...</p>
+              <div className="saas-loading-container" style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "60px 20px" }}>
+                <div className="saas-spinner"></div>
+                <p style={{ marginTop: "15px", color: "#6b7280", fontWeight: "500" }}>Fetching records & generating matrix...</p>
+              </div>
             ) : (
               <table className="saas-attendance-table" style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
@@ -267,7 +270,7 @@ const Register = () => {
           </div>
         </div>
       </div>
-<Header />
+      <Header />
     </>
   );
 };
