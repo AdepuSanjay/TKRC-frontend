@@ -97,7 +97,7 @@ const ActivityDiary = () => {
   return (
     <>
       <ToastContainer position="top-right" autoClose={2000} />
-      <Header />
+      
       <div className="nav">
         <NavBar />
       </div>
@@ -328,6 +328,7 @@ const ActivityDiary = () => {
           }
         }
       `}</style>
+<Header />
     </>
   );
 };
