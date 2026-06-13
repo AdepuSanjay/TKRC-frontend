@@ -1,73 +1,48 @@
-/* ═══════════════════════════════════════════════════════════════
-   VideoSection.css — Edge-to-Edge Banner Video
-   Theme: Full-width on mobile, fixed banner height, Skeleton loader
-   ═══════════════════════════════════════════════════════════════ */
 
+/* Container for the entire section */
 .saas-video-section {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 3rem auto; /* Space between video and delegates below */
-}
-
-/* ── WRAPPER & SKELETON ANIMATION ── */
-.saas-video-wrapper {
   position: relative;
   width: 100%;
+  height: 60vh; /* Adjust this height based on your layout needs */
+  min-height: 400px;
   overflow: hidden;
-  background-color: #E2E8F0; /* Base color for the skeleton */
+  background-color: #000; /* Dark background while images load */
 }
 
-/* Pulsing skeleton animation while the video is fetching */
-.skeleton-loading {
-  animation: pulse-skeleton 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse-skeleton {
-  0% { background-color: #F1F5F9; }
-  50% { background-color: #CBD5E1; }
-  100% { background-color: #F1F5F9; }
-}
-
-/* ── VIDEO ELEMENT ── */
-.saas-video {
+/* Wrapper to hold the absolutely positioned images */
+.saas-slider-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Crops the video to act like a background banner without squishing */
-  display: block;
-  opacity: 0; /* Hidden initially */
-  transition: opacity 0.5s ease-in-out; /* Smooth fade-in once loaded */
 }
 
-.saas-video.loaded {
-  opacity: 1; /* Fade in when React state flips to true */
+/* Base styling for all slider images */
+.saas-slider-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures images fill the space without stretching */
+  object-position: center;
+  opacity: 0; /* Hide all images by default */
+  transition: opacity 1.2s ease-in-out; /* Smooth crossfade animation */
 }
 
-
-/* ═══════════════════════════
-   DESKTOP / TABLET SIZING
-═══════════════════════════ */
-@media (min-width: 768px) {
-  .saas-video-section {
-    padding: 2rem 2rem 0 2rem; /* Keep some padding so it doesn't touch monitor edges */
-  }
-
-  .saas-video-wrapper {
-    height: 400px; /* Taller banner on desktop */
-    border-radius: var(--radius-lg, 24px); /* Rounded corners on large screens */
-  }
+/* Only show the active image */
+.saas-slider-image.active {
+  opacity: 1;
 }
 
-/* ═══════════════════════════
-   MOBILE RESPONSIVENESS (Ultra Compact)
-═══════════════════════════ */
-@media (max-width: 767px) {
-  .saas-video-section {
-    padding: 0; /* Fully edge-to-edge on mobile */
-    margin-bottom: 2rem; /* Tighter gap to next section */
-  }
-
-  .saas-video-wrapper {
-    height: 220px; /* "less height should be less" - Fixed banner height */
-    border-radius: 0; /* Square edges for full-width mobile look */
-  }
+/* Dark overlay to make any hero text readable */
+.saas-slider-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4); /* 40% black tint */
+  z-index: 1;
 }
