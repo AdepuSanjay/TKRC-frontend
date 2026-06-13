@@ -2,13 +2,15 @@
 .saas-hero-slider-section {
   position: relative;
   width: 100%;
-  height: 75vh; /* Taller height for a premium hero feel */
+  height: 75vh;
   min-height: 500px;
   overflow: hidden;
   background-color: #111; 
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 0 !important; /* Forces it flush against the navbar */
+  padding-top: 0 !important;
 }
 
 /* Wrapper to hold the absolutely positioned images */
@@ -20,27 +22,26 @@
   height: 100%;
 }
 
-/* Base styling for all slider images with a slow Ken Burns zoom effect */
+/* Base styling for all slider images */
 .saas-slider-image {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; 
+  object-fit: cover; /* Absolutely prevents stretching, crops naturally */
   object-position: center;
   opacity: 0; 
-  transform: scale(1.1); /* Start slightly zoomed in */
+  transform: scale(1.1);
   transition: opacity 1.5s ease-in-out, transform 6s linear; 
 }
 
-/* Active image fades in and slowly zooms out */
 .saas-slider-image.active {
   opacity: 1;
   transform: scale(1);
 }
 
-/* Dark overlay to make the typing text pop */
+/* Dark overlay for readability */
 .saas-slider-overlay {
   position: absolute;
   top: 0;
@@ -51,9 +52,7 @@
   z-index: 1;
 }
 
-/* =======================================
-   PREMIUM TEXT & TYPING EFFECT STYLES
-   ======================================= */
+/* Premium Content */
 .saas-hero-content {
   position: relative;
   z-index: 2;
@@ -66,16 +65,16 @@
 .saas-hero-typing-text {
   font-size: 3.5rem;
   font-weight: 800;
+  margin-top: 0;
   margin-bottom: 15px;
   letter-spacing: -0.5px;
   text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.5);
-  min-height: 4rem; /* Prevents layout jumping when text wraps or deletes */
+  min-height: 4rem;
 }
 
-/* Blinking Cursor Animation */
 .saas-cursor {
   font-weight: 300;
-  color: #6495ED; /* Brand accent color */
+  color: #6495ED;
   animation: blink 0.8s infinite;
 }
 
@@ -115,37 +114,47 @@
 }
 
 /* =======================================
-   RESPONSIVE DESIGN (MOBILE & TABLET)
+   RESPONSIVE DESIGN (TABLET)
    ======================================= */
 @media (max-width: 768px) {
   .saas-hero-slider-section {
-    height: 60vh;
-    min-height: 400px;
+    height: 50vh;
+    min-height: 350px;
   }
-
   .saas-hero-typing-text {
     font-size: 2.2rem;
     min-height: 3rem;
   }
-
   .saas-hero-subtext {
-    font-size: 1rem;
-    padding: 0 10px;
-  }
-
-  .saas-hero-btn {
-    padding: 12px 28px;
     font-size: 1rem;
   }
 }
 
+/* =======================================
+   RESPONSIVE DESIGN (STRICT 200px MOBILE)
+   ======================================= */
 @media (max-width: 480px) {
+  .saas-hero-slider-section {
+    height: 200px !important;     /* Locked exactly at 200px */
+    min-height: 200px !important; /* Prevents auto-expanding */
+  }
+
+  /* Compacting inner elements so they fit inside the 200px box */
   .saas-hero-typing-text {
-    font-size: 1.8rem;
-    min-height: 2.5rem;
+    font-size: 1.25rem;
+    min-height: 1.8rem;
+    margin-bottom: 8px;
   }
 
   .saas-hero-subtext {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
+    margin-bottom: 12px;
+    padding: 0 5px;
+    line-height: 1.3;
+  }
+
+  .saas-hero-btn {
+    padding: 8px 18px;
+    font-size: 0.85rem;
   }
 }
