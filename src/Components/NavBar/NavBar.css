@@ -1,172 +1,224 @@
-/* ═══════════════════════════════════════════════════════════════
-   NavBar.css — SaaS Desktop Navigation
-   Theme: Frosted Glass, Orange Accents, Crisp Typography
-   ═══════════════════════════════════════════════════════════════ */
-
-nav {
+/* --- Base Navbar Styles --- */
+.saas-navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border-light, #E5E7EB);
-  position: sticky;
-  top: 0;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e1e4e8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #11181c;
+  position: relative;
   z-index: 1000;
-  font-family: var(--font-main, 'Plus Jakarta Sans', sans-serif);
 }
 
-/* ── LEFT SECTION (LINKS) ── */
+/* --- Left Section & Logo --- */
 .nav-left-section {
   display: flex;
   align-items: center;
+  gap: 3rem;
 }
 
+.nav-logo .logo-text {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #11181c;
+}
+
+/* --- Navigation Links --- */
 .nav-menu-links {
   display: flex;
-  gap: 2rem;
   list-style: none;
   margin: 0;
   padding: 0;
+  gap: 2rem;
   align-items: center;
 }
 
-/* Base link styling (handles <a>, <Link>, and <li> acting as links) */
-.nav-menu-links a,
-.nav-menu-links li {
+.nav-menu-links > li,
+.nav-menu-links > li > a {
   text-decoration: none;
-  color: var(--text-muted, #6B7280);
+  color: #687076;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: color 0.2s ease;
-  display: inline-block;
-}
-
-.nav-menu-links a:hover,
-.nav-menu-links li:hover {
-  color: var(--text-dark, #111827);
-}
-
-/* ── DROPDOWNS (Attendance & Account) ── */
-.menu-dropdown, 
-.account-menu {
   position: relative;
 }
 
-/* The popup containers */
-.menu-dropdown-content, 
-.account-menu-content {
-  position: absolute;
-  top: calc(100% + 1rem); /* Drops down just below the nav */
-  left: 0;
-  background: #FFFFFF;
-  border: 1px solid var(--border-light, #E5E7EB);
-  border-radius: var(--radius-md, 12px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  min-width: 220px;
-  padding: 0.5rem;
-  animation: navDropFade 0.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-  z-index: 1001;
+.nav-menu-links > li:hover,
+.nav-menu-links > li > a:hover,
+.dropdown-trigger.active {
+  color: #11181c;
 }
 
-/* Align the account menu to the right side so it doesn't spill off screen */
-.account-menu-content {
+/* --- Dropdown Shared Styles --- */
+.menu-dropdown, .account-menu {
+  position: relative;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+}
+
+.menu-dropdown-content,
+.account-dropdown-content {
+  position: absolute;
+  top: 150%;
+  left: 0;
+  background-color: #ffffff;
+  min-width: 220px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f1f3f5;
+  padding: 0.5rem;
+  animation: slideDown 0.2s ease forwards;
+}
+
+.account-dropdown-content {
   left: auto;
   right: 0;
+  min-width: 160px;
 }
 
-@keyframes navDropFade {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes slideDown {
+  from {
+      opacity: 0;
+      transform: translateY(-10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
 }
 
-/* Dropdown Lists */
-.menu-dropdown-content ul, 
-.account-menu-content ul {
+.menu-dropdown-content ul,
+.account-dropdown-content ul {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
 }
 
-/* Dropdown Items */
-.menu-dropdown-content li, 
-.account-menu-content li {
-  padding: 0.65rem 1rem;
-  border-radius: 8px;
-  color: var(--text-dark, #111827);
+.menu-dropdown-content li,
+.account-dropdown-content li {
+  padding: 0.6rem 1rem;
   font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  display: block; /* Overrides the flex display from parent nav */
+  color: #11181c;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-/* UPDATED: Changed from Mint Green to Faint Orange */
-.menu-dropdown-content li:hover, 
-.account-menu-content li:hover {
-  background: rgba(248, 94, 61, 0.1); /* Faint orange background */
-  color: var(--accent-orange, #F85E3D); /* Vibrant orange text */
-  transform: translateX(4px); /* Slight slide effect on hover */
+.menu-dropdown-content li:hover,
+.account-dropdown-content li:hover {
+  background-color: #f1f3f5;
 }
 
-/* Logout button specific styling */
-.account-menu-content li:last-child {
-  color: #DC2626;
-  border-top: 1px solid var(--border-light, #E5E7EB);
-  margin-top: 0.25rem;
-  border-radius: 0 0 8px 8px;
+/* --- Dropdown Specific States --- */
+.dropdown-divider {
+  height: 1px;
+  background-color: #e1e4e8;
+  margin: 0.25rem 0;
 }
 
-.account-menu-content li:last-child:hover {
-  background: rgba(220, 38, 38, 0.08);
-  color: #DC2626;
-  transform: translateX(4px);
+.menu-dropdown-content li.back-button {
+  color: #687076;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
-/* ── RIGHT SECTION (USER PROFILE) ── */
+.menu-dropdown-content li.back-button:hover {
+  background-color: #dcece7; /* Mint green hint for back button */
+  color: #11181c;
+}
+
+.menu-dropdown-content li.loading-state,
+.menu-dropdown-content li.empty-state {
+  color: #687076;
+  cursor: default;
+  text-align: center;
+  padding: 1rem;
+}
+
+.menu-dropdown-content li.loading-state:hover,
+.menu-dropdown-content li.empty-state:hover {
+  background-color: transparent;
+}
+
+/* --- Right Section / User Profile --- */
 .nav-user-profile {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
 
-.nav-user-profile span {
+.welcome-text {
   font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-dark, #111827);
-  letter-spacing: -0.01em;
+  color: #687076;
+}
+
+.welcome-text strong {
+  color: #11181c;
 }
 
 .account-menu-button {
-  background: var(--text-dark, #111827);
-  color: #FFFFFF;
+  background-color: #11181c;
+  color: #ffffff;
   border: none;
   padding: 0.6rem 1.25rem;
-  border-radius: var(--radius-pill, 100px);
-  font-size: 0.85rem;
+  border-radius: 50px; /* Pill shape */
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .account-menu-button:hover {
-  background: var(--accent-orange, #F85E3D);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(248, 94, 61, 0.25);
+  background-color: #313d44;
 }
 
-/* ═══════════════════════════
-   RESPONSIVENESS
-═══════════════════════════ */
-/* Assuming you hide this on mobile in favor of MobileNav.jsx */
-@media (max-width: 900px) {
-  nav {
-    display: none; /* Usually hidden on small screens */
+.account-menu-button:active {
+  transform: scale(0.98);
+}
+
+.account-dropdown-content li.logout-btn {
+  color: #d93025; /* Soft red for logout */
+  font-weight: 600;
+}
+
+.account-dropdown-content li.logout-btn:hover {
+  background-color: #fce8e6;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .saas-navbar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.5rem;
+      padding: 1rem;
+  }
+  
+  .nav-left-section {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      width: 100%;
+  }
+
+  .nav-menu-links {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+      gap: 1rem;
+  }
+  
+  .nav-user-profile {
+      width: 100%;
+      justify-content: space-between;
   }
 }
