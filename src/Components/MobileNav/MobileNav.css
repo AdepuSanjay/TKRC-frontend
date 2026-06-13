@@ -1,38 +1,50 @@
-/* =========================================
-   MobileNav.css
-   Premium Styling inspired by "Lovable / Dealflow"
-========================================= */
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Core Dealflow/Lovable Palette */
   --nav-bg: #ffffff;
-  --nav-bg-secondary: #f9fafb;
-  --nav-text-primary: #111413;
+  --nav-bg-secondary: #f3f4f6;
+  --nav-text-primary: #111827;
   --nav-text-secondary: #6b7280;
-  --nav-accent-orange: #fc6036; /* Vibrant Primary */
-  --nav-accent-mint: #e2f2eb;   /* Subtle Secondary */
+  --nav-accent-primary: #111827; /* Dark elegant accent like Lovable */
   --nav-border: #e5e7eb;
-  
-  /* Shapes & Shadows */
-  --nav-radius-lg: 24px;
-  --nav-radius-md: 12px;
-  --nav-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.05);
-  
+
+  --nav-radius-lg: 20px;
+  --nav-radius-md: 10px;
+  --nav-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 20px -5px rgba(0, 0, 0, 0.05);
+
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* --- Container & Layout --- */
 .mobile-nav-container {
   font-family: var(--font-family);
-  position: relative;
+  position: sticky;
+  top: 0;
   width: 100%;
   z-index: 1000;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* --- Header Area --- */
+/* Background Dimmer when menu is open */
+.nav-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.nav-backdrop.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -44,45 +56,45 @@
 
 .logo {
   font-weight: 800;
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   color: var(--nav-text-primary);
-  letter-spacing: -0.04em; /* Tight letter spacing typical of modern SaaS */
+  letter-spacing: -0.05em;
 }
 
-/* --- Toggle Button --- */
+/* Lovable-style Circular Toggle Button */
 .menu-toggle {
   background-color: var(--nav-bg);
   border: 1px solid var(--nav-border);
   color: var(--nav-text-primary);
-  width: 44px;
-  height: 44px;
-  border-radius: 50%; /* Perfect circle */
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   padding: 0;
   outline: none;
 }
 
-.menu-toggle:hover,
-.menu-toggle:focus-visible {
+.menu-toggle:hover {
   background-color: var(--nav-bg-secondary);
-  border-color: var(--nav-text-secondary);
   transform: scale(1.05);
 }
 
-.menu-toggle:active {
-  transform: scale(0.95);
+.menu-toggle.is-open {
+  background-color: var(--nav-text-primary);
+  color: var(--nav-bg);
+  border-color: var(--nav-text-primary);
+  transform: rotate(90deg);
 }
 
-/* --- Menu Overlay Card --- */
+/* Floating Premium Menu Card */
 .menu {
   position: absolute;
-  top: calc(100% + 12px); /* Floats just below the header */
+  top: calc(100% + 12px);
   left: 16px;
   right: 16px;
   background-color: var(--nav-bg);
@@ -92,41 +104,39 @@
   padding: 24px 16px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   overflow-y: auto;
-  max-height: 80vh;
+  max-height: calc(100vh - 100px);
   transform-origin: top center;
   animation: slideDownFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes slideDownFade {
-  from { 
-    opacity: 0; 
-    transform: translateY(-12px) scale(0.98); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
-  }
+  from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* --- User Welcome Text --- */
 .user-welcome {
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--nav-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   padding: 0 16px 16px 16px;
   margin-bottom: 8px;
   border-bottom: 1px solid var(--nav-border);
 }
 
-/* --- Menu Items --- */
 .mobile-nav-container a#h {
   text-decoration: none;
   color: inherit;
   display: block;
+}
+
+/* Fix for list elements */
+.link-override {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .menu-item {
@@ -140,86 +150,76 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid transparent; /* Prevents layout shift on active */
+  border: 1px solid transparent;
 }
 
-/* Hover State */
+.chevron {
+  color: var(--nav-text-secondary);
+  transition: transform 0.3s ease;
+}
+
+.chevron.open {
+  transform: rotate(180deg);
+}
+
 .menu-item:hover {
   background-color: var(--nav-bg-secondary);
 }
 
-/* Active/Pressed State (The Mint Accent) */
-.menu-item.active,
-.menu-item[aria-pressed="true"] {
-  background-color: var(--nav-accent-mint);
-  color: #0c5332; /* Deep green to contrast with mint */
-  border-color: #c0e6d4;
+.menu-item.active {
+  background-color: var(--nav-bg-secondary);
+  color: var(--nav-text-primary);
 }
 
-/* --- Dropdown / Nested Menus --- */
 .dropdown {
-  display: none;
+  display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-top: 4px;
-  margin-bottom: 8px;
-  margin-left: 20px; /* Indent nested items */
-  padding-left: 16px;
+  gap: 2px;
+  margin-top: 2px;
+  margin-bottom: 6px;
+  margin-left: 16px;
+  padding-left: 12px;
   border-left: 2px solid var(--nav-border);
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
 }
 
 .dropdown.open {
-  display: flex;
-  animation: fadeIn 0.25s ease forwards;
+  max-height: 500px;
+  opacity: 1;
+  margin-top: 6px;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateX(-5px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-/* Nested Menu Item Styling */
 .dropdown .menu-item {
   font-size: 0.95rem;
-  padding: 10px 16px;
+  padding: 10px 14px;
   font-weight: 500;
   color: var(--nav-text-secondary);
 }
 
-.dropdown .menu-item:hover {
-  color: var(--nav-text-primary);
-  background-color: var(--nav-bg-secondary);
-}
-
+.dropdown .menu-item:hover,
 .dropdown .menu-item.active {
   color: var(--nav-text-primary);
   background-color: var(--nav-bg-secondary);
-  border-color: var(--nav-border);
-  font-weight: 600;
 }
 
-/* --- Specific Target Highlights --- */
-/* Target "Logout" logic dynamically if it contains the word logout */
-.menu-item:last-child:hover {
-  /* Subtle warning styling for the last item assuming it's usually logout */
+/* Specific styling for the Logout button */
+.menu-item:contains("Logout"), 
+.dropdown .menu-item:last-child:hover {
   color: #dc2626;
   background-color: #fef2f2;
 }
 
-/* --- Scrollbar Customization for the Menu Card --- */
+/* Clean Scrollbar */
 .menu::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
-
 .menu::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .menu::-webkit-scrollbar-thumb {
-  background-color: var(--nav-border);
+  background-color: #cbd5e1;
   border-radius: 10px;
-}
-
-.menu::-webkit-scrollbar-thumb:hover {
-  background-color: var(--nav-text-secondary);
 }
