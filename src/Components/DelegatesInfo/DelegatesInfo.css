@@ -1,155 +1,129 @@
-/* ═══════════════════════════════════════════════════════════════
-   DelegatesInfo.css — Compact SaaS Widget
-   Theme: Small footprint, avatar images, refined typography
-   ═══════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-.saas-del-widget {
-  background: var(--bg-white, #FFFFFF);
-  border: 1px solid var(--border-light, #E5E7EB);
-  border-radius: var(--radius-md, 16px);
-  padding: 2rem;
-  max-width: 800px;
-  margin: 0 auto;
-  font-family: var(--font-main, 'Plus Jakarta Sans', sans-serif);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+.saas-about-section {
+    padding: 5rem 1.5rem;
+    background-color: #ffffff;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* ── NAVIGATION (TABS) ── */
-.saas-del-nav-scroll {
-  overflow-x: auto;
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
-  margin-bottom: 2rem;
-  padding-bottom: 0.5rem; /* Space for focus rings */
-}
-.saas-del-nav-scroll::-webkit-scrollbar {
-  display: none; /* Hide scrollbar for Chrome/Safari */
+.saas-about-container {
+    max-width: 1140px;
+    margin: 0 auto;
 }
 
-.saas-del-nav {
-  display: flex;
-  gap: 0.5rem;
-  min-width: max-content;
-  border-bottom: 1px solid var(--border-light, #E5E7EB);
-  padding-bottom: 1rem;
-}
-
-.saas-del-btn {
-  padding: 0.4rem 1rem;
-  border-radius: var(--radius-pill, 100px);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-muted, #6B7280);
-  background: transparent;
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.saas-del-btn:hover {
-  color: var(--text-dark, #111827);
-  background: rgba(0, 0, 0, 0.03);
-}
-
-.saas-del-btn.active {
-  background: var(--text-dark, #111827);
-  color: var(--bg-white, #FFFFFF);
-}
-
-/* ── CONTENT AREA ── */
-.saas-del-content {
-  display: flex;
-  gap: 1.5rem;
-  align-items: flex-start;
-  /* Re-triggered by React 'key' prop */
-  animation: saasFadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-@keyframes saasFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* SMALL AVATAR IMAGE */
-.saas-del-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid var(--border-light, #E5E7EB);
-  background: var(--bg-main, #FAFAFA);
-  flex-shrink: 0;
-}
-
-/* ── TYPOGRAPHY ── */
-.saas-del-text {
-  display: flex;
-  flex-direction: column;
-}
-
-.saas-del-name {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--text-dark, #111827);
-  margin: 0 0 0.2rem 0;
-  letter-spacing: -0.01em;
-}
-
-.saas-del-role {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--accent-orange, #F85E3D);
-  letter-spacing: 0.05em;
-  margin-bottom: 0.85rem;
-}
-
-.saas-del-desc {
-  font-size: 0.85rem;
-  line-height: 1.6;
-  color: var(--text-muted, #6B7280);
-  margin: 0;
-}
-
-/* ═══════════════════════════
-   MOBILE RESPONSIVENESS
-═══════════════════════════ */
-@media (max-width: 600px) {
-  .saas-del-widget {
-    padding: 1.5rem 1.25rem;
-    border-radius: var(--radius-sm, 12px);
-  }
-
-  .saas-del-nav {
-    padding-bottom: 0.75rem;
-  }
-
-  .saas-del-btn {
-    font-size: 0.7rem;
-    padding: 0.35rem 0.85rem;
-  }
-
-  .saas-del-content {
-    flex-direction: column;
-    align-items: center;
+/* --- Header & Lead Intro --- */
+.saas-about-header {
     text-align: center;
-    gap: 1rem;
-  }
+    max-width: 850px;
+    margin: 0 auto 4rem auto;
+}
 
-  /* Even smaller image on mobile */
-  .saas-del-avatar {
-    width: 64px;
-    height: 64px;
-  }
+.saas-about-badge {
+    display: inline-block;
+    padding: 0.4rem 1.2rem;
+    background-color: #f3f4f6;
+    color: #374151;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1.2rem;
+}
 
-  .saas-del-name {
-    font-size: 1rem;
-  }
+.saas-about-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.03em;
+}
 
-  .saas-del-role {
-    margin-bottom: 0.6rem;
-  }
+.saas-about-lead {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: #4b5563;
+}
 
-  .saas-del-desc {
-    font-size: 0.8rem;
-    line-height: 1.5;
-  }
+/* --- Premium Grid Layout --- */
+.saas-about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+}
+
+.saas-about-card {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 1.25rem;
+    padding: 2.5rem 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.saas-about-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+    background-color: #ffffff;
+}
+
+/* --- SVG Icons --- */
+.saas-about-icon {
+    width: 54px;
+    height: 54px;
+    background-color: #e0e7ff;
+    color: #4f46e5;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.1);
+}
+
+.saas-about-icon svg {
+    width: 26px;
+    height: 26px;
+}
+
+/* --- Typography inside Cards --- */
+.saas-about-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+}
+
+.saas-about-card p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #4b5563;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+    .saas-about-section {
+        padding: 3.5rem 1rem;
+    }
+    .saas-about-title {
+        font-size: 2.2rem;
+    }
+    .saas-about-lead {
+        font-size: 1.05rem;
+    }
+    .saas-about-card {
+        padding: 2rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .saas-about-title {
+        font-size: 1.8rem;
+    }
+    .saas-about-header {
+        margin-bottom: 2.5rem;
+    }
+    .saas-about-card {
+        border-radius: 1rem;
+    }
 }
