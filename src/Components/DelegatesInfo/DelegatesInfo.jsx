@@ -1,83 +1,69 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './DelegatesInfo.css';
 
 const DelegatesInfo = () => {
-    const delegateInfo = {
-        chairman: {
-            name: "Sri Teegala Krishna Reddy",
-            photo: "./images/tkrcet-chairman.webp",
-            description: "The newsletter which is being rolled out today marks the launch of an effervescent activity that would enable the management to bring out to the eyes of the competitive world, the academic achievements of our prestigious institution. Teegala Krishna Reddy Engineering College has grown in leaps and bounds, hurtling across barriers along the way. This has been made possible with the collaborative effort of the Management, the Staff and the Students."
-        },
-        secretary: {
-            name: "Dr. T. Harinath Reddy",
-            photo: "./images/tkrcet-secretary.webp",
-            description: "Engineers play the most vital and important role in nation building. In modern times, nations which have rich engineering and experienced management domains are flourishing economically. The essence of Engineering and Management education which has spread in India is a very positive sign not only to cater domestic needs but provide manpower to the entire world. TKRES is a venture contributing to this Endeavour."
-        },
-        treasurer: {
-            name: "Sri. T. Amaranath Reddy",
-            photo: "./images/tkres-treasurer1.webp",
-            description: "The motive of TKRES is to develop a global perspective to cope-up with the fast changing technology scenario. Values with discipline are the hallmark of our college, ensuring quality of the students. The emphasis is not only on academic excellence but the development of the overall total personality of a student. We take special care to ensure that new ideas are not merely discussed here but executed."
-        },
-        principal: {
-            name: "Dr. D. V. Ravi Shankar",
-            photo: "./images/tkr-principal.webp",
-            description: "Dr. D. V. Ravi Shankar, Principal, TKRCET obtained his AMIE from Institution of Engineers in 1987, and his M.Tech in Materials Engineering from NIT Suratkal in 1994. He obtained his Ph.D in Mechanical Engineering in 2010 from JNTUH under the guidance of Dr. P. Rami Reddy. He brings over 23 years of rich academic experience to our institution."
-        },
-        dean: {
-            name: "Dr. A. Suresh Rao",
-            photo: "./images/suresh_cse.webp",
-            description: "Dr. A. Suresh Rao, Vice-Principal & Dean of Academics at TKRCET, is a Professor in the CSE Department. He was conferred with a PhD in Computer Science & Engineering from NIT Warangal in 2015. His experience spans 20 years; 2 years in the Industry and 18 Years in Teaching. Apart from teaching, he is also a highly discerning administrator."
-        },
-        coe: {
-            name: "Dr. D. Nageshwar Rao",
-            photo: "./images/coe.webp",
-            description: "A distinguished academician with 20 Years of teaching experience. He pursued Masters from JNTU Hyderabad and Ph.D in VLSI from GITAM University, Vishakhapatnam. He has published several research papers in National and International journals and is presently guiding research scholars. He has been awarded the Certificate of Merit in NIET for two consecutive years."
-        }
-    };
-
-    const delegateKeys = Object.keys(delegateInfo);
-    const [currentDelegateIndex, setCurrentDelegateIndex] = useState(0);
-
-    useEffect(() => {
-        const delegateInterval = setInterval(() => {
-            setCurrentDelegateIndex((prevIndex) => (prevIndex + 1) % delegateKeys.length);
-        }, 5000);
-
-        return () => clearInterval(delegateInterval);
-    }, [delegateKeys.length]);
-
-    const currentDelegate = delegateInfo[delegateKeys[currentDelegateIndex]];
-
     return (
-        <div className="saas-del-widget">
-            <div className="saas-del-nav-scroll">
-                <div className="saas-del-nav">
-                    {delegateKeys.map((key, index) => (
-                        <button
-                            key={key}
-                            onClick={() => setCurrentDelegateIndex(index)}
-                            className={`saas-del-btn ${currentDelegateIndex === index ? 'active' : ''}`}
-                        >
-                            {key.charAt(0).toUpperCase() + key.slice(1)}
-                        </button>
-                    ))}
+        <section className="saas-about-section">
+            <div className="saas-about-container">
+                
+                {/* Main Campus Introduction */}
+                <div className="saas-about-header">
+                    <span className="saas-about-badge">Our Campus</span>
+                    <h2 className="saas-about-title">About The Campus</h2>
+                    <p className="saas-about-lead">
+                        TKR College of Engineering and Technology – a modern temple of learning, an off shoot of the TKR Educational Society was established in the year 2002 in a sprawling, lush green 20 acre campus at Meerpet, Hyderabad. The college provides a serene and tranquil environment to the students, boosting their mental potential and preparing them in all aspects to face the cut-throat global competition with a smile on the face and emerge victorious.
+                    </p>
+                </div>
+
+                {/* Information Grid Cards */}
+                <div className="saas-about-grid">
+                    
+                    {/* Card 1: Chairman */}
+                    <div className="saas-about-card">
+                        <div className="saas-about-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <polyline points="16 11 18 13 22 9"></polyline>
+                            </svg>
+                        </div>
+                        <h3>The Founder's Vision</h3>
+                        <p>
+                            Sri Teegala Krishna Reddy, the Mayor of Hyderabad, is the founder chairman of TKR Educational Society. A Philanthropist by nature, "the friend of man, to vice alone of foe", and an urge to see our students excelling themselves in all fields prompted him to start the educational society; making it easy for education to be within arm’s length of even a rural student and providing them with an independent and easy in the for pursuing their dreams and making them come true and in the process upholding moral and ethical values.
+                        </p>
+                    </div>
+
+                    {/* Card 2: Secretary */}
+                    <div className="saas-about-card">
+                        <div className="saas-about-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <h3>Unwavering Dedication</h3>
+                        <p>
+                            The person puts in all his efforts to see the students excelling themselves and takes great pride in watching them carve out a niche for themselves is none other than Dr.T.Harinath Reddy, the Secretary of the college. A calm and serene countenance with sharp, twinkling eyes, he is the pivotal of encouragement and is always on the look out for avenues, which would provide the wherewithal for developing a cutting edge to their capabilities and potentialities.
+                        </p>
+                    </div>
+
+                    {/* Card 3: Affiliations */}
+                    <div className="saas-about-card">
+                        <div className="saas-about-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                            </svg>
+                        </div>
+                        <h3>Academic Excellence</h3>
+                        <p>
+                            The College is affiliated to Jawaharlal Nehru Technological University Kukatpally, Hyderabd. It has been approved by AICTE, New Delhi and the State Government of Telangana and has been sanctioned seven UG courses – Civil Engineering, Electrical & Electronics Engineering, Computer Science & Engineering, Electronics & Communication Engineering, Mechanical Engineering and PG Courses – M.Tech in CSE, PE & MBA. In addition the College is running second shift Polytechnic.
+                        </p>
+                    </div>
+
                 </div>
             </div>
-            
-            {/* The 'key' attribute here forces React to re-render this block, triggering the CSS fade animation */}
-            <div className="saas-del-content" key={currentDelegateIndex}>
-                <img
-                    src={currentDelegate.photo}
-                    alt={currentDelegate.name}
-                    className="saas-del-avatar"
-                />
-                <div className="saas-del-text">
-                    <h4 className="saas-del-name">{currentDelegate.name}</h4>
-                    <span className="saas-del-role">{delegateKeys[currentDelegateIndex].toUpperCase()}</span>
-                    <p className="saas-del-desc">{currentDelegate.description}</p>
-                </div>
-            </div>
-        </div>
+        </section>
     );
 };
 
