@@ -14,7 +14,6 @@ function VideoSection() {
     "https://res.cloudinary.com/dppiuypop/image/upload/v1781322242/unnamed_1_zjglh2.webp"
   ];
 
-  // The phrases you want to type out on the screen
   const typingPhrases = [
     "Welcome to TKRCET.",
     "Empowering Future Engineers.",
@@ -22,7 +21,6 @@ function VideoSection() {
     "Excellence in Education."
   ];
 
-  // Auto-slide background images every 5 seconds
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
@@ -30,7 +28,6 @@ function VideoSection() {
     return () => clearInterval(slideInterval);
   }, [images.length]);
 
-  // Premium Typing Effect Logic
   useEffect(() => {
     let timer;
     const handleType = () => {
@@ -43,15 +40,13 @@ function VideoSection() {
           : fullText.substring(0, typedText.length + 1)
       );
 
-      setTypingSpeed(isDeleting ? 50 : 100); // types faster when deleting
+      setTypingSpeed(isDeleting ? 50 : 100);
 
       if (!isDeleting && typedText === fullText) {
-        // Pause at the end of typing before deleting
         timer = setTimeout(() => setIsDeleting(true), 1500);
       } else if (isDeleting && typedText === '') {
         setIsDeleting(false);
         setLoopNum(loopNum + 1);
-        // Pause before typing the next word
         timer = setTimeout(() => {}, 500);
       } else {
         timer = setTimeout(handleType, typingSpeed);
@@ -75,10 +70,8 @@ function VideoSection() {
         ))}
       </div>
       
-      {/* Dark overlay for readability */}
       <div className="saas-slider-overlay"></div>
 
-      {/* Premium Content Overlay */}
       <div className="saas-hero-content">
         <h1 className="saas-hero-typing-text">
           {typedText}
