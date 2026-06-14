@@ -32,6 +32,9 @@ const Homepage = () => {
   const [imgFade, setImgFade] = useState(true);
   const [loading, setLoading] = useState(false);
 
+  // NEW: State to hold inline feedback messages
+  const [loginMessage, setLoginMessage] = useState({ type: '', text: '' });
+
   useEffect(() => {
     const t = setInterval(() => {
       setImgFade(false);
@@ -41,7 +44,7 @@ const Homepage = () => {
       }, 500); 
     }, 5000);
     return () => clearInterval(t);
-  }, []);
+  }, [imagesLoader.length]);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -49,8 +52,13 @@ const Homepage = () => {
 
   // --- INTEGRATED SPRING BOOT LOGIN LOGIC ---
   const handleLogin = async () => {
+    // Clear previous messages
+    setLoginMessage({ type: '', text: '' });
+
     if (!username || !password) { 
-      toast.warning('Please fill in all fields.'); 
+      const msg = 'Please fill in both username and password.';
+      setLoginMessage({ type: 'warning', text: msg });
+      toast.warning(msg); 
       return; 
     }
 
@@ -62,7 +70,6 @@ const Homepage = () => {
         password: password 
       });
 
-      // NEW: Extracting the exact userId directly from the database response
       const { token, role, name, profileImage, userId } = response.data;
 
       localStorage.setItem('token', token);
@@ -73,25 +80,38 @@ const Homepage = () => {
         localStorage.setItem('profileImage', profileImage);
       }
 
-      // NEW: Setting the official backend ID and clearing out old/conflicting IDs
       if (role === 'teacher' || role === 'admin') {
         localStorage.setItem('facultyId', userId);
-        localStorage.removeItem('studentId'); // Prevent ghost data
+        localStorage.removeItem('studentId'); 
       } else {
         localStorage.setItem('studentId', userId);
-        localStorage.removeItem('facultyId'); // Prevent ghost data
+        localStorage.removeItem('facultyId'); 
       }
 
-      const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
-      toast.success(`Welcome back, ${formattedName}!`);
+      const formattedName = name ? name.charAt(0).toUpperCase() + name.slice(1) : 'User';
+      const successMsg = `Login successful! Welcome back, ${formattedName}. Redirecting...`;
+      
+      // Trigger both inline message and toast for success
+      setLoginMessage({ type: 'success', text: successMsg });
+      toast.success(successMsg);
+      
       setTimeout(() => navigate('/index'), 2000);
 
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        toast.error('Invalid credentials. Please check your user ID and password.');
-      } else {
-        toast.error('Server error. Ensure your backend is running.');
+      // Robust error handling to catch exact backend messages or fallback to generic
+      let errorMsg = 'Server error. Ensure your backend is running.';
+      
+      if (error.response) {
+        // Look for standard Spring Boot error message formats
+        errorMsg = error.response.data?.message || error.response.data?.error || 'Invalid credentials. Please check your user ID and password.';
+      } else if (error.request) {
+        errorMsg = 'Network error. Please check your internet connection or server status.';
       }
+
+      // Trigger both inline message and toast for error
+      setLoginMessage({ type: 'error', text: errorMsg });
+      toast.error(errorMsg);
+      
     } finally { 
       setLoading(false); 
     }
@@ -122,9 +142,21 @@ const Homepage = () => {
     'Nurturing holistic development of every student',
   ];
 
+  // Dynamic styling for the inline message box
+  const getAlertStyle = (type) => {
+    const baseStyle = { padding: '12px', borderRadius: '6px', marginBottom: '16px', fontSize: '14px', textAlign: 'center', fontWeight: '500' };
+    switch (type) {
+      case 'error': return { ...baseStyle, backgroundColor: '#fee2e2', color: '#991b1b', border: '1px solid #f87171' };
+      case 'success': return { ...baseStyle, backgroundColor: '#dcfce7', color: '#166534', border: '1px solid #4ade80' };
+      case 'warning': return { ...baseStyle, backgroundColor: '#fef9c3', color: '#854d0e', border: '1px solid #facc15' };
+      default: return { display: 'none' };
+    }
+  };
+
   return (
     <div className="saas-root smooth-wrapper">
-      <ToastContainer position="top-center" hideProgressBar theme="light" />
+      {/* Increased z-index to ensure Toasts are always on top */}
+      <ToastContainer position="top-center" hideProgressBar theme="light" style={{ zIndex: 9999 }} />
 
       <style>
         {`
@@ -263,6 +295,13 @@ const Homepage = () => {
                 <h3>Welcome Back</h3>
               </div>
             </div>
+
+            {/* INLINE ALERT MESSAGE: Guarantees the user sees the response */}
+            {loginMessage.text && (
+              <div style={getAlertStyle(loginMessage.type)}>
+                {loginMessage.text}
+              </div>
+            )}
 
             <div className="saas-field">
               <label><RiUser3Line /> Username / Roll Number</label>
