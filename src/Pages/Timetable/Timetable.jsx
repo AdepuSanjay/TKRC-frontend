@@ -19,8 +19,6 @@ const Timetable = () => {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const loadingToast = toast.loading("Loading your schedule...", { theme: "colored" });
-
                 const facId = localStorage.getItem("facultyId");
                 const stuId = localStorage.getItem("studentId");
                 const token = localStorage.getItem("token");
@@ -28,7 +26,6 @@ const Timetable = () => {
 
                 // Prevent execution if localStorage is empty
                 if (isStudent && !stuId) {
-                    toast.dismiss();
                     toast.error("You are not properly logged in. Please log out and log back in.", { theme: "colored" });
                     setLoading(false);
                     return;
@@ -109,11 +106,9 @@ const Timetable = () => {
                     setSubjectFacultyMap(facultyMappingArray);
                 }
 
-                toast.dismiss(loadingToast);
                 setLoading(false);
 
             } catch (error) {
-                toast.dismiss();
                 console.error("Dashboard Fetch Error:", error);
 
                 // SMART ERROR ALERTS
@@ -154,8 +149,50 @@ const Timetable = () => {
 
     return (
         <>
+            {/* CSS for Skeleton Animation */}
+            <style>
+                {`
+                .skeleton-box {
+                    background: #e0e0e0;
+                    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                    background-size: 200% 100%;
+                    animation: shimmer 1.5s infinite;
+                    border-radius: 4px;
+                }
+                @keyframes shimmer {
+                    0% { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
+                }
+                .skeleton-profile-container {
+                    border: 1px solid #eaeaea;
+                    border-radius: 8px;
+                    padding: 20px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 2rem;
+                    background: #fff;
+                }
+                .skeleton-grid {
+                    border: 1px solid #eaeaea;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    background: #fff;
+                }
+                .skeleton-row {
+                    display: flex;
+                    border-bottom: 1px solid #eaeaea;
+                    padding: 15px;
+                }
+                .skeleton-cell {
+                    flex: 1;
+                    padding: 0 10px;
+                }
+                `}
+            </style>
+
             <ToastContainer position="top-right" autoClose={2000} />
-            
+
             <div className="nav">
                 <NavBar facultyName={profileDetails?.name || "Dashboard"} />
             </div>
@@ -165,8 +202,48 @@ const Timetable = () => {
 
             <div className="timetable-container">
                 {loading ? (
-                    <div style={{ textAlign: "center", padding: "2rem" }}>Loading schedule...</div>
+                    // --- SKELETON UI SECTION ---
+                    <div className="skeleton-wrapper" style={{ padding: "1rem" }}>
+                        
+                        {/* Profile Skeleton */}
+                        <div className="skeleton-profile-container">
+                            <div style={{ flex: 1 }}>
+                                <div className="skeleton-box" style={{ height: "24px", width: "40%", marginBottom: "15px" }}></div>
+                                <div className="skeleton-box" style={{ height: "20px", width: "60%", marginBottom: "15px" }}></div>
+                                <div className="skeleton-box" style={{ height: "20px", width: "30%" }}></div>
+                            </div>
+                            <div>
+                                <div className="skeleton-box" style={{ width: "100px", height: "100px", borderRadius: "50%" }}></div>
+                            </div>
+                        </div>
+
+                        {/* Heading Skeleton */}
+                        <div className="skeleton-box" style={{ height: "30px", width: "50%", margin: "0 auto 2rem auto" }}></div>
+
+                        {/* Timetable Grid Skeleton */}
+                        <div className="skeleton-grid">
+                            {/* Header Row */}
+                            <div className="skeleton-row" style={{ background: "#f9f9f9" }}>
+                                {[...Array(8)].map((_, i) => (
+                                    <div key={i} className="skeleton-cell">
+                                        <div className="skeleton-box" style={{ height: "20px", width: "100%" }}></div>
+                                    </div>
+                                ))}
+                            </div>
+                            {/* 6 Days Rows */}
+                            {[...Array(6)].map((_, r) => (
+                                <div key={r} className="skeleton-row">
+                                    {[...Array(8)].map((_, i) => (
+                                        <div key={i} className="skeleton-cell">
+                                            <div className="skeleton-box" style={{ height: "40px", width: "100%" }}></div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 ) : (
+                    // --- ACTUAL DATA SECTION ---
                     <>
                         {/* 1. PROFILE SECTION */}
                         <section className="faculty-profile">
