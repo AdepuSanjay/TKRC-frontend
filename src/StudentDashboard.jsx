@@ -100,51 +100,30 @@ const StudentDashboard = () => {
       .finally(() => setLoadingAttendance(false));
   }, [studentId, token]);
 
-  // UPGRADED: Dynamic Skeleton UI Loader that perfectly matches the dashboard layout
+  // Render Skeleton UI Loader
   const renderSkeleton = () => (
-    <div className="dashboard-container">
+    <div className="dashboard-container skeleton-container">
       {/* Student Details Skeleton */}
-      <div className="card-panel">
-        <div className="skeleton-anim" style={{ width: '200px', height: '28px', marginBottom: '24px', borderRadius: '6px' }}></div>
-        <div className="student-profile-card">
-          <div className="student-info-content">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="info-item" style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '10px' }}>
-                <div className="skeleton-anim" style={{ width: '25%', height: '18px', borderRadius: '4px' }}></div>
-                <div className="skeleton-anim" style={{ width: '50%', height: '18px', borderRadius: '4px' }}></div>
-              </div>
-            ))}
+      <div className="card-panel skeleton-card">
+        <div className="skeleton-line skeleton-title"></div>
+        <div className="skeleton-profile-wrapper">
+          <div className="skeleton-info-rows">
+            <div className="skeleton-line skeleton-row"></div>
+            <div className="skeleton-line skeleton-row"></div>
+            <div className="skeleton-line skeleton-row"></div>
           </div>
-          <div className="student-image-container">
-            <div className="skeleton-anim" style={{ width: '120px', height: '120px', borderRadius: '12px' }}></div>
-          </div>
+          <div className="skeleton-avatar"></div>
         </div>
       </div>
 
       {/* Attendance Summary Skeleton */}
-      <div className="card-panel">
-        <div className="skeleton-anim" style={{ width: '250px', height: '28px', marginBottom: '24px', borderRadius: '6px' }}></div>
-        <div className="table-responsive">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th><div className="skeleton-anim" style={{ height: '16px', borderRadius: '4px' }}></div></th>
-                <th><div className="skeleton-anim" style={{ height: '16px', borderRadius: '4px' }}></div></th>
-                <th><div className="skeleton-anim" style={{ height: '16px', borderRadius: '4px' }}></div></th>
-                <th><div className="skeleton-anim" style={{ height: '16px', borderRadius: '4px' }}></div></th>
-              </tr>
-            </thead>
-            <tbody>
-              {[1, 2, 3].map((row) => (
-                <tr key={row}>
-                  <td><div className="skeleton-anim" style={{ height: '16px', width: '80%', borderRadius: '4px' }}></div></td>
-                  <td><div className="skeleton-anim" style={{ height: '16px', width: '40%', margin: '0 auto', borderRadius: '4px' }}></div></td>
-                  <td><div className="skeleton-anim" style={{ height: '16px', width: '40%', margin: '0 auto', borderRadius: '4px' }}></div></td>
-                  <td><div className="skeleton-anim" style={{ height: '24px', width: '60%', margin: '0 auto', borderRadius: '12px' }}></div></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="card-panel skeleton-card">
+        <div className="skeleton-line skeleton-title"></div>
+        <div className="skeleton-table">
+          <div className="skeleton-table-header"></div>
+          <div className="skeleton-table-row"></div>
+          <div className="skeleton-table-row"></div>
+          <div className="skeleton-table-row"></div>
         </div>
       </div>
     </div>
@@ -315,7 +294,7 @@ const StudentDashboard = () => {
             background-color: #f8fafc;
             min-height: 100vh;
             color: #1e293b;
-            overflow-x: hidden; 
+            overflow-x: hidden; /* Hard safety constraint */
           }
 
           .dashboard-container {
@@ -387,6 +366,7 @@ const StudentDashboard = () => {
             }
           }
 
+          /* Modernized Student profile block grid replacement */
           .student-profile-card {
             display: flex;
             justify-content: space-between;
@@ -550,16 +530,74 @@ const StudentDashboard = () => {
           }
       
           /* ==========================================
-             UPGRADED SKELETON ANIMATION 
+             SKELETON SHIMMER ANIMATION 
              ========================================== */
-          .skeleton-anim {
-            background: #f1f5f9;
-            background: linear-gradient(90deg, #f1f5f9 25%, #cbd5e1 50%, #f1f5f9 75%);
-            background-size: 200% 100%;
-            animation: skeleton-loading 1.2s infinite linear;
+          .skeleton-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
           }
 
-          @keyframes skeleton-loading {
+          .skeleton-line {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 6px;
+          }
+
+          .skeleton-title {
+            width: 200px;
+            height: 24px;
+            margin-bottom: 24px;
+          }
+
+          .skeleton-profile-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+
+          .skeleton-info-rows {
+            width: 70%;
+          }
+
+          .skeleton-row {
+            height: 18px;
+            margin-bottom: 16px;
+            width: 100%;
+          }
+          .skeleton-info-rows .skeleton-row:nth-child(2) { width: 85%; }
+          .skeleton-info-rows .skeleton-row:nth-child(3) { width: 60%; }
+
+          .skeleton-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+          }
+
+          .skeleton-table {
+            width: 100%;
+          }
+
+          .skeleton-table-header {
+            height: 40px;
+            background: #f8fafc;
+            border-radius: 6px;
+            margin-bottom: 12px;
+          }
+
+          .skeleton-table-row {
+            height: 35px;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 4px;
+          }
+
+          @keyframes shimmer {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
           }
@@ -571,6 +609,10 @@ const StudentDashboard = () => {
           }        
       
           @media (max-width: 768px) {        
+            .skeleton-profile-wrapper { flex-direction: column-reverse; align-items: flex-start; }
+            .skeleton-info-rows { width: 100%; margin-top: 16px; }
+            .skeleton-avatar { margin-bottom: 16px; width: 90px; height: 90px; }
+
             .card-panel { padding: 20px; }
             th, td { padding: 10px 8px; font-size: 0.8rem; white-space: normal !important; }        
             img.student-image { width: 90px !important; height: 90px !important; }        
